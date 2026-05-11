@@ -29,14 +29,13 @@ const CHART_COLORS = {
 
 // ── Estado global ────────────────────────────────────────────────────────────
 const state = {
-  uid:       null,
+  storageKey: "aifm_data",
   anio:      new Date().getFullYear(),
   mesActivo: new Date().getMonth(),
   datos:     crearDatosVacios(),
   guardandoTimer: null,
   sidebarCollapsed: false,
-  escribiendo: false,
-  unsub: null
+  escribiendo: false
 };
 
 // ── Charts (instancias de Chart.js) ─────────────────────────────────────────
@@ -105,20 +104,19 @@ function historial() {
   return MESES.map((mes, i) => ({ mes, ...calcular(state.datos[i]) }));
 }
 
-// ── Firebase: guardar con debounce ───────────────────────────────────────────
+// ── Persistencia Local: guardar con debounce ─────────────────────────────────
 function guardarConDebounce() {
   clearTimeout(state.guardandoTimer);
   mostrarBadge(true);
-  state.escribiendo = true; // Ignorar updates de nuestra propia escritura
-  state.guardandoTimer = setTimeout(async () => {
+  state.guardandoTimer = setTimeout(() => {
     try {
-      await guardarDatos(state.uid, state.anio, state.datos);
+      const allData = JSON.parse(localStorage.getItem(state.storageKey) || "{}");
+      allData[state.anio] = state.datos;
+      localStorage.setItem(state.storageKey, JSON.stringify(allData));
     } catch (e) {
-      console.error("Error al guardar:", e);
+      console.error("Error al guardar en localStorage:", e);
     } finally {
       mostrarBadge(false);
-      // Damos un pequeño margen para que el evento local se ignore
-      setTimeout(() => { state.escribiendo = false; }, 800);
       state.guardandoTimer = null;
     }
   }, 500);
@@ -844,48 +842,37 @@ function setupMobileNav() {
  * Solo incluye meses que tengan datos reales (ingresos > 0 o gastos > 0).
  */
 async function obtenerHistorialCompleto() {
-  const uid = state.uid;
-  if (!uid) return [];
-
-  const currentYear = new Date().getFullYear();
+  const allData = JSON.parse(localStorage.getItem(state.storageKey) || "{}");
   const historial = [];
 
-  // Recopilamos datos desde 2 años atrás hasta el año actual
-  for (let anio = currentYear - 2; anio <= currentYear; anio++) {
-    try {
-      const raw = await cargarDatos(uid, anio);
-      if (!raw) continue;
+  Object.keys(allData).forEach(anioStr => {
+    const anio = parseInt(anioStr);
+    const raw = allData[anioStr];
+    if (!raw) return;
 
-      const datos = normalizarDatos(Array.isArray(raw) ? raw : Object.values(raw));
+    const datos = normalizarDatos(raw);
 
-      datos.forEach((d, mesIdx) => {
-        const calc = calcular(d);
-        // Solo incluir meses con datos reales
-        if (calc.ingresos > 0 || calc.totalGastos > 0) {
-          // Ocupacion calculada con precisión basada en los días reales del mes
-          const diasDelMes = new Date(anio, mesIdx + 1, 0).getDate();
-          const ocupacionReal = ((d.noches_ocupadas || 0) / diasDelMes) * 100;
+    datos.forEach((d, mesIdx) => {
+      const calc = calcular(d);
+      if (calc.ingresos > 0 || calc.totalGastos > 0) {
+        const diasDelMes = new Date(anio, mesIdx + 1, 0).getDate();
+        const ocupacionReal = ((d.noches_ocupadas || 0) / diasDelMes) * 100;
 
-          historial.push({
-            anio,
-            mes: mesIdx,
-            ingresos: calc.ingresos || 0,
-            totalGastos: calc.totalGastos || 0,
-            ganancia: calc.ganancia || 0,
-            ocupacion: ocupacionReal,
-            noches_ocupadas: d.noches_ocupadas || 0,
-            tarifa: d.tarifa_promedio || 0
-          });
-        }
-      });
-    } catch (e) {
-      console.warn(`No se pudieron cargar datos del año ${anio}:`, e);
-    }
-  }
+        historial.push({
+          anio,
+          mes: mesIdx,
+          ingresos: calc.ingresos || 0,
+          totalGastos: calc.totalGastos || 0,
+          ganancia: calc.ganancia || 0,
+          ocupacion: ocupacionReal,
+          noches_ocupadas: d.noches_ocupadas || 0,
+          tarifa: d.tarifa_promedio || 0
+        });
+      }
+    });
+  });
 
-  // Ordenar cronológicamente (más antiguo primero)
   historial.sort((a, b) => a.anio === b.anio ? a.mes - b.mes : a.anio - b.anio);
-
   return historial;
 }
 
@@ -1162,53 +1149,29 @@ async function renderProyeccion() {
 // ══════════════════════════════════════════════════════════════════════════════
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-async function cargarAnio() {
+function cargarAnio() {
   mostrarLoader(true);
   mostrarApp(false);
-  
-  if (state.unsub) {
-    state.unsub();
-    state.unsub = null;
-  }
-  
-  state.escribiendo = false;
 
   try {
-    state.unsub = suscribirDatos(state.uid, state.anio, (raw) => {
-      // Si somos nosotros mismos quienes escribimos, ignoramos este refresco para no romper inputs
-      if (state.escribiendo) return;
+    const allData = JSON.parse(localStorage.getItem(state.storageKey) || "{}");
+    const raw = allData[state.anio];
 
-      state.datos = raw ? normalizarDatos(raw) : crearDatosVacios();
-      
-      renderSelectores();
-      renderDashboard();
-      
-      // Calcular y mostrar la proyección (asíncrono, no bloquea el render)
-      renderProyeccion();
-      
-      // Si hay un modal abierto, refrescar los campos (pero sin quitar el foco si se puede evitar,
-      // aunque aquí lo re-renderizamos completo. Como no estamos "escribiendo", significa que el update
-      // vino de otro dispositivo, así que está bien sobreescribir).
-      if (!document.getElementById("modal-ingresos").classList.contains("hidden")) {
-        renderIngresos();
-      }
-      if (!document.getElementById("modal-gastos").classList.contains("hidden")) {
-        renderGastos();
-      }
+    state.datos = raw ? normalizarDatos(raw) : crearDatosVacios();
 
-      mostrarLoader(false);
-      mostrarApp(true);
-    }, (error) => {
-      console.error("Error al escuchar datos:", error);
-      mostrarError("Error al cargar datos desde Firebase en tiempo real.");
-    });
+    renderSelectores();
+    renderDashboard();
+    renderProyeccion();
+
+    mostrarLoader(false);
+    mostrarApp(true);
   } catch (e) {
-    console.error("Error al suscribirse:", e);
-    mostrarError("Error al conectar con Firebase.");
+    console.error("Error al cargar datos locales:", e);
+    mostrarError("Error al cargar los datos guardados localmente.");
   }
 }
 
-async function init() {
+function init() {
   // Setup UI
   setupTheme();
   setupSidebar();
@@ -1218,12 +1181,7 @@ async function init() {
   setupMobileNav();
   setupExport();
 
-  try {
-    state.uid = obtenerUID();
-    await cargarAnio();
-  } catch (e) {
-    mostrarError("No se pudo conectar con Firebase. Verifica las credenciales.");
-  }
+  cargarAnio();
 }
 
 // ── Arranque ──────────────────────────────────────────────────────────────────
