@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+.turbo/
+dist/
+build/
+out/
+
+# Environment (NUNCA commitear estos archivos)
+.env
+.env.local
+.env.*.local
+
+# Python
+apps/server/.venv/
+apps/server/__pycache__/
+apps/server/**/*.pyc
+apps/server/*.pyc
+apps/server/.pytest_cache/
+apps/server/.mypy_cache/
+apps/server/alembic/versions/*.py
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Docker overrides locales
+docker-compose.override.yml

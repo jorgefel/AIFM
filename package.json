@@ -1,0 +1,23 @@
+{
+  "name": "aifm-root",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "server:dev": "cd apps/server && .venv\\Scripts\\uvicorn main:app --reload --port 8000",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f"
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "concurrently": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

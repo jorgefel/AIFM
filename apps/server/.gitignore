@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+.coverage
+htmlcov/
+
+# Entorno
+.env
+
+# Alembic (las versiones se gestionan por separado)
+alembic/versions/*.py
+
+# IDE
+.vscode/
+.idea/

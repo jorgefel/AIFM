@@ -1,0 +1,81 @@
+# docker-compose.yml
+# Infraestructura local de desarrollo para AIFM
+# Servicios: PostgreSQL 16 + Redis 7 + pgAdmin 4
+#
+# Uso:
+#   pnpm db:up    → levantar todos los servicios
+#   pnpm db:down  → detener todos los servicios
+#   pnpm db:logs  → ver logs en tiempo real
+
+services:
+  # ─────────────────────────────────────────
+  # PostgreSQL 16 — Base de datos principal
+  # ─────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: aifm_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aifm_user
+      POSTGRES_PASSWORD: aifm_pass
+      POSTGRES_DB: aifm_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aifm_user -d aifm_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # Redis 7 — Caché y sesiones
+  # ─────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: aifm_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass aifm_redis_pass
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "aifm_redis_pass", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # pgAdmin 4 — GUI para PostgreSQL
+  # Acceder en: http://localhost:5050
+  # ─────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: aifm_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aifm.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    name: aifm_postgres_data
+  redis_data:
+    name: aifm_redis_data
+  pgadmin_data:
+    name: aifm_pgadmin_data
+
+networks:
+  default:
+    name: aifm_network

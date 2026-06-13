@@ -1,0 +1,4 @@
+packages:
+  - "apps/web"
+  - "packages/*"
+  # apps/server (Python/FastAPI) no se incluye — pnpm no gestiona entornos Python
