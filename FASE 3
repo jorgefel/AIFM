@@ -1,0 +1,68 @@
+# Plan de Implementación: Fase 3 — Frontend (Infraestructura de Datos)
+
+## Objetivo
+Inicializar la aplicación Frontend y establecer la infraestructura base de comunicación con el Backend. Esto incluye el manejo seguro de autenticación (HttpOnly cookies), la auto-renovación de sesiones (Refresh Tokens) y el estado global.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Stack Tecnológico Propuesto:**
+> - **Framework:** React con [Vite](https://vitejs.dev/) (rápido y moderno).
+> - **Lenguaje:** TypeScript.
+> - **Estilos:** TailwindCSS + [shadcn/ui](https://ui.shadcn.com/) (diseños premium y responsivos que impacten visualmente, cumpliendo el requerimiento de "Aesthetics").
+> - **Routing:** React Router v6.
+> - **Peticiones HTTP:** Axios.
+> 
+> ¿Estás de acuerdo con este stack o prefieres Next.js u otra alternativa?
+
+## Proposed Changes
+
+### Inicialización del Proyecto (`apps/web/`)
+
+#### [NEW] [apps/web/package.json](file:///C:/Users/jorjo/OneDrive/Documentos/proyectos%20personales/aifm/AIFM/apps/web/package.json)
+- Inicializar aplicación usando `npm create vite@latest web -- --template react-ts` dentro de la carpeta `apps/`.
+- Instalar dependencias clave: `axios`, `react-router-dom`, `tailwindcss`, `lucide-react`, `framer-motion` (para animaciones premium).
+
+#### [NEW] [apps/web/tailwind.config.js](file:///C:/Users/jorjo/OneDrive/Documentos/proyectos%20personales/aifm/AIFM/apps/web/tailwind.config.js)
+- Configuración base de TailwindCSS con un sistema de colores sofisticado (Dark Mode support, Glassmorphism).
+
+---
+
+### Cliente API y Seguridad (`apps/web/src/lib/`)
+
+#### [NEW] [apps/web/src/lib/api.ts](file:///C:/Users/jorjo/OneDrive/Documentos/proyectos%20personales/aifm/AIFM/apps/web/src/lib/api.ts)
+- Creación de la instancia global de `axios`.
+- Configuración de `withCredentials: true` para asegurar que las cookies `access_token` y `refresh_token` viajen automáticamente al backend.
+- **Interceptor de Respuestas (Refresh Token Logic):**
+  1. Si una petición falla con `401 Unauthorized` y no es la ruta `/auth/login`.
+  2. Llamar silenciosamente a `POST /api/v1/auth/refresh`.
+  3. Si la renovación es exitosa, reintentar la petición original.
+  4. Si falla (refresh token expirado/revocado), forzar el cierre de sesión y redirigir al `/login`.
+
+---
+
+### Contextos y Estado Global (`apps/web/src/contexts/`)
+
+#### [NEW] [apps/web/src/contexts/AuthContext.tsx](file:///C:/Users/jorjo/OneDrive/Documentos/proyectos%20personales/aifm/AIFM/apps/web/src/contexts/AuthContext.tsx)
+- Proveedor de estado global para la información del usuario logueado (`User | null`).
+- Métodos `login(credentials)`, `logout()`, y verificación inicial de sesión (`checkAuth()`).
+
+---
+
+### Componentes Base de Routing (`apps/web/src/routes/`)
+
+#### [NEW] [apps/web/src/routes/ProtectedRoute.tsx](file:///C:/Users/jorjo/OneDrive/Documentos/proyectos%20personales/aifm/AIFM/apps/web/src/routes/ProtectedRoute.tsx)
+- Componente que envuelve las rutas privadas. Redirige a `/login` si el `AuthContext` indica que no hay sesión activa.
+
+#### [NEW] [apps/web/src/App.tsx](file:///C:/Users/jorjo/OneDrive/Documentos/proyectos%20personales/aifm/AIFM/apps/web/src/App.tsx)
+- Configuración de `BrowserRouter`, rutas públicas (Login) y envoltorio de rutas privadas (Dashboard base).
+
+---
+
+## Verification Plan
+
+### Manual Verification
+1. Levantar el Backend y el Frontend localmente.
+2. Hacer login desde el UI y verificar mediante las DevTools del navegador que se reciben y almacenan las cookies `HttpOnly` (`access_token` y `refresh_token`).
+3. Refrescar la pestaña y confirmar que el `AuthContext` mantiene la sesión al consultar `/api/v1/users/me`.
+4. Borrar manualmente la cookie `access_token` en DevTools, hacer una petición cualquiera, y verificar que el Interceptor de Axios hace la petición de refresh y reintenta exitosamente sin que el usuario lo note.
