@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = (
         "postgresql+asyncpg://aifm_user:aifm_pass@localhost:5432/aifm_db"
     )
+    DB_ECHO: bool = False       # Logging de SQL queries (True solo en dev)
+    DB_POOL_SIZE: int = 5       # Conexiones en el pool de asyncpg
 
     # ── Redis ────────────────────────────────────────────────
     REDIS_URL: str = "redis://:aifm_redis_pass@localhost:6379/0"
