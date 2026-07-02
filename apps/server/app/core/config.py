@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     # ── App ──────────────────────────────────────────────────
     APP_ENV: str = "development"
     SECRET_KEY: str = "change-me-in-production"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # ── Base de datos PostgreSQL ─────────────────────────────
     DATABASE_URL: str = (
@@ -25,6 +27,13 @@ class Settings(BaseSettings):
 
     # ── CORS (orígenes permitidos) ───────────────────────────
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+
+    # ── IA / Agentes ─────────────────────────────────────────
+    ENABLE_AI_AGENTS: bool = False
+    OPENAI_API_KEY: str = ""
+    AI_MODEL: str = "gpt-4o-mini"
+    AI_USER_DAILY_LIMIT: int = 50
+    AI_GLOBAL_DAILY_LIMIT: int = 500
 
 
 settings = Settings()

@@ -1,6 +1,20 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi_limiter import FastAPILimiter
+
 from app.core.config import settings
+from app.core.redis import redis_client
+from app.api.v1.api import api_router
+from app.services.storage import UPLOAD_DIR
+import os
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await FastAPILimiter.init(redis_client)
+    yield
+    await redis_client.close()
 
 app = FastAPI(
     title="AIFM API",
@@ -9,6 +23,7 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -19,6 +34,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.get("/api/health", tags=["Health"])
 async def health_check():
@@ -30,9 +47,4 @@ async def health_check():
         "environment": settings.APP_ENV,
     }
 
-
-# ── Aquí se registrarán los routers cuando estén listos ──────
-# from app.api.v1.routes import reservations, expenses, reports
-# app.include_router(reservations.router, prefix="/api/v1")
-# app.include_router(expenses.router, prefix="/api/v1")
-# app.include_router(reports.router, prefix="/api/v1")
+app.include_router(api_router, prefix="/api/v1")

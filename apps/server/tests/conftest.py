@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 from app.core.database import Base
@@ -35,6 +36,7 @@ async def test_engine():
         settings.DATABASE_URL,
         echo=False,
         pool_pre_ping=True,
+        poolclass=NullPool,
     )
 
     # Crear todas las tablas al inicio de la sesión de tests
