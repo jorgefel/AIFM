@@ -7,3 +7,8 @@ class Token(BaseModel):
 class LoginPayload(BaseModel):
     email: str
     password: str
+
+class RegisterPayload(BaseModel):
+    email: str
+    password: str
+    full_name: str

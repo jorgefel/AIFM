@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Airbnb Intelligent Finance & Management",
 };
 
+import { AuthProvider } from "@/contexts/AuthContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${outfit.variable}`}>
       <body className="antialiased min-h-screen">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

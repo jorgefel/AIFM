@@ -16,9 +16,17 @@ const NAV_ITEMS = [
   { name: "Reportes", href: "/reports", icon: BarChart3 },
 ];
 
-export function Sidebar() {
+import { usePathname } from "next/navigation";
+
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export function Sidebar({ onClose }: SidebarProps = {}) {
+  const pathname = usePathname();
+
   return (
-    <aside className="w-64 flex flex-col h-screen border-r border-white/5 bg-obsidian-light/30 backdrop-blur-md">
+    <aside className="w-64 flex flex-col h-full border-r border-white/5 bg-obsidian-light/30 backdrop-blur-md">
       {/* Logo Area */}
       <div className="h-20 flex items-center px-6 border-b border-white/5">
         <div className="flex items-center gap-3">
@@ -35,13 +43,13 @@ export function Sidebar() {
       <nav className="flex-1 py-6 px-4 space-y-2">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
-          // TODO: Mover el estado activo a un hook de Next.js (usePathname)
-          const isActive = item.href === "/"; 
+          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           
           return (
             <Link
               key={item.name}
               href={item.href}
+              onClick={onClose}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
                 isActive 
                   ? "bg-emerald-500/10 text-emerald-400" 
