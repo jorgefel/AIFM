@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Plus, Edit2, Trash2, Filter, Upload, FileText, ReceiptText } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
@@ -57,7 +58,7 @@ export default function ExpensesPage() {
 
   const [formData, setFormData] = useState({
     description: "",
-    amount: 0,
+    amount: "" as any,
     category: "maintenance",
     date: new Date().toISOString().split("T")[0],
     currency: "USD"
@@ -162,7 +163,7 @@ export default function ExpensesPage() {
     setEditingId(null);
     setFormData({
       description: "",
-      amount: 0,
+      amount: "" as any,
       category: "maintenance",
       date: new Date().toISOString().split("T")[0],
       currency: "USD"
@@ -310,12 +311,11 @@ export default function ExpensesPage() {
           />
           
           <div className="grid grid-cols-2 gap-4">
-            <Input 
-              type="number"
-              step="0.01"
+            <CurrencyInput
               label="Monto" 
               value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+              onChange={(val) => setFormData({ ...formData, amount: val as any })}
+              currency={formData.currency}
               required
             />
             <Select 
@@ -325,6 +325,7 @@ export default function ExpensesPage() {
               options={[
                 { value: "USD", label: "Dólares (USD)" },
                 { value: "MXN", label: "Pesos Mexicanos (MXN)" },
+                { value: "COP", label: "Pesos Colombianos (COP)" },
                 { value: "EUR", label: "Euros (EUR)" },
               ]}
               required

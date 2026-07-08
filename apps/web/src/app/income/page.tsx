@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Plus, Edit2, Trash2, Filter, Wallet } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
@@ -62,8 +63,8 @@ export default function IncomePage() {
     guest_name: "",
     check_in: "",
     check_out: "",
-    total_amount: 0,
-    platform_fee: 0,
+    total_amount: "" as any,
+    platform_fee: "" as any,
     currency: "USD",
     platform: "airbnb",
     status: "confirmed"
@@ -152,8 +153,8 @@ export default function IncomePage() {
       guest_name: "",
       check_in: "",
       check_out: "",
-      total_amount: 0,
-      platform_fee: 0,
+      total_amount: "" as any,
+      platform_fee: "" as any,
       currency: "USD",
       platform: "airbnb",
       status: "confirmed"
@@ -321,20 +322,18 @@ export default function IncomePage() {
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Input 
-              type="number"
-              step="0.01"
+            <CurrencyInput
               label="Monto Bruto" 
               value={formData.total_amount}
-              onChange={(e) => setFormData({ ...formData, total_amount: Number(e.target.value) })}
+              onChange={(val) => setFormData({ ...formData, total_amount: val as any })}
+              currency={formData.currency}
               required
             />
-            <Input 
-              type="number"
-              step="0.01"
+            <CurrencyInput
               label="Comisión (Platform Fee)" 
               value={formData.platform_fee}
-              onChange={(e) => setFormData({ ...formData, platform_fee: Number(e.target.value) })}
+              onChange={(val) => setFormData({ ...formData, platform_fee: val as any })}
+              currency={formData.currency}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -357,6 +356,7 @@ export default function IncomePage() {
               options={[
                 { value: "USD", label: "Dólares (USD)" },
                 { value: "MXN", label: "Pesos Mexicanos (MXN)" },
+                { value: "COP", label: "Pesos Colombianos (COP)" },
                 { value: "EUR", label: "Euros (EUR)" },
               ]}
               required

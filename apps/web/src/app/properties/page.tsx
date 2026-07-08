@@ -205,6 +205,7 @@ export default function PropertiesPage() {
             options={[
               { value: "USD", label: "Dólares (USD)" },
               { value: "MXN", label: "Pesos Mexicanos (MXN)" },
+              { value: "COP", label: "Pesos Colombianos (COP)" },
               { value: "EUR", label: "Euros (EUR)" },
             ]}
             required
