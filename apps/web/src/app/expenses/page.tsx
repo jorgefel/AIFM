@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Plus, Edit2, Trash2, Filter, Upload, FileText, ReceiptText } from "lucide-react";
 import { api } from "@/lib/api";
+import { useToast } from "@/contexts/ToastContext";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion, Variants } from "framer-motion";
 
 interface Property {
@@ -37,6 +39,8 @@ export default function ExpensesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const toast = useToast();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -71,8 +75,8 @@ export default function ExpensesPage() {
       } else {
         setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching properties:", error);
+    } catch {
+      toast.error("Error", "No se pudieron cargar las propiedades.");
       setIsLoading(false);
     }
   };
@@ -83,8 +87,8 @@ export default function ExpensesPage() {
     try {
       const { data } = await api.get(`/expenses/?property_id=${propertyId}`);
       setExpenses(data);
-    } catch (error) {
-      console.error("Error fetching expenses:", error);
+    } catch {
+      toast.error("Error", "No se pudieron cargar los gastos.");
     } finally {
       setIsLoading(false);
     }
@@ -132,21 +136,25 @@ export default function ExpensesPage() {
       }
 
       setIsModalOpen(false);
+      toast.success(editingId ? "Gasto actualizado" : "Gasto registrado", "El gasto se guardó correctamente.");
       fetchExpenses(selectedPropertyId);
-    } catch (error) {
-      console.error("Error saving expense:", error);
+    } catch {
+      toast.error("Error", "No se pudo guardar el gasto.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este gasto?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await api.delete(`/expenses/${id}`);
+      await api.delete(`/expenses/${deleteTarget}`);
+      toast.success("Gasto eliminado", "El gasto fue eliminado correctamente.");
       fetchExpenses(selectedPropertyId);
-    } catch (error) {
-      console.error("Error deleting expense:", error);
+    } catch {
+      toast.error("Error", "No se pudo eliminar el gasto.");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -223,7 +231,7 @@ export default function ExpensesPage() {
             <Edit2 className="w-4 h-4" />
           </button>
           <button 
-            onClick={() => handleDelete(item.id)}
+            onClick={() => setDeleteTarget(item.id)}
             className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
           >
             <Trash2 className="w-4 h-4" />
@@ -384,6 +392,14 @@ export default function ExpensesPage() {
           </div>
         </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Eliminar Gasto"
+        message="¿Estás seguro de que deseas eliminar este gasto? Esta acción no se puede deshacer."
+      />
     </DashboardLayout>
   );
 }

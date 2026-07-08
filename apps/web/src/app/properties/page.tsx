@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Plus, Edit2, Trash2, Building2 } from "lucide-react";
 import { api } from "@/lib/api";
+import { useToast } from "@/contexts/ToastContext";
 import { motion, Variants } from "framer-motion";
 
 interface Property {
@@ -24,6 +26,8 @@ export default function PropertiesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const toast = useToast();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -47,8 +51,8 @@ export default function PropertiesPage() {
     try {
       const { data } = await api.get("/properties/");
       setProperties(data);
-    } catch (error) {
-      console.error("Error fetching properties:", error);
+    } catch {
+      toast.error("Error", "No se pudieron cargar las propiedades.");
     } finally {
       setIsLoading(false);
     }
@@ -64,25 +68,30 @@ export default function PropertiesPage() {
     try {
       if (editingId) {
         await api.put(`/properties/${editingId}`, formData);
+        toast.success("Propiedad actualizada", "Los cambios se guardaron correctamente.");
       } else {
         await api.post("/properties/", formData);
+        toast.success("Propiedad creada", "La propiedad se registró correctamente.");
       }
       setIsModalOpen(false);
       fetchProperties();
-    } catch (error) {
-      console.error("Error saving property:", error);
+    } catch {
+      toast.error("Error", "No se pudo guardar la propiedad.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar esta propiedad?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await api.delete(`/properties/${id}`);
+      await api.delete(`/properties/${deleteTarget}`);
+      toast.success("Propiedad eliminada", "La propiedad fue eliminada correctamente.");
       fetchProperties();
-    } catch (error) {
-      console.error("Error deleting property:", error);
+    } catch {
+      toast.error("Error", "No se pudo eliminar la propiedad.");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -119,7 +128,7 @@ export default function PropertiesPage() {
             <Edit2 className="w-4 h-4" />
           </button>
           <button 
-            onClick={() => handleDelete(item.id)}
+            onClick={() => setDeleteTarget(item.id)}
             className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
           >
             <Trash2 className="w-4 h-4" />
@@ -160,6 +169,14 @@ export default function PropertiesPage() {
           />
         </motion.div>
       </motion.div>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Eliminar Propiedad"
+        message="¿Estás seguro de que deseas eliminar esta propiedad? Todos los datos asociados podrían verse afectados."
+      />
 
       <Modal 
         isOpen={isModalOpen} 

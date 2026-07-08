@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Plus, Edit2, Trash2, Filter, Wallet } from "lucide-react";
 import { api } from "@/lib/api";
+import { useToast } from "@/contexts/ToastContext";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion, Variants } from "framer-motion";
 
 interface Property {
@@ -40,6 +42,8 @@ export default function IncomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const toast = useToast();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -74,8 +78,8 @@ export default function IncomePage() {
       } else {
         setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching properties:", error);
+    } catch {
+      toast.error("Error", "No se pudieron cargar las propiedades.");
       setIsLoading(false);
     }
   };
@@ -86,8 +90,8 @@ export default function IncomePage() {
     try {
       const { data } = await api.get(`/reservations/?property_id=${propertyId}`);
       setReservations(data);
-    } catch (error) {
-      console.error("Error fetching reservations:", error);
+    } catch {
+      toast.error("Error", "No se pudieron cargar las reservas.");
     } finally {
       setIsLoading(false);
     }
@@ -120,21 +124,25 @@ export default function IncomePage() {
         await api.post("/reservations/", payload);
       }
       setIsModalOpen(false);
+      toast.success(editingId ? "Reserva actualizada" : "Reserva registrada", "La reserva se guardó correctamente.");
       fetchReservations(selectedPropertyId);
-    } catch (error) {
-      console.error("Error saving reservation:", error);
+    } catch {
+      toast.error("Error", "No se pudo guardar la reserva.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de que deseas cancelar esta reserva?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await api.delete(`/reservations/${id}`);
+      await api.delete(`/reservations/${deleteTarget}`);
+      toast.success("Reserva cancelada", "La reserva fue eliminada correctamente.");
       fetchReservations(selectedPropertyId);
-    } catch (error) {
-      console.error("Error deleting reservation:", error);
+    } catch {
+      toast.error("Error", "No se pudo eliminar la reserva.");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -219,7 +227,7 @@ export default function IncomePage() {
             <Edit2 className="w-4 h-4" />
           </button>
           <button 
-            onClick={() => handleDelete(item.id)}
+            onClick={() => setDeleteTarget(item.id)}
             className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
           >
             <Trash2 className="w-4 h-4" />
@@ -376,6 +384,15 @@ export default function IncomePage() {
           </div>
         </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Cancelar Reserva"
+        message="¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer."
+        confirmLabel="Cancelar Reserva"
+      />
     </DashboardLayout>
   );
 }

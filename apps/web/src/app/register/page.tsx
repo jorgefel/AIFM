@@ -1,16 +1,81 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Eye, EyeOff, Check, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+function PasswordStrength({ password }: { password: string }) {
+  const checks = useMemo(() => {
+    return {
+      length: password.length >= 6,
+      upper: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[^A-Za-z0-9]/.test(password),
+    };
+  }, [password]);
+
+  const score = Object.values(checks).filter(Boolean).length;
+  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-400", "bg-emerald-400"];
+  const labels = ["Débil", "Aceptable", "Buena", "Fuerte"];
+
+  if (!password) return null;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      className="mt-2 space-y-2"
+    >
+      {/* Bar */}
+      <div className="flex gap-1">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: i < score ? "100%" : "0%" }}
+              className={`h-full rounded-full ${i < score ? colors[score - 1] : ""}`}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+            />
+          </div>
+        ))}
+      </div>
+      <p className={`text-xs font-medium ${score <= 1 ? "text-red-400" : score === 2 ? "text-amber-400" : "text-emerald-400"}`}>
+        {labels[score - 1] || "Muy débil"}
+      </p>
+
+      {/* Checks */}
+      <div className="grid grid-cols-2 gap-1">
+        {[
+          { key: "length", label: "6+ caracteres" },
+          { key: "upper", label: "Mayúscula" },
+          { key: "number", label: "Número" },
+          { key: "special", label: "Carácter especial" },
+        ].map((item) => (
+          <div key={item.key} className="flex items-center gap-1.5 text-xs">
+            {checks[item.key as keyof typeof checks] ? (
+              <Check className="w-3 h-3 text-emerald-400" />
+            ) : (
+              <X className="w-3 h-3 text-slate-600" />
+            )}
+            <span className={checks[item.key as keyof typeof checks] ? "text-slate-300" : "text-slate-600"}>
+              {item.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function RegisterPage() {
   const { registerUser } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -29,27 +94,63 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-obsidian">
+    <div className="min-h-screen flex items-center justify-center bg-obsidian relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-emerald-500/10 rounded-full blur-[120px]"></div>
-        <div className="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-teal-500/10 rounded-full blur-[120px]"></div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-emerald-500/10 rounded-full blur-[120px]"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
+          className="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-teal-500/10 rounded-full blur-[120px]"
+        />
       </div>
 
-      <div className="w-full max-w-md p-8 glass-panel-interactive relative z-10">
-        <div className="flex justify-center mb-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25, delay: 0.1 }}
+        className="w-full max-w-md p-8 glass-panel-interactive relative z-10"
+      >
+        <motion.div 
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.3 }}
+          className="flex justify-center mb-8"
+        >
           <div className="w-12 h-12 bg-emerald-500/10 rounded-xl border border-emerald-500/20 flex items-center justify-center text-emerald-400">
             <DollarSign className="w-6 h-6" />
           </div>
-        </div>
+        </motion.div>
 
-        <h2 className="text-2xl font-bold text-center text-white mb-2">Crear Cuenta</h2>
-        <p className="text-center text-slate-400 mb-8">Regístrate para empezar a administrar tus propiedades</p>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <h2 className="text-2xl font-bold text-center text-white mb-2">Crear Cuenta</h2>
+          <p className="text-center text-slate-400 mb-8">Regístrate para empezar a administrar tus propiedades</p>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="space-y-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center">
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           <div>
@@ -59,7 +160,7 @@ export default function RegisterPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Jorge Fernández"
-              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
+              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
               required
             />
           </div>
@@ -71,40 +172,55 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@correo.com"
-              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
+              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mínimo 6 caracteres"
-              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
-              required
-              minLength={6}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 6 caracteres"
+                className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 pr-11 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            <PasswordStrength password={password} />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg transition-colors mt-6 disabled:opacity-50"
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all mt-6 disabled:opacity-50 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-[0.98]"
           >
             {loading ? "Creando cuenta..." : "Registrarme"}
           </button>
-        </form>
+        </motion.form>
 
-        <p className="text-center text-slate-500 text-sm mt-6">
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="text-center text-slate-500 text-sm mt-6"
+        >
           ¿Ya tienes cuenta?{" "}
           <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
             Iniciar Sesión
           </Link>
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     </div>
   );
 }

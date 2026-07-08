@@ -6,6 +6,8 @@ import { ArrowUpRight, ArrowDownRight, DollarSign, Users, Activity, Filter, Down
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "@/lib/api";
 import { Modal } from "@/components/ui/Modal";
+import { SkeletonCard, SkeletonChart, SkeletonList } from "@/components/ui/Skeleton";
+import { useToast } from "@/contexts/ToastContext";
 import { motion, Variants } from "framer-motion";
 
 export default function Home() {
@@ -36,6 +38,7 @@ export default function Home() {
   const [reportState, setReportState] = useState<"idle" | "loading" | "completed" | "error">("idle");
   const [reportResult, setReportResult] = useState<any>(null);
   const [reportError, setReportError] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     const init = async () => {
@@ -144,7 +147,7 @@ export default function Home() {
       link.parentNode?.removeChild(link);
     } catch (error) {
       console.error("Error exporting CSV:", error);
-      alert("Error al exportar los datos.");
+      toast.error("Error de exportación", "No se pudieron exportar los datos.");
     }
   };
 
@@ -352,7 +355,11 @@ export default function Home() {
           </div>
           <div className="flex-1 w-full h-full min-h-0">
             {isLoading ? (
-               <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">Cargando gráfica...</div>
+               <div className="w-full h-full flex items-end gap-2 pt-4">
+                 {[40, 65, 45, 80, 55, 70].map((h, i) => (
+                   <div key={i} className="flex-1 animate-pulse rounded-t-lg bg-white/5" style={{ height: `${h}%` }} />
+                 ))}
+               </div>
             ) : chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
