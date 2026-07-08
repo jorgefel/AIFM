@@ -69,3 +69,32 @@ pip install -r requirements.txt
 | Backend Expert | Schema SQL, endpoints FastAPI, migraciones |
 | Full-stack | Integración API ↔ Frontend |
 | Frontend (x3) | Componentes Next.js, UI/UX |
+
+## 🚀 Despliegue en Vercel (Producción)
+
+Dado que este proyecto utiliza una arquitectura de Monorepo (Turborepo), desplegar el frontend de Next.js en Vercel es muy sencillo. Sin embargo, recuerda que el backend (FastAPI) y la Base de Datos (PostgreSQL) deberán alojarse en servicios compatibles como Render, Railway o Supabase para que la app funcione de forma online.
+
+### Paso 1: Configurar el Repositorio
+1. Asegúrate de que todo tu código esté subido a un repositorio en **GitHub**, **GitLab** o **Bitbucket**.
+
+### Paso 2: Importar en Vercel
+1. Ve a [Vercel](https://vercel.com/) e inicia sesión.
+2. Haz clic en **"Add New..."** > **"Project"**.
+3. Conecta tu cuenta de GitHub y selecciona el repositorio de **AIFM**.
+
+### Paso 3: Configurar el Monorepo en Vercel
+Al importar el proyecto, Vercel suele detectar que es un monorepo, pero debes asegurarte de configurar las siguientes opciones en la pantalla de "Configure Project":
+
+- **Framework Preset:** Next.js
+- **Root Directory:** `apps/web` (Este paso es crucial, dile a Vercel que el código fuente de la web está aquí).
+- **Build Command:** `pnpm run build` o `npx turbo run build --filter=@aifm/web...` (Vercel lo autodetectará normalmente si el Root Directory está bien puesto).
+- **Install Command:** `pnpm install`
+
+### Paso 4: Variables de Entorno
+Despliega la sección **Environment Variables** en Vercel y añade:
+- `NEXT_PUBLIC_API_URL`: La URL pública de tu backend FastAPI en producción (por ejemplo, `https://tu-api-backend.onrender.com`). *Importante: Actualmente en local usa localhost:8000, para producción debes apuntar a tu servidor real.*
+
+### Paso 5: Desplegar
+1. Haz clic en el botón **"Deploy"**.
+2. Vercel comenzará a compilar la aplicación. Gracias a Turborepo, este proceso estará optimizado.
+3. ¡Listo! En un par de minutos tendrás tu dominio `tu-app.vercel.app` funcionando online y listo para compartir.
