@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 export default function RootLayout({
   children,
@@ -25,7 +26,9 @@ export default function RootLayout({
     <html lang="es" className={`${outfit.variable}`}>
       <body className="antialiased min-h-screen">
         <AuthProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -50,13 +50,6 @@ async def run_financial_analysis(input_data: AnalysisInput) -> dict:
     Returns:
         dict con 'insights' (str) y 'alerts' (list[str])
     """
-    llm = ChatOpenAI(
-        model=settings.AI_MODEL,
-        api_key=settings.OPENAI_API_KEY,
-        temperature=0.3,
-        max_tokens=1500,
-    )
-
     summary = input_data["monthly_summary"]
     discrepancies = input_data["discrepancies"]
     property_name = input_data["property_name"]
@@ -83,12 +76,30 @@ Provide:
 3. Actionable recommendations
 4. Any alerts or warnings"""
 
-    messages = [
-        SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content=user_message),
-    ]
-
-    response = await llm.ainvoke(messages)
+    if not settings.OPENAI_API_KEY:
+        response_content = (
+            "**Mock AI Analysis (Modo Simulado)**\n\n"
+            "El Agente de IA está activo pero no se ha configurado una clave de OpenAI. Esta es una simulación basada en tus datos:\n\n"
+            "**Análisis de Salud Financiera:**\n"
+            f"El ingreso neto es de {currency} {summary['net_income']:,.2f} con una ganancia neta de {currency} {summary['net_profit']:,.2f}. "
+            f"La ocupación se encuentra al {summary['occupancy_rate'] * 100:.1f}%.\n\n"
+            "**Recomendaciones:**\n"
+            "- Verifica los gastos fijos para maximizar la rentabilidad.\n"
+            "- Si la ocupación es menor al 50%, considera estrategias de precios dinámicos."
+        )
+    else:
+        llm = ChatOpenAI(
+            model=settings.AI_MODEL,
+            api_key=settings.OPENAI_API_KEY,
+            temperature=0.3,
+            max_tokens=1500,
+        )
+        messages = [
+            SystemMessage(content=SYSTEM_PROMPT),
+            HumanMessage(content=user_message),
+        ]
+        response = await llm.ainvoke(messages)
+        response_content = response.content
 
     # Extract alerts from discrepancies (deterministic, not AI-generated)
     alerts = []
@@ -114,7 +125,7 @@ Provide:
         )
 
     return {
-        "insights": response.content,
+        "summary": response_content,
         "alerts": alerts,
-        "summary": summary,
+        "data_summary": summary,
     }
