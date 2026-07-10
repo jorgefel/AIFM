@@ -254,7 +254,7 @@ export default function Home() {
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
             <Building2 className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">Bienvenido a LuxeLedger</h3>
+          <h3 className="text-xl font-bold text-white mb-2">Bienvenido a AIFM</h3>
           <p className="text-slate-400 max-w-md">
             Aún no tienes propiedades registradas. Para comenzar a ver tu resumen financiero y estadísticas, primero añade tu primera propiedad.
           </p>

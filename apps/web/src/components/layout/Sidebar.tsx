@@ -30,11 +30,11 @@ export function Sidebar({ onClose }: SidebarProps = {}) {
       {/* Logo Area */}
       <div className="h-20 flex items-center px-6 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-            <span className="text-obsidian font-bold text-xl leading-none">A</span>
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+            <span className="text-obsidian font-extrabold text-xs leading-none tracking-tighter">AI</span>
           </div>
           <span className="text-xl font-bold tracking-wide text-white">
-            Luxe<span className="text-emerald-400">Ledger</span>
+            AI<span className="text-emerald-400">FM</span>
           </span>
         </div>
       </div>
