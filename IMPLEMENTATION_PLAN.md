@@ -220,7 +220,7 @@ Para maximizar la velocidad, el trabajo se dividirá con **Contratos de Datos Pr
 
 ---
 
-## Dependencias a Instalar / Cambiar
+## Dependencias a Instalar / Cambiars
 
 **Backend (`apps/server`)**:
 - Agregar `PyJWT`, `redis`, `fastapi-limiter`, `aiofiles`, `python-multipart` (para form data uploads).
