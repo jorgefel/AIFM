@@ -3,7 +3,7 @@
 ## Objetivo
 Inicializar la aplicación Frontend y establecer la infraestructura base de comunicación con el Backend. Esto incluye el manejo seguro de autenticación (HttpOnly cookies), la auto-renovación de sesiones (Refresh Tokens) y el estado global.
 
-## User Review Required
+## User Review Require
 
 > [!IMPORTANT]
 > **Stack Tecnológico Propuesto:**
