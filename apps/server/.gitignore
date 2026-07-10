@@ -15,8 +15,8 @@ htmlcov/
 # Entorno
 .env
 
-# Alembic (las versiones se gestionan por separado)
-alembic/versions/*.py
+# Alembic
+# (Removido: alembic/versions/*.py para que Git sí lo detecte)
 
 # IDE
 .vscode/
