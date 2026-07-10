@@ -38,16 +38,16 @@ async def register(payload: RegisterPayload, response: Response, db: AsyncSessio
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
     )
 
@@ -73,8 +73,8 @@ async def login(payload: LoginPayload, response: Response, db: AsyncSession = De
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     
@@ -82,8 +82,8 @@ async def login(payload: LoginPayload, response: Response, db: AsyncSession = De
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
     )
     
@@ -99,8 +99,8 @@ async def refresh_token(response: Response, user_id: str = Depends(verify_refres
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=is_secure,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     
