@@ -181,7 +181,7 @@ export default function ExpensesPage() {
       amount: exp.amount,
       category: exp.category,
       date: exp.date,
-      currency: exp.currency
+      currency: exp.currency as any
     });
     setReceiptFile(null);
     setIsModalOpen(true);
@@ -323,7 +323,7 @@ export default function ExpensesPage() {
             <Select 
               label="Moneda" 
               value={formData.currency}
-              onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, currency: e.target.value as any })}
               options={[
                 { value: "USD", label: "Dólares (USD)" },
                 { value: "MXN", label: "Pesos Mexicanos (MXN)" },

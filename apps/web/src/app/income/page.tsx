@@ -172,7 +172,7 @@ export default function IncomePage() {
       check_out: res.check_out,
       total_amount: res.total_amount,
       platform_fee: res.platform_fee,
-      currency: res.currency,
+      currency: res.currency as any,
       platform: res.platform,
       status: res.status
     });
@@ -354,7 +354,7 @@ export default function IncomePage() {
             <Select 
               label="Moneda" 
               value={formData.currency}
-              onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, currency: e.target.value as any })}
               options={[
                 { value: "USD", label: "Dólares (USD)" },
                 { value: "MXN", label: "Pesos Mexicanos (MXN)" },
