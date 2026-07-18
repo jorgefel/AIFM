@@ -17,7 +17,7 @@ export function CurrencyInput({ label, value, onChange, currency, required }: Cu
   const thousandSeparator = (isCOP || isEUR) ? "." : ",";
   const decimalSeparator = (isCOP || isEUR) ? "," : ".";
   
-  const prefix = currency === "EUR" ? "€ " : "$ ";
+  const prefix = currency === "EUR" ? "€ " : currency === "COP" ? "COP $ " : "$ ";
 
   return (
     <div className="space-y-1.5">

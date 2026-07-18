@@ -40,12 +40,13 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
     try {
       if (currentCurrency === "COP") {
-        return new Intl.NumberFormat("es-CO", {
+        const formatted = new Intl.NumberFormat("es-CO", {
           style: "currency",
           currency: "COP",
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         }).format(amount);
+        return formatted.replace("$", "COP $");
       }
       
       if (currentCurrency === "EUR") {
