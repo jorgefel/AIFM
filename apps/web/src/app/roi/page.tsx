@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Calculator, DollarSign, Percent, Calendar, RefreshCcw, TrendingUp } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { motion, Variants } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +21,8 @@ export default function ROICalculator() {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
+
+  const { formatCurrency } = useCurrency();
 
   // State
   const [initialInvestment, setInitialInvestment] = useState(50000);
@@ -165,7 +168,7 @@ export default function ROICalculator() {
               <div>
                 <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
                   <span>Inversión Inicial</span>
-                  <span className="text-emerald-400 font-bold">${initialInvestment.toLocaleString()}</span>
+                  <span className="text-emerald-400 font-bold">{formatCurrency(initialInvestment)}</span>
                 </label>
                 <input 
                   type="range" 
@@ -179,7 +182,7 @@ export default function ROICalculator() {
               <div>
                 <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
                   <span>Precio por Noche</span>
-                  <span className="text-emerald-400 font-bold">${pricePerNight}</span>
+                  <span className="text-emerald-400 font-bold">{formatCurrency(pricePerNight)}</span>
                 </label>
                 <input 
                   type="range" 
@@ -217,7 +220,7 @@ export default function ROICalculator() {
               <div>
                 <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
                   <span>Gastos Operativos (Limpieza, insumos)</span>
-                  <span className="text-teal-400 font-bold">${operatingExpenses}</span>
+                  <span className="text-teal-400 font-bold">{formatCurrency(operatingExpenses)}</span>
                 </label>
                 <input 
                   type="range" 
@@ -231,7 +234,7 @@ export default function ROICalculator() {
               <div>
                 <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
                   <span>Gastos Fijos (Luz, agua, internet)</span>
-                  <span className="text-teal-400 font-bold">${fixedExpenses}</span>
+                  <span className="text-teal-400 font-bold">{formatCurrency(fixedExpenses)}</span>
                 </label>
                 <input 
                   type="range" 
@@ -279,7 +282,7 @@ export default function ROICalculator() {
           <div className="grid grid-cols-2 gap-4">
             <div className="glass-panel-interactive p-6 text-center">
               <p className="text-sm font-medium text-slate-400 mb-2">Ingreso Bruto Mensual</p>
-              <h3 className="text-2xl font-bold text-white">${results.grossIncome.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold text-white">{formatCurrency(results.grossIncome)}</h3>
             </div>
             
             <div className={`p-6 text-center rounded-xl border backdrop-blur-md transition-all duration-300 ${
@@ -287,7 +290,7 @@ export default function ROICalculator() {
             }`}>
               <p className="text-sm font-medium text-slate-400 mb-2">Ganancia Neta Mensual</p>
               <h3 className={`text-3xl font-bold ${results.netIncome > 0 ? "text-emerald-400" : "text-coral-accent"}`}>
-                ${results.netIncome.toLocaleString()}
+                {formatCurrency(results.netIncome)}
               </h3>
             </div>
           </div>
@@ -332,12 +335,12 @@ export default function ROICalculator() {
                       </linearGradient>
                     </defs>
                     <XAxis dataKey="month" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value/1000}k`} />
+                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} />
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
                       itemStyle={{ color: '#e2e8f0' }}
-                      formatter={(value: any, name: any) => [`$${Number(value).toLocaleString()}`, name]}
+                      formatter={(value: any, name: any) => [formatCurrency(Number(value)), name]}
                     />
                     
                     {/* Línea de inversión inicial */}

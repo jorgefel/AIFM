@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Bell, ChevronDown, Search, Loader2, Menu, AlertTriangle, TrendingDown, Percent } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface HeaderProps {
@@ -20,6 +21,7 @@ interface Notification {
 
 export function Header({ onMenuClick }: HeaderProps = {}) {
   const { user, logout } = useAuth();
+  const { formatCurrency } = useCurrency();
   
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any>({ properties: [], reservations: [], expenses: [] });
@@ -76,7 +78,7 @@ export function Header({ onMenuClick }: HeaderProps = {}) {
                 id: `loss-${prop.id}`,
                 type: "alert",
                 title: `Pérdida neta: ${prop.name}`,
-                message: `Pérdida de $${Math.abs(summary.net_profit).toFixed(2)} este mes.`,
+                message: `Pérdida de ${formatCurrency(Math.abs(summary.net_profit))} este mes.`,
                 icon: <TrendingDown className="w-4 h-4 text-red-400" />,
               });
             }

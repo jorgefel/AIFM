@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { Modal } from "@/components/ui/Modal";
 import { SkeletonCard, SkeletonChart, SkeletonList } from "@/components/ui/Skeleton";
 import { useToast } from "@/contexts/ToastContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { motion, Variants } from "framer-motion";
 
 export default function Home() {
@@ -39,6 +40,7 @@ export default function Home() {
   const [reportResult, setReportResult] = useState<any>(null);
   const [reportError, setReportError] = useState<string | null>(null);
   const toast = useToast();
+  const { formatCurrency } = useCurrency();
 
   useEffect(() => {
     const init = async () => {
@@ -286,7 +288,7 @@ export default function Home() {
             <div>
               <p className="text-sm font-medium text-slate-400 mb-1">Ingresos Brutos (Mes)</p>
               <h3 className="text-3xl font-bold text-white tracking-tight">
-                ${(summary?.gross_income || 0).toFixed(2)}
+                {formatCurrency(summary?.gross_income || 0)}
               </h3>
             </div>
           </motion.div>
@@ -306,7 +308,7 @@ export default function Home() {
             <div>
               <p className="text-sm font-medium text-slate-400 mb-1">Ganancia Neta (Mes)</p>
               <h3 className="text-3xl font-bold text-gradient-emerald tracking-tight">
-                ${(summary?.net_profit || 0).toFixed(2)}
+                {formatCurrency(summary?.net_profit || 0)}
               </h3>
             </div>
           </motion.div>
@@ -326,7 +328,7 @@ export default function Home() {
             <div>
               <p className="text-sm font-medium text-slate-400 mb-1">Gastos Totales (Mes)</p>
               <h3 className="text-3xl font-bold text-slate-200 tracking-tight">
-                ${(summary?.total_expenses || 0).toFixed(2)}
+                {formatCurrency(summary?.total_expenses || 0)}
               </h3>
             </div>
           </motion.div>
@@ -390,7 +392,7 @@ export default function Home() {
                       </linearGradient>
                     </defs>
                     <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} />
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
@@ -438,7 +440,7 @@ export default function Home() {
                     </div>
                   </div>
                   <p className={`text-sm font-bold ${item.type === "reservation" ? "text-emerald-400" : "text-slate-300"}`}>
-                    {item.type === "reservation" ? "+" : "-"}${item.amount.toFixed(2)}
+                    {item.type === "reservation" ? "+" : "-"}{formatCurrency(item.amount)}
                   </p>
                 </div>
               ))}

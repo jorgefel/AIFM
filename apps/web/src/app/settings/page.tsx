@@ -4,11 +4,13 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { User, Mail, Shield, LogOut } from "lucide-react";
+import { User, Mail, Shield, LogOut, Globe } from "lucide-react";
+import { useCurrency, CurrencyCode } from "@/contexts/CurrencyContext";
 import { motion, Variants } from "framer-motion";
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
+  const { currency, setCurrency } = useCurrency();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -104,6 +106,30 @@ export default function SettingsPage() {
                         className="w-full bg-obsidian-light/50 border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-colors opacity-70 cursor-not-allowed"
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* Preferencias Globales */}
+                <div className="pt-6 border-t border-white/5 space-y-6">
+                  <h4 className="text-white font-semibold flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-teal-400" />
+                    Preferencias Regionales
+                  </h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Moneda Principal</label>
+                    <select 
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                      className="w-full bg-obsidian-light/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    >
+                      <option value="USD">Dólar Estadounidense (USD)</option>
+                      <option value="EUR">Euro (EUR)</option>
+                      <option value="COP">Peso Colombiano (COP)</option>
+                    </select>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Esta moneda se utilizará para mostrar todos los valores financieros en la aplicación.
+                    </p>
                   </div>
                 </div>
 

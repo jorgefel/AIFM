@@ -11,6 +11,7 @@ import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Plus, Edit2, Trash2, Filter, Wallet } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion, Variants } from "framer-motion";
 
@@ -45,6 +46,7 @@ export default function IncomePage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const toast = useToast();
+  const { formatCurrency } = useCurrency();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -65,7 +67,7 @@ export default function IncomePage() {
     check_out: "",
     total_amount: "" as any,
     platform_fee: "" as any,
-    currency: "USD",
+    currency,
     platform: "airbnb",
     status: "confirmed"
   });
@@ -155,7 +157,7 @@ export default function IncomePage() {
       check_out: "",
       total_amount: "" as any,
       platform_fee: "" as any,
-      currency: "USD",
+      currency,
       platform: "airbnb",
       status: "confirmed"
     });
@@ -194,7 +196,7 @@ export default function IncomePage() {
       accessorKey: "net_amount",
       cell: (item: Reservation) => (
         <span className="font-bold text-emerald-400">
-          ${item.net_amount?.toFixed(2)} {item.currency}
+          {formatCurrency(item.net_amount)}
         </span>
       )
     },

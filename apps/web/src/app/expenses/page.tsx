@@ -11,6 +11,7 @@ import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Plus, Edit2, Trash2, Filter, Upload, FileText, ReceiptText } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion, Variants } from "framer-motion";
 
@@ -42,6 +43,7 @@ export default function ExpensesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const toast = useToast();
+  const { formatCurrency } = useCurrency();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -61,7 +63,7 @@ export default function ExpensesPage() {
     amount: "" as any,
     category: "maintenance",
     date: new Date().toISOString().split("T")[0],
-    currency: "USD"
+    currency
   });
   
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
@@ -166,7 +168,7 @@ export default function ExpensesPage() {
       amount: "" as any,
       category: "maintenance",
       date: new Date().toISOString().split("T")[0],
-      currency: "USD"
+      currency
     });
     setReceiptFile(null);
     setIsModalOpen(true);
@@ -198,7 +200,7 @@ export default function ExpensesPage() {
       accessorKey: "amount",
       cell: (item: Expense) => (
         <span className="font-bold text-coral-accent">
-          -${item.amount.toFixed(2)} {item.currency}
+          -{formatCurrency(item.amount)}
         </span>
       )
     },
