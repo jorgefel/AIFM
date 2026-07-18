@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Modal } from "@/components/ui/Modal";
-import { Download, Sparkles, Filter, Loader2, FileSpreadsheet, BrainCircuit } from "lucide-react";
+import { Download, Sparkles, Filter, Loader2, FileSpreadsheet, BrainCircuit, Zap } from "lucide-react";
 import { api } from "@/lib/api";
 import { motion, Variants } from "framer-motion";
 
@@ -16,10 +16,10 @@ export default function ReportsPage() {
   const [isExporting, setIsExporting] = useState(false);
 
   // AI Report State
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportState, setReportState] = useState<"idle" | "loading" | "completed" | "error">("idle");
   const [reportResult, setReportResult] = useState<any>(null);
   const [reportError, setReportError] = useState<string | null>(null);
+  const [reportType, setReportType] = useState<"ai" | "deterministic">("ai");
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -73,8 +73,9 @@ export default function ReportsPage() {
     }
   };
 
-  const handleGenerateReport = async () => {
+  const handleGenerateReport = async (type: "ai" | "deterministic") => {
     if (!selectedPropertyId) return;
+    setReportType(type);
     setIsReportModalOpen(true);
     setReportState("loading");
     setReportResult(null);
@@ -82,12 +83,26 @@ export default function ReportsPage() {
 
     try {
       const date = new Date();
-      const { data: jobInit } = await api.post("/analysis/ai-insights", {
+      const payload = {
         property_id: selectedPropertyId,
         year: date.getFullYear(),
         month: date.getMonth() + 1
-      });
+      };
 
+      if (type === "deterministic") {
+        // Análisis determinístico síncrono (instantáneo)
+        const { data } = await api.post("/analysis/deterministic-insights", payload);
+        
+        // Retraso artificial para dar sensación de procesamiento premium
+        setTimeout(() => {
+          setReportResult(data);
+          setReportState("completed");
+        }, 1200);
+        return;
+      }
+
+      // Flujo asíncrono para IA
+      const { data: jobInit } = await api.post("/analysis/ai-insights", payload);
       const jobId = jobInit.job_id;
 
       const pollInterval = setInterval(async () => {
@@ -111,7 +126,7 @@ export default function ReportsPage() {
       }, 2500);
     } catch (error: any) {
       setReportState("error");
-      setReportError(error.response?.data?.detail || "Error al solicitar el reporte a la IA.");
+      setReportError(error.response?.data?.detail || "Error al solicitar el reporte.");
     }
   };
 
@@ -146,7 +161,8 @@ export default function ReportsPage() {
         )}
 
         {selectedPropertyId && (
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
             
             {/* Tarjeta de Exportación CSV */}
             <div className="glass-panel p-8 flex flex-col items-center text-center">
@@ -163,19 +179,35 @@ export default function ReportsPage() {
               </Button>
             </div>
 
+            {/* Tarjeta de Análisis Rápido (Determinístico) */}
+            <div className="glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden group">
+              <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-500/10 blur-[80px] pointer-events-none group-hover:bg-teal-500/20 transition-all" />
+              <div className="w-16 h-16 bg-teal-500/10 rounded-full flex items-center justify-center mb-6 border border-teal-500/20">
+                <Zap className="w-8 h-8 text-teal-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Análisis Rápido</h3>
+              <p className="text-slate-400 text-sm mb-6 max-w-sm">
+                Obtén un análisis instantáneo basado en métricas y reglas financieras, junto con un Score de Salud Financiera.
+              </p>
+              <Button onClick={() => handleGenerateReport("deterministic")} className="w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white shadow-lg shadow-teal-500/20">
+                <Zap className="w-4 h-4 mr-2" />
+                Generar Análisis
+              </Button>
+            </div>
+
             {/* Tarjeta de Agente IA */}
             <div className="glass-panel p-8 flex flex-col items-center text-center relative overflow-hidden group">
               <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/10 blur-[80px] pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
               <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 border border-emerald-500/20">
                 <BrainCircuit className="w-8 h-8 text-emerald-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Análisis de IA</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Agente IA (Avanzado)</h3>
               <p className="text-slate-400 text-sm mb-6 max-w-sm">
-                Deja que nuestro agente financiero de IA revise tus métricas del mes y te proporcione un veredicto y recomendaciones.
+                Deja que nuestro agente financiero de IA revise tus métricas del mes de manera profunda y personalizada.
               </p>
-              <Button onClick={handleGenerateReport} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20">
+              <Button onClick={() => handleGenerateReport("ai")} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20">
                 <Sparkles className="w-4 h-4 mr-2" />
-                Generar Reporte IA
+                Consultar IA
               </Button>
             </div>
 
@@ -203,9 +235,23 @@ export default function ReportsPage() {
           {reportState === "completed" && reportResult && (
             <div className="space-y-6">
               <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <h4 className="text-emerald-400 font-semibold mb-2 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" /> Veredicto de IA
-                </h4>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                  <h4 className="text-emerald-400 font-semibold flex items-center gap-2">
+                    {reportType === "ai" ? <Sparkles className="w-4 h-4" /> : <Zap className="w-4 h-4 text-teal-400" />} 
+                    {reportType === "ai" ? "Veredicto de IA" : "Veredicto Financiero"}
+                  </h4>
+                  {reportResult.health_score !== undefined && (
+                    <div className="flex items-center gap-2 bg-obsidian-light/50 px-3 py-1.5 rounded-lg border border-white/5">
+                      <span className="text-xs text-slate-400 font-medium">Salud Financiera:</span>
+                      <span className={`text-sm font-bold ${
+                        reportResult.health_score >= 70 ? "text-emerald-400" :
+                        reportResult.health_score >= 40 ? "text-amber-400" : "text-coral-accent"
+                      }`}>
+                        {reportResult.health_score}/100
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <p className="text-sm text-slate-300 leading-relaxed">
                   {reportResult.summary || "Análisis completado satisfactoriamente."}
                 </p>

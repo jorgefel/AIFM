@@ -1,5 +1,6 @@
 import React from "react";
 import { Loader2 } from "lucide-react";
+import { SkeletonTable } from "./Skeleton";
 
 interface Column<T> {
   header: string;
@@ -30,10 +31,8 @@ export function DataTable<T>({ data, columns, isLoading, emptyMessage = "No hay 
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={columns.length} className="p-8 text-center">
-                <div className="flex justify-center items-center text-emerald-500">
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                </div>
+              <td colSpan={columns.length} className="p-0">
+                <SkeletonTable columns={columns.length} rows={5} />
               </td>
             </tr>
           ) : data.length === 0 ? (

@@ -273,68 +273,84 @@ export default function Home() {
       >
         
         {/* Tarjeta 1: Ingresos Totales */}
-        <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-              <DollarSign className="w-5 h-5 text-emerald-400" />
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <DollarSign className="w-5 h-5 text-emerald-400" />
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-400 mb-1">Ingresos Brutos (Mes)</p>
-            <h3 className="text-3xl font-bold text-white tracking-tight">
-              ${isLoading ? "..." : (summary?.gross_income || 0).toFixed(2)}
-            </h3>
-          </div>
-        </motion.div>
+            <div>
+              <p className="text-sm font-medium text-slate-400 mb-1">Ingresos Brutos (Mes)</p>
+              <h3 className="text-3xl font-bold text-white tracking-tight">
+                ${(summary?.gross_income || 0).toFixed(2)}
+              </h3>
+            </div>
+          </motion.div>
+        )}
 
         {/* Tarjeta 2: Ganancia Neta */}
-        <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-teal-500/10 rounded-lg border border-teal-500/20">
-              <Activity className="w-5 h-5 text-teal-400" />
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2 bg-teal-500/10 rounded-lg border border-teal-500/20">
+                <Activity className="w-5 h-5 text-teal-400" />
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-400 mb-1">Ganancia Neta (Mes)</p>
-            <h3 className="text-3xl font-bold text-gradient-emerald tracking-tight">
-              ${isLoading ? "..." : (summary?.net_profit || 0).toFixed(2)}
-            </h3>
-          </div>
-        </motion.div>
+            <div>
+              <p className="text-sm font-medium text-slate-400 mb-1">Ganancia Neta (Mes)</p>
+              <h3 className="text-3xl font-bold text-gradient-emerald tracking-tight">
+                ${(summary?.net_profit || 0).toFixed(2)}
+              </h3>
+            </div>
+          </motion.div>
+        )}
 
         {/* Tarjeta 3: Gastos Operativos */}
-        <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-coral-accent/5 rounded-full blur-2xl group-hover:bg-coral-accent/10 transition-all"></div>
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-obsidian-light rounded-lg border border-white/5">
-              <ArrowDownRight className="w-5 h-5 text-coral-accent" />
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-coral-accent/5 rounded-full blur-2xl group-hover:bg-coral-accent/10 transition-all"></div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2 bg-obsidian-light rounded-lg border border-white/5">
+                <ArrowDownRight className="w-5 h-5 text-coral-accent" />
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-400 mb-1">Gastos Totales (Mes)</p>
-            <h3 className="text-3xl font-bold text-slate-200 tracking-tight">
-              ${isLoading ? "..." : (summary?.total_expenses || 0).toFixed(2)}
-            </h3>
-          </div>
-        </motion.div>
+            <div>
+              <p className="text-sm font-medium text-slate-400 mb-1">Gastos Totales (Mes)</p>
+              <h3 className="text-3xl font-bold text-slate-200 tracking-tight">
+                ${(summary?.total_expenses || 0).toFixed(2)}
+              </h3>
+            </div>
+          </motion.div>
+        )}
 
         {/* Tarjeta 4: Ocupación */}
-        <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
-              <Users className="w-5 h-5 text-blue-400" />
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <motion.div variants={itemVariants} className="glass-panel-interactive p-6 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Users className="w-5 h-5 text-blue-400" />
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-400 mb-1">Tasa de Ocupación</p>
-            <h3 className="text-3xl font-bold text-white tracking-tight">
-              {isLoading ? "..." : `${((summary?.occupancy_rate || 0) * 100).toFixed(1)}%`}
-            </h3>
-          </div>
-        </motion.div>
+            <div>
+              <p className="text-sm font-medium text-slate-400 mb-1">Tasa de Ocupación</p>
+              <h3 className="text-3xl font-bold text-white tracking-tight">
+                {`${((summary?.occupancy_rate || 0) * 100).toFixed(1)}%`}
+              </h3>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Área Principal de Gráficas y Listas */}
@@ -345,88 +361,91 @@ export default function Home() {
         className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2"
       >
         {/* Gráfica de Rendimiento Anual */}
-        <motion.div variants={itemVariants} className="lg:col-span-2 glass-panel p-6 h-[400px] flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-white">Rendimiento (Últimos 6 Meses)</h3>
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-              <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Ingresos</div>
-              <div className="flex items-center gap-1 ml-2"><div className="w-2 h-2 rounded-full bg-coral-accent"></div> Gastos</div>
-            </div>
+        {/* Gráfica de Rendimiento Anual */}
+        {isLoading ? (
+          <div className="lg:col-span-2">
+            <SkeletonChart />
           </div>
-          <div className="flex-1 w-full h-full min-h-0">
-            {isLoading ? (
-               <div className="w-full h-full flex items-end gap-2 pt-4">
-                 {[40, 65, 45, 80, 55, 70].map((h, i) => (
-                   <div key={i} className="flex-1 animate-pulse rounded-t-lg bg-white/5" style={{ height: `${h}%` }} />
-                 ))}
-               </div>
-            ) : chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorGastos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ff7b72" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#ff7b72" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
-                    itemStyle={{ color: '#e2e8f0' }}
-                  />
-                  <Area type="monotone" dataKey="Ingresos" stroke="#10b981" fillOpacity={1} fill="url(#colorIngresos)" />
-                  <Area type="monotone" dataKey="Gastos" stroke="#ff7b72" fillOpacity={1} fill="url(#colorGastos)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm border border-white/5 border-dashed rounded-xl bg-obsidian-light/20">
-                No hay datos suficientes
+        ) : (
+          <motion.div variants={itemVariants} className="lg:col-span-2 glass-panel p-6 h-[400px] flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Rendimiento (Últimos 6 Meses)</h3>
+              <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Ingresos</div>
+                <div className="flex items-center gap-1 ml-2"><div className="w-2 h-2 rounded-full bg-coral-accent"></div> Gastos</div>
               </div>
-            )}
-          </div>
-        </motion.div>
+            </div>
+            <div className="flex-1 w-full h-full min-h-0">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorGastos" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#ff7b72" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#ff7b72" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                      itemStyle={{ color: '#e2e8f0' }}
+                    />
+                    <Area type="monotone" dataKey="Ingresos" stroke="#10b981" fillOpacity={1} fill="url(#colorIngresos)" />
+                    <Area type="monotone" dataKey="Gastos" stroke="#ff7b72" fillOpacity={1} fill="url(#colorGastos)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm border border-white/5 border-dashed rounded-xl bg-obsidian-light/20">
+                  No hay datos suficientes
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* Transacciones Recientes */}
-        <motion.div variants={itemVariants} className="glass-panel p-6 h-[400px] flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-white">Actividad Reciente</h3>
-            <button className="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
-              Ver todo
-            </button>
-          </div>
-          <div className="flex-1 space-y-4 overflow-y-auto pr-2">
-            
-            {isLoading ? (
-               <div className="text-slate-500 text-sm text-center mt-4">Cargando actividad...</div>
-            ) : recentActivity.length === 0 ? (
-              <div className="text-slate-500 text-sm text-center mt-4">No hay actividad reciente.</div>
-            ) : recentActivity.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    item.type === "reservation" ? "bg-emerald-500/10 text-emerald-400" : "bg-coral-accent/10 text-coral-accent"
-                  }`}>
-                    {item.type === "reservation" ? <ArrowDownRight className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
+        {isLoading ? (
+          <SkeletonList />
+        ) : (
+          <motion.div variants={itemVariants} className="glass-panel p-6 h-[400px] flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-white">Actividad Reciente</h3>
+              <button className="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
+                Ver todo
+              </button>
+            </div>
+            <div className="flex-1 space-y-4 overflow-y-auto pr-2">
+              
+              {recentActivity.length === 0 ? (
+                <div className="text-slate-500 text-sm text-center mt-4">No hay actividad reciente.</div>
+              ) : recentActivity.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      item.type === "reservation" ? "bg-emerald-500/10 text-emerald-400" : "bg-coral-accent/10 text-coral-accent"
+                    }`}>
+                      {item.type === "reservation" ? <ArrowDownRight className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors truncate max-w-[150px]">{item.title}</p>
+                      <p className="text-xs text-slate-500">{item.date.toLocaleDateString()}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors truncate max-w-[150px]">{item.title}</p>
-                    <p className="text-xs text-slate-500">{item.date.toLocaleDateString()}</p>
-                  </div>
+                  <p className={`text-sm font-bold ${item.type === "reservation" ? "text-emerald-400" : "text-slate-300"}`}>
+                    {item.type === "reservation" ? "+" : "-"}${item.amount.toFixed(2)}
+                  </p>
                 </div>
-                <p className={`text-sm font-bold ${item.type === "reservation" ? "text-emerald-400" : "text-slate-300"}`}>
-                  {item.type === "reservation" ? "+" : "-"}${item.amount.toFixed(2)}
-                </p>
-              </div>
-            ))}
-            
-          </div>
-        </motion.div>
+              ))}
+              
+            </div>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Modal del Reporte IA */}

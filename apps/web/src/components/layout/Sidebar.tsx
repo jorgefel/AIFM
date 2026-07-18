@@ -5,7 +5,8 @@ import {
   ReceiptText, 
   Building2, 
   BarChart3, 
-  Settings
+  Settings,
+  Calculator
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
+  { name: "Calculadora ROI", href: "/roi", icon: Calculator },
 ];
 
 import { usePathname } from "next/navigation";

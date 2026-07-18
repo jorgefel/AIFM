@@ -8,7 +8,7 @@ interface SkeletonProps {
 export function Skeleton({ className = "", style }: SkeletonProps) {
   return (
     <div
-      className={`animate-pulse rounded-xl bg-white/5 ${className}`}
+      className={`animate-shimmer rounded-xl bg-white/5 ${className}`}
       style={style}
     />
   );
@@ -61,6 +61,35 @@ export function SkeletonList() {
           <Skeleton className="h-4 w-16" />
         </div>
       ))}
+    </div>
+  );
+}
+
+export function SkeletonTable({ columns = 4, rows = 5 }: { columns?: number, rows?: number }) {
+  return (
+    <div className="w-full overflow-x-auto rounded-xl border border-white/5 bg-obsidian-light/20 backdrop-blur-sm">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="border-b border-white/5 bg-white/5">
+            {[...Array(columns)].map((_, i) => (
+              <th key={i} className="p-4">
+                <Skeleton className="h-4 w-24" />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {[...Array(rows)].map((_, rowIdx) => (
+            <tr key={rowIdx} className="border-b border-white/5 last:border-b-0">
+              {[...Array(columns)].map((_, colIdx) => (
+                <td key={colIdx} className="p-4">
+                  <Skeleton className="h-4 w-full max-w-[120px]" />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

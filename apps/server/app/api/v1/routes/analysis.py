@@ -11,6 +11,7 @@ from app.models.property import Property
 from app.models.reservation import Reservation
 from app.models.expense import Expense
 from app.engine.golden_rule import calculate_monthly_summary, detect_discrepancies
+from app.engine.deterministic_analyzer import generate_deterministic_analysis
 from app.schemas.analysis import MonthlySummary, AIInsightRequest
 from app.services.job_manager import create_job, update_job
 from app.agents.rate_limiter import check_user_ai_limit, check_global_ai_limit, increment_ai_usage
@@ -156,3 +157,29 @@ async def request_ai_insights(
     )
 
     return {"job_id": job_id, "status": "pending"}
+
+
+@router.post("/deterministic-insights")
+async def request_deterministic_insights(
+    request: AIInsightRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Retorna un análisis determinístico (síncrono) sin usar IA.
+    """
+    prop = await _verify_property_access(request.property_id, current_user, db)
+    
+    reservations, expenses, _ = await _get_property_data(request.property_id, db)
+
+    summary = calculate_monthly_summary(reservations, expenses, request.year, request.month)
+    discrepancies = detect_discrepancies(reservations)
+
+    result = generate_deterministic_analysis({
+        "monthly_summary": summary,
+        "discrepancies": discrepancies,
+        "property_name": prop.name,
+        "currency": prop.currency,
+    })
+
+    return result
