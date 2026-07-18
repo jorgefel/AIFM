@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Calculator, DollarSign, Percent, Calendar, RefreshCcw, TrendingUp } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { motion, Variants } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { Button } from "@/components/ui/Button";
@@ -22,7 +23,7 @@ export default function ROICalculator() {
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
 
-  const { formatCurrency } = useCurrency();
+  const { currency, formatCurrency } = useCurrency();
 
   // State
   const [initialInvestment, setInitialInvestment] = useState(50000);
@@ -165,33 +166,19 @@ export default function ROICalculator() {
             </h3>
             
             <div className="space-y-4">
-              <div>
-                <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                  <span>Inversión Inicial</span>
-                  <span className="text-emerald-400 font-bold">{formatCurrency(initialInvestment)}</span>
-                </label>
-                <input 
-                  type="range" 
-                  min="5000" max="500000" step="1000"
-                  value={initialInvestment} 
-                  onChange={(e) => setInitialInvestment(Number(e.target.value))}
-                  className="w-full accent-emerald-500"
-                />
-              </div>
+              <CurrencyInput
+                label="Inversión Inicial"
+                value={initialInvestment}
+                onChange={(val) => setInitialInvestment(Number(val) || 0)}
+                currency={currency}
+              />
 
-              <div>
-                <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                  <span>Precio por Noche</span>
-                  <span className="text-emerald-400 font-bold">{formatCurrency(pricePerNight)}</span>
-                </label>
-                <input 
-                  type="range" 
-                  min="20" max="1000" step="5"
-                  value={pricePerNight} 
-                  onChange={(e) => setPricePerNight(Number(e.target.value))}
-                  className="w-full accent-emerald-500"
-                />
-              </div>
+              <CurrencyInput
+                label="Precio por Noche"
+                value={pricePerNight}
+                onChange={(val) => setPricePerNight(Number(val) || 0)}
+                currency={currency}
+              />
             </div>
           </motion.div>
 
@@ -217,33 +204,19 @@ export default function ROICalculator() {
                 />
               </div>
 
-              <div>
-                <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                  <span>Gastos Operativos (Limpieza, insumos)</span>
-                  <span className="text-teal-400 font-bold">{formatCurrency(operatingExpenses)}</span>
-                </label>
-                <input 
-                  type="range" 
-                  min="0" max="2000" step="50"
-                  value={operatingExpenses} 
-                  onChange={(e) => setOperatingExpenses(Number(e.target.value))}
-                  className="w-full accent-teal-500"
-                />
-              </div>
+              <CurrencyInput
+                label="Gastos Operativos (Limpieza, insumos)"
+                value={operatingExpenses}
+                onChange={(val) => setOperatingExpenses(Number(val) || 0)}
+                currency={currency}
+              />
 
-              <div>
-                <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                  <span>Gastos Fijos (Luz, agua, internet)</span>
-                  <span className="text-teal-400 font-bold">{formatCurrency(fixedExpenses)}</span>
-                </label>
-                <input 
-                  type="range" 
-                  min="0" max="2000" step="50"
-                  value={fixedExpenses} 
-                  onChange={(e) => setFixedExpenses(Number(e.target.value))}
-                  className="w-full accent-teal-500"
-                />
-              </div>
+              <CurrencyInput
+                label="Gastos Fijos (Luz, agua, internet)"
+                value={fixedExpenses}
+                onChange={(val) => setFixedExpenses(Number(val) || 0)}
+                currency={currency}
+              />
             </div>
           </motion.div>
 
