@@ -43,7 +43,7 @@ export default function ExpensesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const toast = useToast();
-  const { formatCurrency } = useCurrency();
+  const { currency, formatCurrency } = useCurrency();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
