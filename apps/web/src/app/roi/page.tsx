@@ -337,7 +337,7 @@ export default function ROICalculator() {
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
                       itemStyle={{ color: '#e2e8f0' }}
-                      formatter={(value: any, name: string) => [`$${Number(value).toLocaleString()}`, name]}
+                      formatter={(value: any, name: any) => [`$${Number(value).toLocaleString()}`, name]}
                     />
                     
                     {/* Línea de inversión inicial */}
