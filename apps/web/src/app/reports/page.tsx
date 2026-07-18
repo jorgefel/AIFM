@@ -16,6 +16,7 @@ export default function ReportsPage() {
   const [isExporting, setIsExporting] = useState(false);
 
   // AI Report State
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportState, setReportState] = useState<"idle" | "loading" | "completed" | "error">("idle");
   const [reportResult, setReportResult] = useState<any>(null);
   const [reportError, setReportError] = useState<string | null>(null);
