@@ -10,7 +10,7 @@
 from __future__ import annotations
 
 import calendar
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any
 
@@ -61,13 +61,13 @@ def calculate_occupancy_rate(
 
         # Clamp to month boundaries
         eff_start = max(check_in, month_start)
-        eff_end = min(check_out, month_end + __import__("datetime").timedelta(days=1))
+        eff_end = min(check_out, month_end + timedelta(days=1))
 
         current = eff_start
         while current < eff_end:
             if month_start <= current <= month_end:
                 occupied_days.add(current)
-            current += __import__("datetime").timedelta(days=1)
+            current += timedelta(days=1)
 
     if days_in_month == 0:
         return 0.0

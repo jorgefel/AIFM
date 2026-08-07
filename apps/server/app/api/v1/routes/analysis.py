@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.core.database import get_db
 from app.core.config import settings
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, verify_property_access
 from app.models.user import User
 from app.models.property import Property
 from app.models.reservation import Reservation
@@ -17,21 +17,6 @@ from app.services.job_manager import create_job, update_job
 from app.agents.rate_limiter import check_user_ai_limit, check_global_ai_limit, increment_ai_usage
 
 router = APIRouter(prefix="/analysis", tags=["analysis"])
-
-
-async def _verify_property_access(property_id: uuid.UUID, current_user: User, db: AsyncSession) -> Property:
-    result = await db.execute(
-        select(Property).where(
-            Property.id == property_id,
-            Property.owner_id == current_user.id,
-            Property.is_active == True,
-        )
-    )
-    prop = result.scalars().first()
-    if not prop:
-        raise HTTPException(status_code=404, detail="Property not found")
-    return prop
-
 
 async def _get_property_data(property_id: uuid.UUID, db: AsyncSession) -> tuple[list[dict], list[dict], Property]:
     """Fetch reservations and expenses for a property and return as dicts."""
@@ -85,7 +70,7 @@ async def get_financial_summary(
     """
     Resumen financiero mensual (Motor Determinístico, sin IA).
     """
-    await _verify_property_access(property_id, current_user, db)
+    await verify_property_access(property_id, current_user, db)
     reservations, expenses, _ = await _get_property_data(property_id, db)
     summary = calculate_monthly_summary(reservations, expenses, year, month)
     return summary
@@ -141,7 +126,7 @@ async def request_ai_insights(
             detail="AI agents are disabled. Set ENABLE_AI_AGENTS=True in .env to enable.",
         )
 
-    await _verify_property_access(request.property_id, current_user, db)
+    await verify_property_access(request.property_id, current_user, db)
     await check_user_ai_limit(str(current_user.id))
     await check_global_ai_limit()
 
@@ -168,7 +153,7 @@ async def request_deterministic_insights(
     """
     Retorna un análisis determinístico (síncrono) sin usar IA.
     """
-    prop = await _verify_property_access(request.property_id, current_user, db)
+    prop = await verify_property_access(request.property_id, current_user, db)
     
     reservations, expenses, _ = await _get_property_data(request.property_id, db)
 

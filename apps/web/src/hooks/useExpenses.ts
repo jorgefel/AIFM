@@ -3,21 +3,7 @@ import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
-export interface Property {
-  id: string;
-  name: string;
-}
-
-export interface Expense {
-  id: string;
-  property_id: string;
-  description: string;
-  amount: number;
-  category: string;
-  date: string;
-  currency: string;
-  receipt_url: string | null;
-}
+import { Property, Expense } from "@/types/models";
 
 export function useExpenses() {
   const [properties, setProperties] = useState<Property[]>([]);

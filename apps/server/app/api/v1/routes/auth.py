@@ -12,6 +12,27 @@ from app.schemas.auth import LoginPayload, RegisterPayload
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+def _set_auth_cookies(response: Response, access_token: str, refresh_token: str | None = None):
+    is_secure = settings.APP_ENV == "production"
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=is_secure,
+        samesite="none",
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
+    if refresh_token:
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=is_secure,
+            samesite="none",
+            max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+        )
+
+
 @router.post("/register", status_code=201)
 async def register(payload: RegisterPayload, response: Response, db: AsyncSession = Depends(get_db)):
     # Check if user already exists
@@ -32,25 +53,7 @@ async def register(payload: RegisterPayload, response: Response, db: AsyncSessio
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(subject=str(user.id))
 
-    is_secure = settings.APP_ENV == "production"
-
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
-    )
-
+    _set_auth_cookies(response, access_token, refresh_token)
     return {"message": "Registration successful"}
 
 @router.post("/login", dependencies=[Depends(RateLimiter(times=5, minutes=1))])
@@ -67,42 +70,14 @@ async def login(payload: LoginPayload, response: Response, db: AsyncSession = De
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(subject=str(user.id))
     
-    is_secure = settings.APP_ENV == "production"
-    
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-    
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
-    )
-    
+    _set_auth_cookies(response, access_token, refresh_token)
     return {"message": "Login successful"}
 
 @router.post("/refresh")
 async def refresh_token(response: Response, user_id: str = Depends(verify_refresh_token)):
     access_token = create_access_token(subject=user_id)
     
-    is_secure = settings.APP_ENV == "production"
-    
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
+    _set_auth_cookies(response, access_token)
     
     return {"message": "Token refreshed"}
 

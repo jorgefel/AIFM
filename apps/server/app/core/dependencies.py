@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.core.security import ALGORITHM
 from app.core.redis import redis_client
 from app.models.user import User
+from app.models.property import Property
 
 async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
@@ -83,5 +84,13 @@ async def verify_refresh_token(request: Request) -> uuid.UUID:
     except (jwt.PyJWTError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate refresh token"
         )
+
+async def verify_property_access(property_id: uuid.UUID, current_user: User, db: AsyncSession) -> Property:
+    result = await db.execute(
+        select(Property).where(Property.id == property_id, Property.owner_id == current_user.id, Property.is_active == True)
+    )
+    property_obj = result.scalars().first()
+    if not property_obj:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return property_obj

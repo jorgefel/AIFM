@@ -9,7 +9,8 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion, Variants } from "framer-motion";
 
 // Hooks
-import { useExpenses, Expense } from "@/hooks/useExpenses";
+import { useExpenses } from "@/hooks/useExpenses";
+import { Expense } from "@/types/models";
 
 // Components
 import { ExpenseForm } from "@/components/expenses/ExpenseForm";

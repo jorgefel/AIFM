@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/ui/DataTable";
 import { Wallet, Edit2, Trash2 } from "lucide-react";
-import { Reservation } from "@/hooks/useIncome";
+import { Reservation } from "@/types/models";
 import { motion, Variants } from "framer-motion";
 
 interface IncomeListProps {
@@ -30,7 +30,7 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
       accessorKey: "net_amount",
       cell: (item: Reservation) => (
         <span className="font-bold text-emerald-400">
-          {formatCurrency(item.net_amount)}
+          {formatCurrency(Number(item.net_amount))}
         </span>
       )
     },

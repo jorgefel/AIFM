@@ -4,7 +4,8 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Filter, Download, Sparkles, Building2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 // Hooks
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -17,21 +18,7 @@ import { ActivityList } from "@/components/dashboard/ActivityList";
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
 
 export default function Home() {
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
-
   const toast = useToast();
-
   const {
     properties,
     selectedPropertyId,

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, verify_property_access
 from app.models.user import User
 from app.models.property import Property
 from app.models.expense import Expense
@@ -14,14 +14,6 @@ from app.services.storage import save_receipt
 
 router = APIRouter(prefix="/expenses", tags=["expenses"])
 
-async def verify_property_access(property_id: uuid.UUID, current_user: User, db: AsyncSession) -> Property:
-    result = await db.execute(
-        select(Property).where(Property.id == property_id, Property.owner_id == current_user.id, Property.is_active == True)
-    )
-    property_obj = result.scalars().first()
-    if not property_obj:
-        raise HTTPException(status_code=404, detail="Property not found")
-    return property_obj
 
 @router.get("/", response_model=List[ExpenseRead])
 async def get_expenses(property_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):

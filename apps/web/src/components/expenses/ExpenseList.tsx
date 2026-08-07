@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/ui/DataTable";
 import { ReceiptText, FileText, Edit2, Trash2 } from "lucide-react";
-import { Expense } from "@/hooks/useExpenses";
+import { Expense } from "@/types/models";
 import { motion, Variants } from "framer-motion";
 
 interface ExpenseListProps {
@@ -26,7 +26,7 @@ export function ExpenseList({ expenses, isLoading, formatCurrency, onEdit, onDel
       accessorKey: "amount",
       cell: (item: Expense) => (
         <span className="font-bold text-coral-accent">
-          -{formatCurrency(item.amount)}
+          -{formatCurrency(Number(item.amount))}
         </span>
       )
     },
