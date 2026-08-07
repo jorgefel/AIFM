@@ -1,49 +1,40 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { DataTable } from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/Button";
-import { Modal } from "@/components/ui/Modal";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
-import { CurrencyInput } from "@/components/ui/CurrencyInput";
-import { Plus, Edit2, Trash2, Filter, Upload, FileText, ReceiptText } from "lucide-react";
-import { api } from "@/lib/api";
-import { useToast } from "@/contexts/ToastContext";
+import { Plus, Filter } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion, Variants } from "framer-motion";
 
-interface Property {
-  id: string;
-  name: string;
-}
+// Hooks
+import { useExpenses, Expense } from "@/hooks/useExpenses";
 
-interface Expense {
-  id: string;
-  property_id: string;
-  description: string;
-  amount: number;
-  category: string;
-  date: string;
-  currency: string;
-  receipt_url: string | null;
-}
+// Components
+import { ExpenseForm } from "@/components/expenses/ExpenseForm";
+import { ExpenseList } from "@/components/expenses/ExpenseList";
 
 export default function ExpensesPage() {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
-  
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const toast = useToast();
-  const { currency, formatCurrency } = useCurrency();
+  
+  const { formatCurrency } = useCurrency();
+
+  const {
+    properties,
+    selectedPropertyId, setSelectedPropertyId,
+    expenses,
+    isLoading,
+    isSubmitting,
+    formData, setFormData,
+    receiptFile, setReceiptFile,
+    submitExpense,
+    deleteExpense,
+    resetForm,
+    loadForm
+  } = useExpenses();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -58,191 +49,33 @@ export default function ExpensesPage() {
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
 
-  const [formData, setFormData] = useState({
-    description: "",
-    amount: "" as any,
-    category: "maintenance",
-    date: new Date().toISOString().split("T")[0],
-    currency
-  });
-  
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const fetchProperties = async () => {
-    try {
-      const { data } = await api.get("/properties/");
-      setProperties(data);
-      if (data.length > 0) {
-        setSelectedPropertyId(data[0].id);
-      } else {
-        setIsLoading(false);
-      }
-    } catch {
-      toast.error("Error", "No se pudieron cargar las propiedades.");
-      setIsLoading(false);
-    }
-  };
-
-  const fetchExpenses = useCallback(async (propertyId: string) => {
-    if (!propertyId) return;
-    setIsLoading(true);
-    try {
-      const { data } = await api.get(`/expenses/?property_id=${propertyId}`);
-      setExpenses(data);
-    } catch {
-      toast.error("Error", "No se pudieron cargar los gastos.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProperties();
-  }, []);
-
-  useEffect(() => {
-    if (selectedPropertyId) {
-      fetchExpenses(selectedPropertyId);
-    }
-  }, [selectedPropertyId, fetchExpenses]);
-
-  const handleUploadReceipt = async (expenseId: string, file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    await api.post(`/expenses/${expenseId}/receipt`, formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        ...formData,
-        property_id: selectedPropertyId,
-        amount: Number(formData.amount)
-      };
-
-      let expenseId = editingId;
-
-      if (editingId) {
-        await api.put(`/expenses/${editingId}`, payload);
-      } else {
-        const { data } = await api.post("/expenses/", payload);
-        expenseId = data.id;
-      }
-      
-      if (receiptFile && expenseId) {
-        await handleUploadReceipt(expenseId, receiptFile);
-      }
-
-      setIsModalOpen(false);
-      toast.success(editingId ? "Gasto actualizado" : "Gasto registrado", "El gasto se guardó correctamente.");
-      fetchExpenses(selectedPropertyId);
-    } catch {
-      toast.error("Error", "No se pudo guardar el gasto.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      await api.delete(`/expenses/${deleteTarget}`);
-      toast.success("Gasto eliminado", "El gasto fue eliminado correctamente.");
-      fetchExpenses(selectedPropertyId);
-    } catch {
-      toast.error("Error", "No se pudo eliminar el gasto.");
-    } finally {
-      setDeleteTarget(null);
-    }
-  };
-
   const openNewModal = () => {
     setEditingId(null);
-    setFormData({
-      description: "",
-      amount: "" as any,
-      category: "maintenance",
-      date: new Date().toISOString().split("T")[0],
-      currency
-    });
-    setReceiptFile(null);
+    resetForm();
     setIsModalOpen(true);
   };
 
   const openEditModal = (exp: Expense) => {
     setEditingId(exp.id);
-    setFormData({
-      description: exp.description,
-      amount: exp.amount,
-      category: exp.category,
-      date: exp.date,
-      currency: exp.currency as any
-    });
-    setReceiptFile(null);
+    loadForm(exp);
     setIsModalOpen(true);
   };
 
-  const columns = [
-    { header: "Descripción", accessorKey: "description" },
-    { 
-      header: "Categoría", 
-      accessorKey: "category",
-      cell: (item: Expense) => <span className="capitalize">{item.category}</span>
-    },
-    { header: "Fecha", accessorKey: "date" },
-    { 
-      header: "Monto", 
-      accessorKey: "amount",
-      cell: (item: Expense) => (
-        <span className="font-bold text-coral-accent">
-          -{formatCurrency(item.amount)}
-        </span>
-      )
-    },
-    {
-      header: "Recibo",
-      accessorKey: "receipt_url",
-      cell: (item: Expense) => (
-        item.receipt_url ? (
-          <a 
-            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${item.receipt_url}`} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
-          >
-            <FileText className="w-4 h-4" /> Ver
-          </a>
-        ) : (
-          <span className="text-xs text-slate-500">Sin recibo</span>
-        )
-      )
-    },
-    {
-      header: "Acciones",
-      accessorKey: "actions",
-      cell: (item: Expense) => (
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => openEditModal(item)}
-            className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>
-          <button 
-            onClick={() => setDeleteTarget(item.id)}
-            className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await submitExpense(editingId);
+    if (success) {
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    const success = await deleteExpense(deleteTarget);
+    if (success) {
+      setDeleteTarget(null);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -280,121 +113,27 @@ export default function ExpensesPage() {
           </motion.div>
         )}
 
-        <motion.div variants={itemVariants}>
-          <DataTable 
-            data={expenses} 
-            columns={columns} 
-            isLoading={isLoading} 
-            emptyMessage={
-              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                  <ReceiptText className="w-8 h-8 text-slate-500" />
-                </div>
-                <p className="text-lg font-medium text-slate-300 mb-1">Sin gastos registrados</p>
-                <p className="text-sm max-w-sm mx-auto">No hay gastos para esta propiedad. Haz clic en "Nuevo Gasto" para registrar uno.</p>
-              </div>
-            }
-          />
-        </motion.div>
+        <ExpenseList 
+          expenses={expenses}
+          isLoading={isLoading}
+          formatCurrency={formatCurrency}
+          onEdit={openEditModal}
+          onDelete={setDeleteTarget}
+          itemVariants={itemVariants}
+        />
       </motion.div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        title={editingId ? "Editar Gasto" : "Nuevo Gasto"}
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input 
-            label="Descripción" 
-            placeholder="Ej. Reparación de tubería" 
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            required
-          />
-          
-          <div className="grid grid-cols-2 gap-4">
-            <CurrencyInput
-              label="Monto" 
-              value={formData.amount}
-              onChange={(val) => setFormData({ ...formData, amount: val as any })}
-              currency={formData.currency}
-              required
-            />
-            <Select 
-              label="Moneda" 
-              value={formData.currency}
-              onChange={(e) => setFormData({ ...formData, currency: e.target.value as any })}
-              options={[
-                { value: "USD", label: "Dólares (USD)" },
-                { value: "MXN", label: "Pesos Mexicanos (MXN)" },
-                { value: "COP", label: "Pesos Colombianos (COP)" },
-                { value: "EUR", label: "Euros (EUR)" },
-              ]}
-              required
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <Select 
-              label="Categoría" 
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              options={[
-                { value: "maintenance", label: "Mantenimiento" },
-                { value: "cleaning", label: "Limpieza" },
-                { value: "utilities", label: "Servicios (Agua, Luz)" },
-                { value: "supplies", label: "Insumos" },
-                { value: "taxes", label: "Impuestos" },
-                { value: "other", label: "Otro" },
-              ]}
-              required
-            />
-            <Input 
-              type="date"
-              label="Fecha" 
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="pt-2">
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Comprobante (Opcional)</label>
-            <div className="flex items-center gap-4">
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full justify-center"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                {receiptFile ? receiptFile.name : "Subir Archivo"}
-              </Button>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/png, image/jpeg, application/pdf"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setReceiptFile(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-            <p className="mt-1 text-xs text-slate-500">Imágenes (PNG, JPG) o PDF. Máx 5MB.</p>
-          </div>
-
-          <div className="pt-4 flex justify-end gap-3">
-            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              Guardar
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <ExpenseForm 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        editingId={editingId}
+        formData={formData}
+        setFormData={setFormData}
+        receiptFile={receiptFile}
+        setReceiptFile={setReceiptFile}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
 
       <ConfirmDialog
         isOpen={!!deleteTarget}

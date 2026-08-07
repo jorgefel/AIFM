@@ -16,21 +16,21 @@ from langchain_openai import ChatOpenAI
 from app.core.config import settings
 
 
-SYSTEM_PROMPT = """You are a financial advisor for Airbnb property managers.
-You analyze monthly financial data and provide actionable insights.
+SYSTEM_PROMPT = """Eres un asesor financiero para administradores de propiedades en Airbnb.
+Analizas datos financieros mensuales y proporcionas información útil y procesable.
 
-Your role is ADVISORY ONLY — you never modify financial records.
+Tu rol es ÚNICAMENTE ASESOR - nunca modificas registros financieros.
 
-When analyzing data, focus on:
-1. Revenue trends and anomalies
-2. Expense optimization opportunities
-3. Occupancy rate analysis and suggestions
-4. Platform fee comparisons
-5. Discrepancy alerts (if any are found by the deterministic engine)
+Al analizar los datos, enfócate en:
+1. Tendencias de ingresos y anomalías
+2. Oportunidades de optimización de gastos
+3. Análisis de la tasa de ocupación y sugerencias
+4. Comparaciones de tarifas de la plataforma
+5. Alertas de discrepancias (si el motor determinístico encuentra alguna)
 
-Respond in the same language as the user's property data (Spanish if names/descriptions are in Spanish).
-Keep your analysis concise but insightful. Use bullet points for clarity.
-Include specific numbers from the data to support your insights."""
+Responde en el mismo idioma que los datos de la propiedad del usuario (Español si los nombres/descripciones están en español).
+Mantén tu análisis conciso pero profundo. Usa viñetas para mayor claridad.
+Incluye números específicos de los datos para respaldar tus conclusiones."""
 
 
 class AnalysisInput(TypedDict):
@@ -55,26 +55,26 @@ async def run_financial_analysis(input_data: AnalysisInput) -> dict:
     property_name = input_data["property_name"]
     currency = input_data["currency"]
 
-    user_message = f"""Analyze the following monthly financial data for property "{property_name}":
+    user_message = f"""Analiza los siguientes datos financieros mensuales para la propiedad "{property_name}":
 
-**Monthly Summary ({summary['year']}-{summary['month']:02d}):**
-- Gross Income: {currency} {summary['gross_income']:,.2f}
-- Platform Fees: {currency} {summary['total_fees']:,.2f}
-- Net Income: {currency} {summary['net_income']:,.2f}
-- Total Expenses: {currency} {summary['total_expenses']:,.2f}
-- Net Profit: {currency} {summary['net_profit']:,.2f}
-- Occupancy Rate: {summary['occupancy_rate'] * 100:.1f}%
-- Reservations: {summary['reservation_count']}
-- Expenses Count: {summary['expense_count']}
+**Resumen Mensual ({summary['year']}-{summary['month']:02d}):**
+- Ingresos Brutos: {currency} {summary['gross_income']:,.2f}
+- Tarifas de Plataforma: {currency} {summary['total_fees']:,.2f}
+- Ingresos Netos: {currency} {summary['net_income']:,.2f}
+- Gastos Totales: {currency} {summary['total_expenses']:,.2f}
+- Beneficio Neto: {currency} {summary['net_profit']:,.2f}
+- Tasa de Ocupación: {summary['occupancy_rate'] * 100:.1f}%
+- Reservas: {summary['reservation_count']}
+- Cantidad de Gastos: {summary['expense_count']}
 
-**Discrepancies Found:** {len(discrepancies)}
-{json.dumps(discrepancies, indent=2) if discrepancies else "None"}
+**Discrepancias Encontradas:** {len(discrepancies)}
+{json.dumps(discrepancies, indent=2) if discrepancies else "Ninguna"}
 
-Provide:
-1. A brief financial health assessment
-2. Key insights and trends
-3. Actionable recommendations
-4. Any alerts or warnings"""
+Proporciona:
+1. Una breve evaluación de la salud financiera
+2. Conclusiones clave y tendencias
+3. Recomendaciones prácticas (accionables)
+4. Cualquier alerta o advertencia"""
 
     if not settings.OPENAI_API_KEY:
         response_content = (
@@ -101,27 +101,27 @@ Provide:
         response = await llm.ainvoke(messages)
         response_content = response.content
 
-    # Extract alerts from discrepancies (deterministic, not AI-generated)
+    # Extraer alertas de las discrepancias (determinístico, no generado por IA)
     alerts = []
     if discrepancies:
         for d in discrepancies:
             alerts.append(
-                f"Discrepancy in reservation {d['guest_name']}: "
-                f"expected net {currency} {d['expected_net']:,.2f}, "
+                f"Discrepancia en la reserva {d['guest_name']}: "
+                f"neto esperado {currency} {d['expected_net']:,.2f}, "
                 f"actual {currency} {d['actual_net']:,.2f} "
-                f"(diff: {currency} {d['diff']:,.2f})"
+                f"(diferencia: {currency} {d['diff']:,.2f})"
             )
 
     if summary["occupancy_rate"] < 0.3:
         alerts.append(
-            f"Low occupancy rate: {summary['occupancy_rate'] * 100:.1f}%. "
-            "Consider adjusting pricing strategy."
+            f"Baja tasa de ocupación: {summary['occupancy_rate'] * 100:.1f}%. "
+            "Considera ajustar la estrategia de precios."
         )
 
     if summary["net_profit"] < 0:
         alerts.append(
-            f"Negative net profit: {currency} {summary['net_profit']:,.2f}. "
-            "Expenses exceed net income this month."
+            f"Beneficio neto negativo: {currency} {summary['net_profit']:,.2f}. "
+            "Los gastos superan a los ingresos netos este mes."
         )
 
     return {

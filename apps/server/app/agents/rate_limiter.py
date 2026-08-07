@@ -25,7 +25,7 @@ async def check_user_ai_limit(user_id: str) -> None:
     if current is not None and int(current) >= settings.AI_USER_DAILY_LIMIT:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=f"Daily AI limit reached ({settings.AI_USER_DAILY_LIMIT} calls/day). Try again tomorrow.",
+            detail=f"Límite diario de IA alcanzado ({settings.AI_USER_DAILY_LIMIT} llamadas/día). Intenta de nuevo mañana.",
         )
 
 
@@ -39,7 +39,7 @@ async def check_global_ai_limit() -> None:
     if current is not None and int(current) >= settings.AI_GLOBAL_DAILY_LIMIT:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="System-wide AI limit reached. Please try again later.",
+            detail="Límite de IA de todo el sistema alcanzado. Por favor, intenta de nuevo más tarde.",
         )
 
 
