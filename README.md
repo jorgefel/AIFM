@@ -70,6 +70,35 @@ Ubicado en `apps/server/app/agents/`, utiliza modelos de **OpenAI** para proveer
 - **Generación de Insights**: Recibe el resumen financiero y las alertas previas, analizando las tendencias. Sugiere estrategias de optimización de precios, reducciones de gastos o estrategias operativas para maximizar el ROI.
 - **Fallback**: Incorpora un modo simulado por defecto en caso de no proveer una `OPENAI_API_KEY`.
 
+### 📊 Diagrama de Flujo de Datos
+
+```mermaid
+graph TD
+    Client[Cliente Web / Next.js] -->|HTTP REST| API[FastAPI Endpoints]
+    API --> Auth[Middleware Autenticación]
+    API --> Logic[Controladores / Servicios]
+    Logic --> EngineAI[Agente IA / Asesor Financiero]
+    Logic --> Golden[Motor Determinista]
+    EngineAI -->|Análisis (Prompt)| LLM[OpenAI API]
+    Golden --> DB[(PostgreSQL)]
+    Logic --> DB
+    Logic --> Cache[(Redis / Rate Limiting)]
+```
+
+### 🔌 Endpoints de la API
+
+La API principal de FastAPI (ubicada en `apps/server/app/api/v1/`) expone las siguientes familias de rutas:
+
+- **Auth** (`/auth/*`): Endpoints para el manejo de sesiones, login y autenticación.
+- **Users** (`/users/*`): Gestión de perfiles de administradores y usuarios.
+- **Properties** (`/properties/*`): Gestión (CRUD) de las unidades de negocio/propiedades.
+- **Reservations** (`/reservations/*`): Registro de estancias, validación de montos brutos y netos.
+- **Expenses** (`/expenses/*`): Registro y trazabilidad de los gastos operativos de las propiedades.
+- **Analysis** (`/analysis/*`): Expone los análisis financieros, los _Health Scores_ y las alertas generadas combinando el motor determinístico y la IA.
+- **Search** (`/search/*`): Buscador unificado y optimizado de entidades en el sistema.
+- **Export** (`/export/*`): Exportación de información financiera (ej. reportes CSV).
+- **Jobs** (`/jobs/*`): Gestión de tareas asíncronas o en segundo plano.
+
 ---
 
 ## 🚀 Guía de Configuración y Desarrollo Local
