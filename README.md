@@ -1,100 +1,190 @@
 # AIFM — Airbnb Intelligent Finance & Management
 
-Sistema híbrido de finanzas e inteligencia operativa para propiedades en Airbnb.
+**AIFM** es un sistema híbrido de finanzas e inteligencia operativa para la gestión avanzada de propiedades en plataformas como Airbnb. Combina una interfaz web moderna, un motor backend robusto y análisis inteligente para optimizar operaciones y finanzas.
 
-## Stack
+---
 
-| Capa | Tecnología |
-|---|---|
-| Monorepo | Turborepo + pnpm |
-| Frontend | Next.js 15 · App Router · TypeScript · Tailwind CSS 4 |
-| Backend | Python 3.12 · FastAPI · SQLAlchemy · Alembic |
-| Base de datos | PostgreSQL 16 |
-| Caché / Sesiones | Redis 7 |
-| GUI DB | pgAdmin 4 |
+## 🏗 Arquitectura y Stack Tecnológico
 
-## Estructura
+El proyecto está estructurado como un **Monorepo** utilizando **Turborepo** y **pnpm** para gestionar eficientemente las aplicaciones y paquetes compartidos.
 
-```
+| Capa | Tecnología | Descripción |
+|---|---|---|
+| **Monorepo** | Turborepo + pnpm | Gestión de dependencias, ejecución paralela y caché de builds. |
+| **Frontend** | Next.js 15, React, TypeScript | Interfaz de usuario basada en App Router, con Tailwind CSS 4 para el diseño de UI. |
+| **Backend API** | FastAPI (Python 3.12) | Servidor de alto rendimiento para lógica de negocio, endpoints e inteligencia artificial. |
+| **Base de Datos** | PostgreSQL 16 | Almacenamiento relacional principal. |
+| **Caché / Rate Limit** | Redis 7 | Manejo de caché, sesiones y Rate Limiting a través de `FastAPILimiter`. |
+| **ORM / Migraciones** | SQLAlchemy + Alembic, Prisma | Manejo de modelos en backend y un paquete de `database` con Prisma. |
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
 aifm-root/
 ├── apps/
-│   ├── web/        → Next.js 15 (frontend)
-│   └── server/     → FastAPI (backend API)
+│   ├── web/                # Aplicación Frontend (Next.js 15)
+│   │   ├── src/            # Componentes, Contextos, Hooks, Lib, Types
+│   │   └── public/         # Archivos estáticos de la web
+│   │
+│   └── server/             # Aplicación Backend (FastAPI)
+│       ├── app/            # Código fuente (api, core, engine, models, schemas, services, agents)
+│       ├── alembic/        # Migraciones de Base de Datos
+│       ├── tests/          # Tests unitarios y de integración
+│       ├── .env.example    # Variables de entorno backend
+│       └── main.py         # Punto de entrada FastAPI
+│
 ├── packages/
-│   ├── shared/     → Tipos TypeScript compartidos
-│   └── database/   → Prisma Client (schema relacional)
-├── docker-compose.yml
-└── turbo.json
+│   ├── database/           # Paquete de Base de Datos (Prisma)
+│   └── shared/             # Tipos e interfaces compartidas (TypeScript)
+│
+├── docker-compose.yml      # Definición de contenedores (Postgres, Redis, pgAdmin)
+├── turbo.json              # Configuración de los pipelines de Turborepo
+└── package.json            # Dependencias raíz y scripts de workspace
 ```
 
-## Inicio Rápido
+---
 
-### 1. Infraestructura (Docker)
+## 🧠 Lógica Core e Inteligencia Operativa (El Sistema)
+
+AIFM no es solo un CRUD; integra un **Motor Financiero Determinístico** y un sistema de **Agentes de IA** (basado en LangChain/LLMs) que trabajan en conjunto para automatizar el análisis, asegurando precisión absoluta en los números mientras se proveen insights avanzados.
+
+### 1. Entidades del Dominio (Modelos)
+El sistema se modela en base a las siguientes entidades relacionales principales (vía SQLAlchemy en `apps/server/app/models/`):
+- **User**: Propietarios o administradores del sistema.
+- **Property**: Unidades de negocio en plataformas como Airbnb.
+- **Reservation**: Registros de estancias. Maneja fechas, montos brutos, tarifas de plataforma y montos netos.
+- **Expense**: Gastos operativos de las propiedades (limpieza, mantenimiento, utilidades).
+
+### 2. Motor Financiero Determinístico (`golden_rule.py` & `deterministic_analyzer.py`)
+Ubicado en `apps/server/app/engine/`, es la **única fuente de verdad** para los cálculos.
+- **Regla de Oro**: `net_amount = total_amount - platform_fee`. El motor recalcula y audita esto del lado del servidor para evitar discrepancias.
+- **Métricas Mensuales**: Calcula ingresos brutos, tarifas totales, beneficio neto y la **tasa de ocupación real** (cruzando días ocupados vs días del mes). Todas las operaciones financieras usan `Decimal` para evitar errores de coma flotante.
+- **Health Score**: Algoritmo que evalúa la salud de una propiedad (0-100) penalizando si el ratio de gastos supera el 30%, si la ocupación es baja o el margen de ganancia neta decae.
+- **Heurísticas y Alertas**: Lanza advertencias de alta severidad instantáneamente sin costo de IA (ej. discrepancias monetarias detectadas o beneficios netos negativos).
+
+### 3. Agente Asesor Financiero (`financial_advisor.py`)
+Ubicado en `apps/server/app/agents/`, utiliza modelos de **OpenAI** para proveer inteligencia sobre los datos duros.
+- **Solo Lectura**: El Agente nunca modifica datos financieros; asume los datos del Motor Determinista y actúa como un asesor consultor.
+- **Generación de Insights**: Recibe el resumen financiero y las alertas previas, analizando las tendencias. Sugiere estrategias de optimización de precios, reducciones de gastos o estrategias operativas para maximizar el ROI.
+- **Fallback**: Incorpora un modo simulado por defecto en caso de no proveer una `OPENAI_API_KEY`.
+
+---
+
+## 🚀 Guía de Configuración y Desarrollo Local
+
+### Prerrequisitos
+- **Node.js**: `>=20`
+- **pnpm**: `>=9`
+- **Python**: `3.12`
+- **Docker & Docker Compose**
+
+### 1. Iniciar Infraestructura (Docker)
+Levanta la base de datos PostgreSQL, Redis y pgAdmin.
 ```bash
+# Iniciar los servicios en segundo plano
 pnpm db:up
+
+# Para ver los logs
+pnpm db:logs
+
+# Para detener los servicios
+pnpm db:down
 ```
 
-### 2. Frontend (Next.js)
-```bash
-pnpm dev
-```
-
-### 3. Backend (FastAPI) — nueva terminal
-```bash
-cd apps/server
-.venv\Scripts\Activate.ps1   # Windows
-# source .venv/bin/activate  # macOS/Linux
-uvicorn main:app --reload --port 8000
-```
-
-### URLs
-- Frontend: http://localhost:3000
-- API Docs: http://localhost:8000/api/docs
-- pgAdmin: http://localhost:5050
-
-## Setup del entorno Python (primera vez)
-
+### 2. Configurar el Backend (FastAPI)
+Se requiere crear un entorno virtual para instalar las dependencias de Python.
 ```bash
 cd apps/server
 python -m venv .venv
+
+# Activar el entorno virtual:
+# En Windows:
 .venv\Scripts\Activate.ps1
+# En macOS/Linux:
+source .venv/bin/activate
+
+# Instalar dependencias
 pip install -r requirements.txt
 ```
+*Asegúrate de copiar el archivo `apps/server/.env.example` a `.env` y configurar las credenciales correctas según `docker-compose.yml`.*
 
-## Equipo
+### 3. Ejecutar el Proyecto
+
+Gracias a Turborepo, puedes arrancar ambos servidores al mismo tiempo (si configuraste tu entorno Python para ejecutar `uvicorn` globalmente o en el path) o por separado.
+
+**Para ejecutar solo el Frontend:**
+```bash
+# Desde la raíz del proyecto
+pnpm dev
+```
+
+**Para ejecutar el Backend (en una nueva terminal):**
+```bash
+cd apps/server
+.venv\Scripts\Activate.ps1  # O source .venv/bin/activate
+uvicorn main:app --reload --port 8000
+```
+
+### 🔗 URLs Locales
+- **Frontend Web**: [http://localhost:3000](http://localhost:3000)
+- **API Swagger / Docs**: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+- **pgAdmin (Gestión de DB)**: [http://localhost:5050](http://localhost:5050)
+
+---
+
+## 🛠️ Base de Datos y Migraciones
+
+La base de datos central es PostgreSQL 16. Dependiendo del dominio, se interactúa mediante SQLAlchemy (Backend) o Prisma (Paquete compartido).
+
+- **Backend (Alembic)**: 
+  Ubicado en `apps/server/alembic/`. Maneja los modelos en Python.
+  Para generar nuevas migraciones:
+  ```bash
+  alembic revision --autogenerate -m "Descripción"
+  alembic upgrade head
+  ```
+
+- **Paquete de Base de Datos (Prisma)**:
+  Ubicado en `packages/database/`. 
+  Útil si se planea consumir la base de datos desde Node.js (scripts de sincronización, webhooks o futuros servicios TS).
+  ```bash
+  # Desde packages/database/
+  pnpm db:generate   # Genera el cliente Prisma
+  pnpm db:push       # Sincroniza el esquema sin migraciones
+  pnpm db:studio     # Abre interfaz de exploración visual
+  ```
+
+---
+
+## ☁️ Despliegue en Producción (CI/CD)
+
+### Frontend (Vercel)
+Al utilizar Turborepo, Vercel gestiona las dependencias de forma eficiente.
+1. Crea un proyecto en Vercel e impórtalo desde GitHub/GitLab.
+2. **Root Directory**: Configúralo en `apps/web`.
+3. **Build Command**: Vercel detectará el comando correcto o usa `npx turbo run build --filter=web`.
+4. Añade variables de entorno como `NEXT_PUBLIC_API_URL` apuntando a tu backend en producción.
+
+### Backend (Render, Railway, Supabase)
+El backend requiere un entorno con Python y Redis.
+1. Utiliza un servicio como Render o Railway para desplegar la carpeta `apps/server`.
+2. Configura el comando de inicio: `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+3. Asegúrate de configurar las variables de entorno para `DATABASE_URL` y `REDIS_URL` en tu proveedor cloud.
+
+---
+
+## 👥 Equipo y Responsabilidades
 
 | Rol | Responsabilidad |
 |---|---|
-| Tech Lead / DevOps | Arquitectura, CI/CD, infraestructura |
-| Backend Expert | Schema SQL, endpoints FastAPI, migraciones |
-| Full-stack | Integración API ↔ Frontend |
-| Frontend (x3) | Componentes Next.js, UI/UX |
+| **Tech Lead / DevOps** | Arquitectura, CI/CD, configuración de Turborepo e infraestructura. |
+| **Backend Expert** | Modelado SQL (SQLAlchemy), endpoints de FastAPI, agentes inteligentes. |
+| **Full-stack** | Integración del API al Frontend (Hooks, Fetching, Zustand/Context). |
+| **Frontend UI/UX** | Desarrollo de componentes (Next.js), diseño interactivo (Tailwind CSS 4). |
 
-## 🚀 Despliegue en Vercel (Producción)
-
-Dado que este proyecto utiliza una arquitectura de Monorepo (Turborepo), desplegar el frontend de Next.js en Vercel es muy sencillo. Sin embargo, recuerda que el backend (FastAPI) y la Base de Datos (PostgreSQL) deberán alojarse en servicios compatibles como Render, Railway o Supabase para que la app funcione de forma online.
-
-### Paso 1: Configurar el Repositorio
-1. Asegúrate de que todo tu código esté subido a un repositorio en **GitHub**, **GitLab** o **Bitbucket**.
-
-### Paso 2: Importar en Vercel
-1. Ve a [Vercel](https://vercel.com/) e inicia sesión.
-2. Haz clic en **"Add New..."** > **"Project"**.
-3. Conecta tu cuenta de GitHub y selecciona el repositorio de **AIFM**.
-
-### Paso 3: Configurar el Monorepo en Vercel
-Al importar el proyecto, Vercel suele detectar que es un monorepo, pero debes asegurarte de configurar las siguientes opciones en la pantalla de "Configure Project":
-
-- **Framework Preset:** Next.js
-- **Root Directory:** `apps/web` (Este paso es crucial, dile a Vercel que el código fuente de la web está aquí).
-- **Build Command:** `pnpm run build` o `npx turbo run build --filter=@aifm/web...` (Vercel lo autodetectará normalmente si el Root Directory está bien puesto).
-- **Install Command:** `pnpm install`
-
-### Paso 4: Variables de Entorno
-Despliega la sección **Environment Variables** en Vercel y añade:
-- `NEXT_PUBLIC_API_URL`: La URL pública de tu backend FastAPI en producción (por ejemplo, `https://tu-api-backend.onrender.com`). *Importante: Actualmente en local usa localhost:8000, para producción debes apuntar a tu servidor real.*
-
-### Paso 5: Desplegar
-1. Haz clic en el botón **"Deploy"**.
-2. Vercel comenzará a compilar la aplicación. Gracias a Turborepo, este proceso estará optimizado.
-3. ¡Listo! En un par de minutos tendrás tu dominio `tu-app.vercel.app` funcionando online y listo para compartir.
+## 📐 Convenciones
+- **Linting & Formateo**: Todo el código web debe pasar por `pnpm lint` y `pnpm type-check`.
+- **Ramas**: Utilizar `feature/<nombre>`, `fix/<nombre>` o `chore/<nombre>`.
+- **Pull Requests**: Requeridas para cualquier cambio en la rama `main`. Asegurarse de que el pipeline de Turborepo compile exitosamente (`pnpm build`).
