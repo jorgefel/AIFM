@@ -4,17 +4,14 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { WidgetBase } from "./WidgetBase";
 
-interface WidgetProps {
-  isEditing: boolean;
-  onRemove?: () => void;
-}
 
-export function WidgetIncome({ isEditing, onRemove }: WidgetProps) {
+
+export function WidgetIncome() {
   const { summary, isLoading } = useDashboardData();
   const { formatCurrencyCompact } = useCurrency();
 
   return (
-    <WidgetBase isEditing={isEditing} onRemove={onRemove} className="group flex flex-col justify-center">
+    <WidgetBase  className="group flex flex-col justify-center">
       {isLoading ? (
         <div className="animate-pulse flex flex-col gap-3 w-full">
           <div className="w-10 h-10 bg-white/5 rounded-lg"></div>

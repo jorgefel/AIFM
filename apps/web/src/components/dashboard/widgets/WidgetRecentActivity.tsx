@@ -4,17 +4,14 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { WidgetBase } from "./WidgetBase";
 
-interface WidgetProps {
-  isEditing: boolean;
-  onRemove?: () => void;
-}
 
-export function WidgetRecentActivity({ isEditing, onRemove }: WidgetProps) {
+
+export function WidgetRecentActivity() {
   const { recentActivity, isLoading } = useDashboardData();
   const { formatCurrencyCompact } = useCurrency();
 
   return (
-    <WidgetBase isEditing={isEditing} onRemove={onRemove} className="flex flex-col p-6">
+    <WidgetBase  className="flex flex-col p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">Actividad Reciente</h3>
         <button 

@@ -27,45 +27,4 @@ DEFAULT_LAYOUT = [
 ]
 
 
-@router.get("/layout", response_model=DashboardLayoutRead)
-async def get_dashboard_layout(
-    db: AsyncSession = Depends(get_db), 
-    current_user: User = Depends(get_current_user)
-):
-    """Obtiene el layout guardado del usuario, o un default."""
-    result = await db.execute(
-        select(DashboardLayout).where(DashboardLayout.user_id == current_user.id)
-    )
-    layout = result.scalars().first()
-    
-    if not layout:
-        return {"layout_data": DEFAULT_LAYOUT}
-        
-    return layout
 
-
-@router.put("/layout", response_model=DashboardLayoutRead)
-async def update_dashboard_layout(
-    payload: DashboardLayoutUpdate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """Guarda o actualiza el layout del usuario."""
-    result = await db.execute(
-        select(DashboardLayout).where(DashboardLayout.user_id == current_user.id)
-    )
-    layout = result.scalars().first()
-    
-    if layout:
-        layout.layout_data = payload.layout_data
-    else:
-        layout = DashboardLayout(
-            user_id=current_user.id,
-            layout_data=payload.layout_data
-        )
-        db.add(layout)
-        
-    await db.commit()
-    await db.refresh(layout)
-    
-    return layout
