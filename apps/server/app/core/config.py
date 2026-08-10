@@ -27,6 +27,7 @@ class Settings(BaseSettings):
 
     # ── CORS (orígenes permitidos) ───────────────────────────
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    CORS_ORIGIN_REGEX: str = ""  # e.g. r"https://.*\.vercel\.app"
 
     # ── IA / Agentes ─────────────────────────────────────────
     ENABLE_AI_AGENTS: bool = False
