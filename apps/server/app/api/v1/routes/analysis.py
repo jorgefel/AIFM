@@ -57,6 +57,7 @@ async def _get_property_data(property_id: uuid.UUID, db: AsyncSession) -> tuple[
     ]
 
     return reservations, expenses, prop
+from app.services.cache import get_cached_summary, set_cached_summary
 
 
 @router.get("/summary", response_model=MonthlySummary)
@@ -69,10 +70,20 @@ async def get_financial_summary(
 ):
     """
     Resumen financiero mensual (Motor Determinístico, sin IA).
+    Cached in Redis for 60s to avoid redundant computation.
     """
     await verify_property_access(property_id, current_user, db)
+
+    # ── Redis cache check ──
+    cached = await get_cached_summary(property_id, year, month)
+    if cached is not None:
+        return cached
+
+    # ── Cache miss: compute and store ──
     reservations, expenses, _ = await _get_property_data(property_id, db)
     summary = calculate_monthly_summary(reservations, expenses, year, month)
+
+    await set_cached_summary(property_id, year, month, summary)
     return summary
 
 

@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { api } from "@/lib/api";
+import { fetcher } from "@/lib/fetcher";
+import { PROPERTIES_SWR_KEY } from "./useProperties";
 
 export function useReports() {
-  const [properties, setProperties] = useState<any[]>([]);
+  const { data: properties = [], isLoading } = useSWR<any[]>(
+    PROPERTIES_SWR_KEY,
+    fetcher,
+    { revalidateOnFocus: false, dedupingInterval: 10000 }
+  );
+
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -13,22 +20,12 @@ export function useReports() {
   const [reportError, setReportError] = useState<string | null>(null);
   const [reportType, setReportType] = useState<"ai" | "deterministic">("ai");
 
+  // Auto-select first property
   useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const { data } = await api.get("/properties/");
-        setProperties(data);
-        if (data.length > 0) {
-          setSelectedPropertyId(data[0].id);
-        }
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProperties();
-  }, []);
+    if (properties.length > 0 && !selectedPropertyId) {
+      setSelectedPropertyId(properties[0].id);
+    }
+  }, [properties, selectedPropertyId]);
 
   const exportCSV = async () => {
     if (!selectedPropertyId) return;

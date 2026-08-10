@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { api } from "@/lib/api";
+import { fetcher } from "@/lib/fetcher";
+import { PROPERTIES_SWR_KEY } from "./useProperties";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import React from "react";
 
@@ -15,51 +18,62 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { formatCurrency } = useCurrency();
 
+  // Properties via SWR (shared cache, no duplicate request)
+  const { data: properties = [] } = useSWR<any[]>(
+    PROPERTIES_SWR_KEY,
+    fetcher,
+    { revalidateOnFocus: false, dedupingInterval: 10000 }
+  );
+
   useEffect(() => {
+    if (properties.length === 0) return;
+
     const fetchNotifications = async () => {
-      try {
-        const { data: properties } = await api.get("/properties/");
-        if (properties.length === 0) return;
+      const date = new Date();
+      const notifs: Notification[] = [];
 
-        const date = new Date();
-        const notifs: Notification[] = [];
-
-        for (const prop of properties.slice(0, 3)) {
-          try {
-            const { data: summary } = await api.get(
+      // Fetch summaries in parallel instead of sequential loop
+      const propsToCheck = properties.slice(0, 3);
+      const results = await Promise.all(
+        propsToCheck.map((prop) =>
+          api
+            .get(
               `/analysis/summary?property_id=${prop.id}&year=${date.getFullYear()}&month=${date.getMonth() + 1}`
-            );
+            )
+            .then((res) => ({ prop, summary: res.data }))
+            .catch(() => null)
+        )
+      );
 
-            if (summary.occupancy_rate < 0.3) {
-              notifs.push({
-                id: `occ-${prop.id}`,
-                type: "warning",
-                title: `Baja ocupación: ${prop.name}`,
-                message: `Solo ${(summary.occupancy_rate * 100).toFixed(0)}% de ocupación este mes.`,
-              });
-            }
+      for (const result of results) {
+        if (!result) continue;
+        const { prop, summary } = result;
 
-            if (summary.net_profit < 0) {
-              notifs.push({
-                id: `loss-${prop.id}`,
-                type: "alert",
-                title: `Pérdida neta: ${prop.name}`,
-                message: `Pérdida de ${formatCurrency(Math.abs(summary.net_profit))} este mes.`,
-              });
-            }
-          } catch {
-            // silently skip property
-          }
+        if (summary.occupancy_rate < 0.3) {
+          notifs.push({
+            id: `occ-${prop.id}`,
+            type: "warning",
+            title: `Baja ocupación: ${prop.name}`,
+            message: `Solo ${(summary.occupancy_rate * 100).toFixed(0)}% de ocupación este mes.`,
+          });
         }
 
-        setNotifications(notifs);
-      } catch {
-        // No properties or auth error
+        if (summary.net_profit < 0) {
+          notifs.push({
+            id: `loss-${prop.id}`,
+            type: "alert",
+            title: `Pérdida neta: ${prop.name}`,
+            message: `Pérdida de ${formatCurrency(Math.abs(summary.net_profit))} este mes.`,
+          });
+        }
       }
+
+      setNotifications(notifs);
     };
 
     fetchNotifications();
-  }, [formatCurrency]);
+  }, [properties, formatCurrency]);
 
   return { notifications };
 }
+

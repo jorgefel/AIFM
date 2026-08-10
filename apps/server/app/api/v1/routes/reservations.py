@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.property import Property
 from app.models.reservation import Reservation
 from app.schemas.reservation import ReservationRead, ReservationCreate, ReservationUpdate
+from app.services.cache import invalidate_summary_cache
 
 router = APIRouter(prefix="/reservations", tags=["reservations"])
 
@@ -34,6 +35,9 @@ async def create_reservation(reservation_in: ReservationCreate, db: AsyncSession
     db.add(db_reservation)
     await db.commit()
     await db.refresh(db_reservation)
+    
+    await invalidate_summary_cache(db_reservation.property_id)
+    
     return db_reservation
 
 @router.put("/{reservation_id}", response_model=ReservationRead)
@@ -60,6 +64,9 @@ async def update_reservation(reservation_id: uuid.UUID, reservation_in: Reservat
         
     await db.commit()
     await db.refresh(db_reservation)
+    
+    await invalidate_summary_cache(db_reservation.property_id)
+    
     return db_reservation
 
 @router.delete("/{reservation_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -77,4 +84,7 @@ async def delete_reservation(reservation_id: uuid.UUID, db: AsyncSession = Depen
         
     db_reservation.status = "cancelled" # Soft delete
     await db.commit()
+    
+    await invalidate_summary_cache(db_reservation.property_id)
+    
     return None

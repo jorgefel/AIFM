@@ -42,7 +42,7 @@ class Expense(Base, UUIDMixin, TimestampMixin):
         # "platform_fees" | "taxes" | "insurance" | "marketing" | "other"
     )
     date: Mapped[date] = mapped_column(
-        Date, nullable=False
+        Date, nullable=False, index=True  # Index for monthly date-range filtering
     )
     currency: Mapped[str] = mapped_column(
         String(3), nullable=False, default="MXN"  # "USD" | "MXN" | "EUR"

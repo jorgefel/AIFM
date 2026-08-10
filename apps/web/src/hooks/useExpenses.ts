@@ -1,12 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
+import useSWR from "swr";
 import { api } from "@/lib/api";
+import { fetcher } from "@/lib/fetcher";
+import { PROPERTIES_SWR_KEY } from "./useProperties";
 import { useToast } from "@/contexts/ToastContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 import { Property, Expense } from "@/types/models";
 
 export function useExpenses() {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const { data: properties = [] } = useSWR<Property[]>(
+    PROPERTIES_SWR_KEY,
+    fetcher,
+    { revalidateOnFocus: false, dedupingInterval: 10000 }
+  );
+
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,20 +32,14 @@ export function useExpenses() {
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
-  const fetchProperties = async () => {
-    try {
-      const { data } = await api.get("/properties/");
-      setProperties(data);
-      if (data.length > 0) {
-        setSelectedPropertyId(data[0].id);
-      } else {
-        setIsLoading(false);
-      }
-    } catch {
-      toast.error("Error", "No se pudieron cargar las propiedades.");
+  // Auto-select first property
+  useEffect(() => {
+    if (properties.length > 0 && !selectedPropertyId) {
+      setSelectedPropertyId(properties[0].id);
+    } else if (properties.length === 0) {
       setIsLoading(false);
     }
-  };
+  }, [properties, selectedPropertyId]);
 
   const fetchExpenses = useCallback(async (propertyId: string) => {
     if (!propertyId) return;
@@ -52,9 +54,8 @@ export function useExpenses() {
     }
   }, [toast]);
 
-  useEffect(() => {
-    fetchProperties();
-  }, []);
+
+
 
   useEffect(() => {
     if (selectedPropertyId) {

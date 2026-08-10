@@ -35,10 +35,10 @@ class Reservation(Base, UUIDMixin, TimestampMixin):
         String(200), nullable=False
     )
     check_in: Mapped[date] = mapped_column(
-        Date, nullable=False
+        Date, nullable=False, index=True  # Index for monthly date-range filtering
     )
     check_out: Mapped[date] = mapped_column(
-        Date, nullable=False
+        Date, nullable=False, index=True  # Index for monthly date-range filtering
     )
 
     # ── Montos financieros (Numeric(10,2) estricto) ──────────

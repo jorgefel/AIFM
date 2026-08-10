@@ -11,6 +11,7 @@ from app.models.property import Property
 from app.models.expense import Expense
 from app.schemas.expense import ExpenseRead, ExpenseCreate, ExpenseUpdate
 from app.services.storage import save_receipt
+from app.services.cache import invalidate_summary_cache
 
 router = APIRouter(prefix="/expenses", tags=["expenses"])
 
@@ -32,6 +33,9 @@ async def create_expense(expense_in: ExpenseCreate, db: AsyncSession = Depends(g
     db.add(db_expense)
     await db.commit()
     await db.refresh(db_expense)
+    
+    await invalidate_summary_cache(db_expense.property_id)
+    
     return db_expense
 
 @router.post("/{expense_id}/receipt", response_model=ExpenseRead)
@@ -74,6 +78,9 @@ async def update_expense(expense_id: uuid.UUID, expense_in: ExpenseUpdate, db: A
         
     await db.commit()
     await db.refresh(db_expense)
+    
+    await invalidate_summary_cache(db_expense.property_id)
+    
     return db_expense
 
 @router.delete("/{expense_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -91,4 +98,7 @@ async def delete_expense(expense_id: uuid.UUID, db: AsyncSession = Depends(get_d
         
     db_expense.is_deleted = True # Soft delete
     await db.commit()
+    
+    await invalidate_summary_cache(db_expense.property_id)
+    
     return None

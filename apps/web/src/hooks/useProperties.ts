@@ -1,11 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import { api } from "@/lib/api";
+import { fetcher } from "@/lib/fetcher";
 import { useToast } from "@/contexts/ToastContext";
 import { Property } from "@/types/models";
 
+/**
+ * SWR key for properties — exported so other hooks can revalidate
+ * without importing the full hook.
+ */
+export const PROPERTIES_SWR_KEY = "/properties/";
+
 export function useProperties() {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: properties = [], isLoading, mutate } = useSWR<Property[]>(
+    PROPERTIES_SWR_KEY,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000, // 10s — deduplicates across all components
+    }
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
@@ -14,22 +29,6 @@ export function useProperties() {
   const [editingId, setEditingId] = useState<string | null>(null);
   
   const toast = useToast();
-
-  const fetchProperties = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.get("/properties/");
-      setProperties(data);
-    } catch {
-      toast.error("Error", "No se pudieron cargar las propiedades.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
-
-  useEffect(() => {
-    fetchProperties();
-  }, [fetchProperties]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +42,7 @@ export function useProperties() {
         toast.success("Propiedad creada", "La propiedad se registró correctamente.");
       }
       setIsModalOpen(false);
-      fetchProperties();
+      mutate(); // Revalidate the SWR cache
     } catch {
       toast.error("Error", "No se pudo guardar la propiedad.");
     } finally {
@@ -56,7 +55,7 @@ export function useProperties() {
     try {
       await api.delete(`/properties/${deleteTarget}`);
       toast.success("Propiedad eliminada", "La propiedad fue eliminada correctamente.");
-      fetchProperties();
+      mutate(); // Revalidate the SWR cache
     } catch {
       toast.error("Error", "No se pudo eliminar la propiedad.");
     } finally {
