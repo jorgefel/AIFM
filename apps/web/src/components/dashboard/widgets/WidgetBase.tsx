@@ -11,7 +11,7 @@ interface WidgetBaseProps {
 export function WidgetBase({ children, isEditing, className = "", onRemove }: WidgetBaseProps) {
   return (
     <div 
-      className={`relative h-full w-full rounded-2xl glass-panel transition-colors duration-200 ${
+      className={`relative h-full w-full rounded-2xl glass-panel overflow-hidden transition-colors duration-200 ${
         isEditing ? "border-2 border-dashed border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-obsidian-light/60" : "border border-white/10"
       } ${className}`}
     >

@@ -28,7 +28,7 @@ export default function Home() {
   const [currentLayout, setCurrentLayout] = useState<any[]>([]);
   
   const containerRef = useRef<HTMLDivElement>(null);
-  const [gridWidth, setGridWidth] = useState(1200);
+  const [gridWidth, setGridWidth] = useState(0);
   
   const {
     properties,
@@ -227,8 +227,8 @@ export default function Home() {
 
         {/* Contenedor Principal: Grid + Sidebar en modo edición */}
         <div className="flex gap-6 mt-2 relative">
-          <div className="flex-1 min-w-0" ref={containerRef}>
-            {isLoading ? (
+          <div className="flex-1 min-w-0 overflow-hidden" ref={containerRef}>
+            {(isLoading || gridWidth === 0) ? (
               <div className="w-full h-[600px] flex items-center justify-center">
                 <div className="w-8 h-8 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
               </div>

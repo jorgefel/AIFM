@@ -54,7 +54,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           
           <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
           
-          <main className="flex-1 overflow-y-auto p-8 relative z-1">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-8 relative z-1">
             <AnimatePresence mode="wait">
               <motion.div
                 key={pathname}

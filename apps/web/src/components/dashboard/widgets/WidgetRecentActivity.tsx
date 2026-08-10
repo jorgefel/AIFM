@@ -11,7 +11,7 @@ interface WidgetProps {
 
 export function WidgetRecentActivity({ isEditing, onRemove }: WidgetProps) {
   const { recentActivity, isLoading } = useDashboardData();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrencyCompact } = useCurrency();
 
   return (
     <WidgetBase isEditing={isEditing} onRemove={onRemove} className="flex flex-col p-6">
@@ -32,20 +32,20 @@ export function WidgetRecentActivity({ isEditing, onRemove }: WidgetProps) {
           <div className="text-slate-500 text-sm text-center mt-4">No hay actividad reciente.</div>
         ) : (
           recentActivity.map((item: any) => (
-            <div key={item.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-white/5">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+            <div key={item.id} className="flex items-center justify-between gap-2 p-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-white/5 min-w-0">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center ${
                   item.type === "reservation" ? "bg-emerald-500/10 text-emerald-400" : "bg-coral-accent/10 text-coral-accent"
                 }`}>
                   {item.type === "reservation" ? <ArrowDownRight className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors truncate max-w-[150px]">{item.title}</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors truncate">{item.title}</p>
                   <p className="text-xs text-slate-500">{item.date.toLocaleDateString()}</p>
                 </div>
               </div>
-              <p className={`text-sm font-bold ${item.type === "reservation" ? "text-emerald-400" : "text-slate-300"}`}>
-                {item.type === "reservation" ? "+" : "-"}{formatCurrency(item.amount)}
+              <p className={`text-sm font-bold flex-shrink-0 ${item.type === "reservation" ? "text-emerald-400" : "text-slate-300"}`}>
+                {item.type === "reservation" ? "+" : "-"}{formatCurrencyCompact(item.amount)}
               </p>
             </div>
           ))
