@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import PixelBlast from "@/components/PixelBlast";
 
 
 export default function RegisterPage() {
@@ -34,18 +35,22 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-obsidian relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-emerald-500/10 rounded-full blur-[120px]"
-        />
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-          className="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-teal-500/10 rounded-full blur-[120px]"
+      <div className="absolute inset-0 overflow-hidden z-0">
+        <PixelBlast
+          variant="circle"
+          pixelSize={5}
+          color="#10b981"
+          patternScale={3}
+          patternDensity={1.1}
+          pixelSizeJitter={0.05}
+          enableRipples
+          rippleSpeed={0.4}
+          rippleThickness={0.12}
+          rippleIntensityScale={1.2}
+          liquid={false}
+          speed={0.4}
+          edgeFade={0.3}
+          transparent
         />
       </div>
 
