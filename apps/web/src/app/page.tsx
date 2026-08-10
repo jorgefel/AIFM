@@ -285,7 +285,7 @@ export default function Home() {
                       const WidgetComponent = WIDGET_COMPONENTS[item.i];
                       if (!WidgetComponent) return null;
                       return (
-                        <div key={item.i}>
+                        <div key={item.i} data-grid={{ ...item, static: !isEditing }}>
                           <WidgetComponent 
                             isEditing={isEditing} 
                             onRemove={isEditing ? () => handleRemoveWidget(item.i) : undefined} 
