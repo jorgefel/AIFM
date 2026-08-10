@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { DashboardLayout as AppLayout } from "@/components/layout/DashboardLayout";
 import { Filter, Download, Sparkles, Building2, Settings2, Check, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
@@ -53,12 +53,14 @@ export default function Home() {
     generateReport
   } = useAIReport();
 
-  // Initialize currentLayout from savedLayout when it loads
+  // Initialize currentLayout from savedLayout ONLY on first load
+  const [layoutInitialized, setLayoutInitialized] = useState(false);
   useEffect(() => {
-    if (savedLayout && savedLayout.length > 0 && !isEditing) {
+    if (!layoutInitialized && savedLayout && savedLayout.length > 0) {
       setCurrentLayout(savedLayout);
+      setLayoutInitialized(true);
     }
-  }, [savedLayout, isEditing]);
+  }, [savedLayout, layoutInitialized]);
 
   // Track container width for ResponsiveGridLayout
   useEffect(() => {
@@ -72,11 +74,18 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  const onLayoutChange = (newLayout: any) => {
+  // Memoize layouts to prevent react-grid-layout from re-initializing on every render
+  const gridLayouts = useMemo(() => ({
+    lg: currentLayout,
+    md: currentLayout,
+    sm: currentLayout,
+  }), [currentLayout]);
+
+  const onLayoutChange = useCallback((newLayout: any, _allLayouts?: any) => {
     if (isEditing) {
       setCurrentLayout(newLayout);
     }
-  };
+  }, [isEditing]);
 
   const handleAddWidget = (widgetId: string) => {
     const catalogItem = WIDGET_CATALOG.find(w => w.id === widgetId);
@@ -103,8 +112,9 @@ export default function Home() {
   };
 
   const handleSaveLayout = async () => {
-    setIsEditing(false);
+    // Save layout first — ensures SWR cache is updated before exiting edit mode
     await saveLayout(currentLayout);
+    setIsEditing(false);
   };
 
   // Export CSV Action
@@ -269,7 +279,7 @@ export default function Home() {
                   <Grid
                     width={gridWidth}
                     className={`layout ${isEditing ? 'is-editing' : ''}`}
-                    layouts={{ lg: currentLayout.map((item: any) => ({...item, static: !isEditing})), md: currentLayout.map((item: any) => ({...item, static: !isEditing})), sm: currentLayout.map((item: any) => ({...item, static: !isEditing})) }}
+                    layouts={gridLayouts}
                     breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
                     cols={{ lg: 4, md: 4, sm: 2, xs: 1, xxs: 1 }}
                     rowHeight={150}
@@ -285,7 +295,7 @@ export default function Home() {
                       const WidgetComponent = WIDGET_COMPONENTS[item.i];
                       if (!WidgetComponent) return null;
                       return (
-                        <div key={item.i} data-grid={{ ...item, static: !isEditing }}>
+                        <div key={item.i}>
                           <WidgetComponent 
                             isEditing={isEditing} 
                             onRemove={isEditing ? () => handleRemoveWidget(item.i) : undefined} 

@@ -20,17 +20,12 @@ export function useDashboardLayout() {
 
   const saveLayout = async (newLayout: any[]) => {
     try {
-      // Optimistic update
-      mutate({ layout_data: newLayout }, false);
-      
       await api.put("/dashboard/layout", { layout_data: newLayout });
-      
-      // Revalidate to ensure backend matches
-      mutate();
+      // Update cache with what we just saved — no extra GET needed
+      mutate({ layout_data: newLayout }, false);
       return true;
     } catch (err) {
       toast.error("Error", "No se pudo guardar el diseño del dashboard.");
-      mutate(); // Rollback on error
       return false;
     }
   };
