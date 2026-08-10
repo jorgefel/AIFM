@@ -44,7 +44,7 @@ export function DashboardCharts({ isLoading, chartData, itemVariants }: Dashboar
                 </linearGradient>
               </defs>
               <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} />
+              <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} domain={[0, 'auto']} allowDecimals={false} />
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}

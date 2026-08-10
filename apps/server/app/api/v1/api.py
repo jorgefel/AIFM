@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.api.v1.routes import (
-    auth, users, properties, reservations, expenses, analysis, jobs, search, export
+    auth, users, properties, reservations, expenses, analysis, jobs, search, export, dashboard
 )
 
 api_router = APIRouter()
@@ -13,3 +13,4 @@ api_router.include_router(analysis.router)
 api_router.include_router(jobs.router)
 api_router.include_router(search.router)
 api_router.include_router(export.router)
+api_router.include_router(dashboard.router)
