@@ -11,7 +11,7 @@ interface WidgetProps {
 
 export function WidgetIncome({ isEditing, onRemove }: WidgetProps) {
   const { summary, isLoading } = useDashboardData();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrencyCompact } = useCurrency();
 
   return (
     <WidgetBase isEditing={isEditing} onRemove={onRemove} className="group flex flex-col justify-center">
@@ -31,8 +31,8 @@ export function WidgetIncome({ isEditing, onRemove }: WidgetProps) {
           </div>
           <div>
             <p className="text-sm font-medium text-slate-400 mb-1">Ingresos Brutos (Mes)</p>
-            <h3 className="text-3xl font-bold text-white tracking-tight truncate">
-              {formatCurrency(summary?.gross_income || 0)}
+            <h3 className="text-3xl font-bold text-white tracking-tight">
+              {formatCurrencyCompact(summary?.gross_income || 0)}
             </h3>
           </div>
         </>

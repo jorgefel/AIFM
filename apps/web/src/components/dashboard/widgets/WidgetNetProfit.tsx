@@ -11,7 +11,7 @@ interface WidgetProps {
 
 export function WidgetNetProfit({ isEditing, onRemove }: WidgetProps) {
   const { summary, isLoading } = useDashboardData();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrencyCompact } = useCurrency();
 
   return (
     <WidgetBase isEditing={isEditing} onRemove={onRemove} className="group flex flex-col justify-center">
@@ -23,16 +23,16 @@ export function WidgetNetProfit({ isEditing, onRemove }: WidgetProps) {
         </div>
       ) : (
         <>
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all pointer-events-none"></div>
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-400/5 rounded-full blur-2xl group-hover:bg-emerald-400/10 transition-all pointer-events-none"></div>
           <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-teal-500/10 rounded-lg border border-teal-500/20">
-              <Activity className="w-5 h-5 text-teal-400" />
+            <div className="p-2 bg-emerald-400/10 rounded-lg border border-emerald-400/20">
+              <Activity className="w-5 h-5 text-emerald-400" />
             </div>
           </div>
           <div>
             <p className="text-sm font-medium text-slate-400 mb-1">Ganancia Neta (Mes)</p>
-            <h3 className="text-3xl font-bold text-gradient-emerald tracking-tight truncate">
-              {formatCurrency(summary?.net_profit || 0)}
+            <h3 className="text-3xl font-bold text-white tracking-tight break-words">
+              {formatCurrencyCompact(summary?.net_profit || 0)}
             </h3>
           </div>
         </>

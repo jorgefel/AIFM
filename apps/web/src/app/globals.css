@@ -101,3 +101,13 @@
     }
   }
 }
+
+/* React Grid Layout Overrides */
+.layout:not(.is-editing) .react-resizable-handle {
+  display: none !important;
+}
+.react-grid-item.react-grid-placeholder {
+  background: var(--color-emerald-accent) !important;
+  opacity: 0.1 !important;
+  border-radius: 1rem !important;
+}

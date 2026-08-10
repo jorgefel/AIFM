@@ -8,6 +8,7 @@ interface CurrencyContextType {
   currency: CurrencyCode;
   setCurrency: (code: CurrencyCode) => void;
   formatCurrency: (amount: number, overrideCurrency?: CurrencyCode) => string;
+  formatCurrencyCompact: (amount: number, overrideCurrency?: CurrencyCode) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -70,8 +71,28 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const formatCurrencyCompact = (amount: number, overrideCurrency?: CurrencyCode) => {
+    if (!isMounted) return `$${amount}`;
+    const currentCurrency = overrideCurrency || currency;
+    try {
+      const formatted = new Intl.NumberFormat(
+        currentCurrency === "COP" ? "es-CO" : currentCurrency === "EUR" ? "es-ES" : "en-US", 
+        {
+          style: "currency",
+          currency: currentCurrency,
+          notation: "compact",
+          compactDisplay: "short",
+          maximumFractionDigits: 1
+        }
+      ).format(amount);
+      return currentCurrency === "COP" ? formatted.replace("$", "COP $") : formatted;
+    } catch {
+      return `$${amount}`;
+    }
+  };
+
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, formatCurrency }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, formatCurrency, formatCurrencyCompact }}>
       {children}
     </CurrencyContext.Provider>
   );

@@ -238,7 +238,7 @@ export default function Home() {
                   <Grid
                     width={gridWidth}
                     className={`layout ${isEditing ? 'is-editing' : ''}`}
-                    layouts={{ lg: currentLayout, md: currentLayout, sm: currentLayout }}
+                    layouts={{ lg: currentLayout.map((item: any) => ({...item, static: !isEditing})), md: currentLayout.map((item: any) => ({...item, static: !isEditing})), sm: currentLayout.map((item: any) => ({...item, static: !isEditing})) }}
                     breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
                     cols={{ lg: 4, md: 4, sm: 2, xs: 1, xxs: 1 }}
                     rowHeight={150}

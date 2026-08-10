@@ -11,7 +11,7 @@ interface WidgetProps {
 
 export function WidgetPerformanceChart({ isEditing, onRemove }: WidgetProps) {
   const { chartData, isLoading } = useDashboardData();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrencyCompact } = useCurrency();
 
   return (
     <WidgetBase isEditing={isEditing} onRemove={onRemove} className="flex flex-col p-6">
@@ -28,7 +28,7 @@ export function WidgetPerformanceChart({ isEditing, onRemove }: WidgetProps) {
           <div className="w-full h-full animate-pulse bg-white/5 rounded-xl"></div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
@@ -40,7 +40,7 @@ export function WidgetPerformanceChart({ isEditing, onRemove }: WidgetProps) {
                 </linearGradient>
               </defs>
               <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value)} domain={[0, 'auto']} allowDecimals={false} />
+              <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrencyCompact(value)} domain={[0, 'auto']} allowDecimals={false} />
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
