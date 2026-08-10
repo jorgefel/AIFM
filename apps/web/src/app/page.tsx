@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { DashboardLayout as AppLayout } from "@/components/layout/DashboardLayout";
-import { Filter, Download, Sparkles, Building2, Settings2, Check } from "lucide-react";
+import { Filter, Download, Sparkles, Building2, Settings2, Check, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
 import { motion } from "framer-motion";
@@ -29,6 +29,7 @@ export default function Home() {
   
   const containerRef = useRef<HTMLDivElement>(null);
   const [gridWidth, setGridWidth] = useState(0);
+  const [isPropertyDropdownOpen, setIsPropertyDropdownOpen] = useState(false);
   
   const {
     properties,
@@ -161,17 +162,47 @@ export default function Home() {
           </div>
           <div className="flex gap-3 items-center">
             {properties.length > 0 && (
-              <div className="flex items-center bg-obsidian-light/50 border border-white/10 rounded-lg px-3 py-1">
-                <Filter className="w-4 h-4 text-slate-400 mr-2" />
-                <select 
-                  className="bg-transparent text-white text-sm focus:outline-none border-none py-1"
-                  value={selectedPropertyId}
-                  onChange={(e) => setSelectedPropertyId(e.target.value)}
+              <div className="relative">
+                <button 
+                  onClick={() => setIsPropertyDropdownOpen(!isPropertyDropdownOpen)}
+                  disabled={isLoading || isEditing}
+                  className="flex items-center justify-between w-48 bg-obsidian-light/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors disabled:opacity-50"
                 >
-                  {properties.map(p => (
-                    <option key={p.id} value={p.id} className="bg-obsidian">{p.name}</option>
-                  ))}
-                </select>
+                  <div className="flex items-center truncate">
+                    <Filter className="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0" />
+                    <span className="truncate">
+                      {properties.find(p => p.id === selectedPropertyId)?.name || "Seleccionar..."}
+                    </span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 ml-2 transition-transform duration-200 flex-shrink-0 ${isPropertyDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isPropertyDropdownOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setIsPropertyDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 mt-2 w-48 bg-obsidian-light border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1">
+                      {properties.map(p => (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            setSelectedPropertyId(p.id);
+                            setIsPropertyDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                            selectedPropertyId === p.id 
+                              ? "bg-emerald-500/10 text-emerald-400 font-medium" 
+                              : "text-slate-300 hover:bg-white/5 hover:text-white"
+                          }`}
+                        >
+                          <span className="truncate block">{p.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
             

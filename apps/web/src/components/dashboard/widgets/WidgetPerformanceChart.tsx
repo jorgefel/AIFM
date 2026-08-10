@@ -28,7 +28,7 @@ export function WidgetPerformanceChart({ isEditing, onRemove }: WidgetProps) {
           <div className="w-full h-full animate-pulse bg-white/5 rounded-xl"></div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
               <defs>
                 <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>

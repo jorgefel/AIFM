@@ -17,7 +17,11 @@ export function WidgetRecentActivity({ isEditing, onRemove }: WidgetProps) {
     <WidgetBase isEditing={isEditing} onRemove={onRemove} className="flex flex-col p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">Actividad Reciente</h3>
-        <button className="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
+        <button 
+          className="text-xs text-emerald-400/50 cursor-not-allowed font-medium transition-colors"
+          title="El historial completo estará disponible pronto"
+          disabled
+        >
           Ver todo
         </button>
       </div>
