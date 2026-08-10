@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import useSWR from "swr";
+import { useState, useEffect } from "react";
+import useSWR, { mutate } from "swr";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { PROPERTIES_SWR_KEY } from "./useProperties";
@@ -16,8 +16,6 @@ export function useExpenses() {
   );
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
   const { currency } = useCurrency();
@@ -36,32 +34,22 @@ export function useExpenses() {
   useEffect(() => {
     if (properties.length > 0 && !selectedPropertyId) {
       setSelectedPropertyId(properties[0].id);
-    } else if (properties.length === 0) {
-      setIsLoading(false);
     }
   }, [properties, selectedPropertyId]);
 
-  const fetchExpenses = useCallback(async (propertyId: string) => {
-    if (!propertyId) return;
-    setIsLoading(true);
-    try {
-      const { data } = await api.get(`/expenses/?property_id=${propertyId}`);
-      setExpenses(data);
-    } catch {
-      toast.error("Error", "No se pudieron cargar los gastos.");
-    } finally {
-      setIsLoading(false);
+  // ── Expenses via SWR (cached + deduplicated) ──
+  const expensesKey = selectedPropertyId
+    ? `/expenses/?property_id=${selectedPropertyId}`
+    : null;
+
+  const { data: expenses = [], isLoading } = useSWR<Expense[]>(
+    expensesKey,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000,
     }
-  }, [toast]);
-
-
-
-
-  useEffect(() => {
-    if (selectedPropertyId) {
-      fetchExpenses(selectedPropertyId);
-    }
-  }, [selectedPropertyId, fetchExpenses]);
+  );
 
   const handleUploadReceipt = async (expenseId: string, file: File) => {
     const fd = new FormData();
@@ -94,7 +82,8 @@ export function useExpenses() {
       }
 
       toast.success(editingId ? "Gasto actualizado" : "Gasto registrado", "El gasto se guardó correctamente.");
-      fetchExpenses(selectedPropertyId);
+      // Revalidate the SWR cache
+      mutate(expensesKey);
       return true;
     } catch {
       toast.error("Error", "No se pudo guardar el gasto.");
@@ -108,7 +97,7 @@ export function useExpenses() {
     try {
       await api.delete(`/expenses/${id}`);
       toast.success("Gasto eliminado", "El gasto fue eliminado correctamente.");
-      fetchExpenses(selectedPropertyId);
+      mutate(expensesKey);
       return true;
     } catch {
       toast.error("Error", "No se pudo eliminar el gasto.");
@@ -142,7 +131,7 @@ export function useExpenses() {
     properties,
     selectedPropertyId, setSelectedPropertyId,
     expenses,
-    isLoading,
+    isLoading: isLoading && !!selectedPropertyId,
     isSubmitting,
     formData, setFormData,
     receiptFile, setReceiptFile,
@@ -152,3 +141,4 @@ export function useExpenses() {
     loadForm
   };
 }
+

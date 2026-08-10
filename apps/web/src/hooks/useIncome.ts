@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import useSWR from "swr";
+import { useState, useEffect } from "react";
+import useSWR, { mutate } from "swr";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { PROPERTIES_SWR_KEY } from "./useProperties";
@@ -16,8 +16,6 @@ export function useIncome() {
   );
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
   const { currency } = useCurrency();
@@ -37,32 +35,22 @@ export function useIncome() {
   useEffect(() => {
     if (properties.length > 0 && !selectedPropertyId) {
       setSelectedPropertyId(properties[0].id);
-    } else if (properties.length === 0) {
-      setIsLoading(false);
     }
   }, [properties, selectedPropertyId]);
 
-  const fetchReservations = useCallback(async (propertyId: string) => {
-    if (!propertyId) return;
-    setIsLoading(true);
-    try {
-      const { data } = await api.get(`/reservations/?property_id=${propertyId}`);
-      setReservations(data);
-    } catch {
-      toast.error("Error", "No se pudieron cargar las reservas.");
-    } finally {
-      setIsLoading(false);
+  // ── Reservations via SWR (cached + deduplicated) ──
+  const reservationsKey = selectedPropertyId
+    ? `/reservations/?property_id=${selectedPropertyId}`
+    : null;
+
+  const { data: reservations = [], isLoading } = useSWR<Reservation[]>(
+    reservationsKey,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000,
     }
-  }, [toast]);
-
-
-
-
-  useEffect(() => {
-    if (selectedPropertyId) {
-      fetchReservations(selectedPropertyId);
-    }
-  }, [selectedPropertyId, fetchReservations]);
+  );
 
   const submitReservation = async (editingId: string | null) => {
     setIsSubmitting(true);
@@ -81,7 +69,8 @@ export function useIncome() {
       }
       
       toast.success(editingId ? "Reserva actualizada" : "Reserva registrada", "La reserva se guardó correctamente.");
-      fetchReservations(selectedPropertyId);
+      // Revalidate the SWR cache
+      mutate(reservationsKey);
       return true;
     } catch {
       toast.error("Error", "No se pudo guardar la reserva.");
@@ -95,7 +84,7 @@ export function useIncome() {
     try {
       await api.delete(`/reservations/${id}`);
       toast.success("Reserva cancelada", "La reserva fue eliminada correctamente.");
-      fetchReservations(selectedPropertyId);
+      mutate(reservationsKey);
       return true;
     } catch {
       toast.error("Error", "No se pudo eliminar la reserva.");
@@ -133,7 +122,7 @@ export function useIncome() {
     properties,
     selectedPropertyId, setSelectedPropertyId,
     reservations,
-    isLoading,
+    isLoading: isLoading && !!selectedPropertyId,
     isSubmitting,
     formData, setFormData,
     submitReservation,
@@ -142,3 +131,4 @@ export function useIncome() {
     loadForm
   };
 }
+
