@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { DashboardLayout as AppLayout } from "@/components/layout/DashboardLayout";
-import { Filter, Download, Sparkles, Building2, Settings2, Check, ChevronDown } from "lucide-react";
+import { Filter, Download, Sparkles, Building2, Settings2, Check, ChevronDown, RotateCcw } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
 import { motion } from "framer-motion";
@@ -19,13 +19,15 @@ import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 
 // Components
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
-import { WIDGET_COMPONENTS, WIDGET_CATALOG } from "@/components/dashboard/WidgetRegistry";
+import { WIDGET_COMPONENTS, WIDGET_CATALOG, DEFAULT_LAYOUT } from "@/components/dashboard/WidgetRegistry";
 import { EditModeSidebar } from "@/components/dashboard/EditModeSidebar";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export default function Home() {
   const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [currentLayout, setCurrentLayout] = useState<any[]>([]);
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const [gridWidth, setGridWidth] = useState(0);
@@ -117,6 +119,12 @@ export default function Home() {
     setIsEditing(false);
   };
 
+  const handleResetLayout = async () => {
+    setCurrentLayout(DEFAULT_LAYOUT);
+    await saveLayout(DEFAULT_LAYOUT);
+    setIsResetDialogOpen(false);
+  };
+
   // Export CSV Action
   const handleExportCSV = async () => {
     if (!selectedPropertyId) return;
@@ -149,13 +157,22 @@ export default function Home() {
             <span className="text-emerald-400 font-semibold">Modo Edición: Diseño</span>
           </div>
           <p className="text-sm text-slate-300 hidden md:block">Arrastra para reposicionar, usa la esquina inferior para redimensionar.</p>
-          <button 
-            onClick={handleSaveLayout}
-            className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-emerald-500/20 flex items-center gap-2"
-          >
-            <Check className="w-4 h-4" />
-            Guardar Diseño
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsResetDialogOpen(true)}
+              className="px-4 py-1.5 bg-obsidian border border-white/10 hover:border-white/20 text-slate-300 hover:text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span className="hidden sm:inline">Restablecer</span>
+            </button>
+            <button 
+              onClick={handleSaveLayout}
+              className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+            >
+              <Check className="w-4 h-4" />
+              Guardar Diseño
+            </button>
+          </div>
         </div>
       )}
 
@@ -329,6 +346,15 @@ export default function Home() {
         reportError={reportError} 
       />
 
+      {/* Modal de Restablecer Diseño */}
+      <ConfirmDialog
+        isOpen={isResetDialogOpen}
+        onClose={() => setIsResetDialogOpen(false)}
+        onConfirm={handleResetLayout}
+        title="¿Restablecer el diseño?"
+        message="Esto eliminará tu personalización actual y devolverá todos los widgets a su disposición original."
+        confirmLabel="Restablecer"
+      />
     </AppLayout>
   );
 }

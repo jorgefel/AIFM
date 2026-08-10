@@ -62,3 +62,12 @@ export const WIDGET_CATALOG: WidgetCatalogItem[] = [
     defaultW: 2, defaultH: 2, minW: 2, minH: 2
   }
 ];
+
+export const DEFAULT_LAYOUT = [
+  { i: "income_summary", x: 0, y: 0, w: 1, h: 1, minW: 1, minH: 1 },
+  { i: "net_profit", x: 1, y: 0, w: 1, h: 1, minW: 1, minH: 1 },
+  { i: "expenses_summary", x: 2, y: 0, w: 1, h: 1, minW: 1, minH: 1 },
+  { i: "occupancy_rate", x: 3, y: 0, w: 1, h: 1, minW: 1, minH: 1 },
+  { i: "performance_chart", x: 0, y: 1, w: 2, h: 2, minW: 2, minH: 2 },
+  { i: "recent_activity", x: 2, y: 1, w: 2, h: 2, minW: 2, minH: 2 },
+];
