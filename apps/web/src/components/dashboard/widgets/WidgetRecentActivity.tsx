@@ -31,7 +31,7 @@ export function WidgetRecentActivity({ isEditing, onRemove }: WidgetProps) {
         ) : recentActivity.length === 0 ? (
           <div className="text-slate-500 text-sm text-center mt-4">No hay actividad reciente.</div>
         ) : (
-          recentActivity.map((item) => (
+          recentActivity.map((item: any) => (
             <div key={item.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-white/5">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${

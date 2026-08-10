@@ -1,11 +1,5 @@
 import React from "react";
 import { Move } from "lucide-react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 interface WidgetBaseProps {
   children: React.ReactNode;
@@ -14,14 +8,12 @@ interface WidgetBaseProps {
   onRemove?: () => void;
 }
 
-export function WidgetBase({ children, isEditing, className, onRemove }: WidgetBaseProps) {
+export function WidgetBase({ children, isEditing, className = "", onRemove }: WidgetBaseProps) {
   return (
     <div 
-      className={cn(
-        "relative h-full w-full rounded-2xl glass-panel transition-colors duration-200",
-        isEditing ? "border-2 border-dashed border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-obsidian-light/60" : "border border-white/10",
-        className
-      )}
+      className={`relative h-full w-full rounded-2xl glass-panel transition-colors duration-200 ${
+        isEditing ? "border-2 border-dashed border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-obsidian-light/60" : "border border-white/10"
+      } ${className}`}
     >
       {isEditing && (
         <>
