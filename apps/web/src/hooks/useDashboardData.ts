@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
-import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { PROPERTIES_SWR_KEY } from "./useProperties";
 
@@ -27,110 +26,53 @@ export function useDashboardData() {
     return {
       currentYear: date.getFullYear(),
       currentMonth: date.getMonth() + 1,
-      date,
     };
   }, []);
 
-  // ── Summary for current month via SWR (cached + deduplicated) ──
-  const summaryKey = selectedPropertyId
-    ? `/analysis/summary?property_id=${selectedPropertyId}&year=${dateParams.currentYear}&month=${dateParams.currentMonth}`
+  // ── Consolidated Dashboard Data via SWR ──
+  // One single endpoint to fetch summary, chart data, and recent activity
+  const dashboardKey = selectedPropertyId
+    ? `/analysis/dashboard?property_id=${selectedPropertyId}&year=${dateParams.currentYear}&month=${dateParams.currentMonth}`
     : null;
 
-  const { data: summary = null, isLoading: isSummaryLoading } = useSWR(
-    summaryKey,
+  const { data: dashboardData = null, isLoading: isDashboardLoading } = useSWR(
+    dashboardKey,
     fetcher,
     {
       revalidateOnFocus: false,
-      dedupingInterval: 30000, // 30s — summary data doesn't change often
+      dedupingInterval: 30000, // 30s
     }
   );
 
-  // ── Chart data (last 6 months) — fetched in parallel, cached by SWR ──
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [isChartLoading, setIsChartLoading] = useState(false);
+  const summary = dashboardData?.summary || null;
+  
+  // Format chart data for Recharts
+  const chartData = useMemo(() => {
+    if (!dashboardData?.chart_data) return [];
+    
+    // The backend returns it in chronological order from oldest to newest
+    // assuming the loop generated 5 months ago first, ending with current month.
+    // Wait, the backend loop goes `for i in range(5, -1, -1)`, which means it appends oldest first.
+    return dashboardData.chart_data.map((m: any) => {
+      const d = new Date(m.year, m.month - 1, 1);
+      return {
+        name: d.toLocaleString("es", { month: "short" }),
+        Ingresos: m.gross_income ?? 0,
+        Gastos: m.total_expenses ?? 0,
+      };
+    });
+  }, [dashboardData]);
 
-  useEffect(() => {
-    if (!selectedPropertyId) return;
+  // Format recent activity
+  const recentActivity = useMemo(() => {
+    if (!dashboardData?.recent_activity) return [];
+    return dashboardData.recent_activity.map((a: any) => ({
+      ...a,
+      date: new Date(a.date)
+    }));
+  }, [dashboardData]);
 
-    const fetchChartData = async () => {
-      setIsChartLoading(true);
-      try {
-        const months: { d: Date; y: number; m: number }[] = [];
-        for (let i = 5; i >= 0; i--) {
-          const d = new Date(dateParams.currentYear, dateParams.date.getMonth() - i, 1);
-          months.push({ d, y: d.getFullYear(), m: d.getMonth() + 1 });
-        }
-
-        // Parallel fetch instead of sequential loop (was 6 sequential awaits)
-        const results = await Promise.all(
-          months.map(({ y, m }) =>
-            api
-              .get(`/analysis/summary?property_id=${selectedPropertyId}&year=${y}&month=${m}`)
-              .then((res) => res.data)
-              .catch(() => null)
-          )
-        );
-
-        const newChartData = months.map(({ d }, idx) => ({
-          name: d.toLocaleString("es", { month: "short" }),
-          Ingresos: results[idx]?.gross_income ?? 0,
-          Gastos: results[idx]?.total_expenses ?? 0,
-        }));
-
-        setChartData(newChartData);
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-      } finally {
-        setIsChartLoading(false);
-      }
-    };
-
-    fetchChartData();
-  }, [selectedPropertyId, dateParams]);
-
-  // ── Recent activity ──
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (!selectedPropertyId) return;
-
-    const fetchActivity = async () => {
-      try {
-        const [resData, expData] = await Promise.all([
-          api.get(`/reservations/?property_id=${selectedPropertyId}`),
-          api.get(`/expenses/?property_id=${selectedPropertyId}`),
-        ]);
-
-        const activities = [
-          ...resData.data.map((r: any) => ({
-            id: `res-${r.id}`,
-            type: "reservation",
-            title: `Reserva: ${r.guest_name}`,
-            date: new Date(r.created_at),
-            amount: r.net_amount,
-            platform: r.platform,
-          })),
-          ...expData.data.map((e: any) => ({
-            id: `exp-${e.id}`,
-            type: "expense",
-            title: `Gasto: ${e.category}`,
-            date: new Date(e.date),
-            amount: e.amount,
-          })),
-        ]
-          .sort((a, b) => b.date.getTime() - a.date.getTime())
-          .slice(0, 5);
-
-        setRecentActivity(activities);
-      } catch (error) {
-        console.error("Error fetching activity:", error);
-      }
-    };
-
-    fetchActivity();
-  }, [selectedPropertyId]);
-
-  const isLoading = isSummaryLoading || isChartLoading;
+  const isLoading = isDashboardLoading && !!selectedPropertyId;
 
   return {
     properties,
@@ -142,4 +84,5 @@ export function useDashboardData() {
     isLoading,
   };
 }
+
 

@@ -3,6 +3,10 @@ import jwt
 from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.database import get_db
 from app.core.config import settings
@@ -12,6 +16,7 @@ from app.models.user import User
 from app.models.property import Property
 
 async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)) -> User:
+    start_time = time.time()
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -25,6 +30,8 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated"
         )
+    
+    t_cookie = time.time()
     
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
@@ -41,6 +48,8 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     except ValueError:
         raise credentials_exception
         
+    t_jwt = time.time()
+    
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalars().first()
     
@@ -49,6 +58,9 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+        
+    t_end = time.time()
+    logger.info(f"[AUTH_PERF] Total: {(t_end - start_time)*1000:.1f}ms | Cookie/Init: {(t_cookie - start_time)*1000:.1f}ms | JWT Decode: {(t_jwt - t_cookie)*1000:.1f}ms | DB Query: {(t_end - t_jwt)*1000:.1f}ms")
         
     return user
 

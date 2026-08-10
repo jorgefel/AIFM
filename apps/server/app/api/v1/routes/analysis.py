@@ -12,7 +12,7 @@ from app.models.reservation import Reservation
 from app.models.expense import Expense
 from app.engine.golden_rule import calculate_monthly_summary, detect_discrepancies
 from app.engine.deterministic_analyzer import generate_deterministic_analysis
-from app.schemas.analysis import MonthlySummary, AIInsightRequest
+from app.schemas.analysis import MonthlySummary, AIInsightRequest, DashboardData
 from app.services.job_manager import create_job, update_job
 from app.agents.rate_limiter import check_user_ai_limit, check_global_ai_limit, increment_ai_usage
 
@@ -85,6 +85,81 @@ async def get_financial_summary(
 
     await set_cached_summary(property_id, year, month, summary)
     return summary
+
+
+@router.get("/dashboard", response_model=DashboardData)
+async def get_dashboard_data(
+    property_id: uuid.UUID,
+    year: int,
+    month: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Endpoint consolidado para el frontend.
+    Devuelve todo lo necesario para el dashboard en una sola petición.
+    """
+    await verify_property_access(property_id, current_user, db)
+    
+    # Obtenemos los datos raw para hacer todos los cálculos en memoria
+    reservations, expenses, _ = await _get_property_data(property_id, db)
+    
+    # 1. Resumen actual
+    summary = calculate_monthly_summary(reservations, expenses, year, month)
+    
+    # 2. Gráfico (6 meses)
+    chart_data = []
+    for i in range(5, -1, -1):
+        # Lógica para restar meses
+        m = month - i
+        y = year
+        while m <= 0:
+            m += 12
+            y -= 1
+        
+        # Intentar cache primero (usamos get_cached_summary que definimos antes)
+        cached_m = await get_cached_summary(property_id, y, m)
+        if cached_m is not None:
+            chart_data.append(cached_m)
+        else:
+            calc_m = calculate_monthly_summary(reservations, expenses, y, m)
+            await set_cached_summary(property_id, y, m, calc_m)
+            chart_data.append(calc_m)
+            
+    # 3. Actividad reciente (top 5 más recientes)
+    from datetime import date
+    activity = []
+    
+    for r in reservations:
+        activity.append({
+            "id": f"res-{r['id']}",
+            "type": "reservation",
+            "title": f"Reserva: {r.get('guest_name', 'Huésped')}",
+            "date": r["check_in"].isoformat() if isinstance(r["check_in"], date) else r["check_in"],
+            "amount": r["net_amount"],
+            "platform": r.get("platform", "airbnb")
+        })
+        
+    for e in expenses:
+        if e.get("is_deleted", False):
+            continue
+        activity.append({
+            "id": f"exp-{e['id']}",
+            "type": "expense",
+            "title": f"Gasto: {e.get('category', 'Otro')}",
+            "date": e["date"].isoformat() if isinstance(e["date"], date) else e["date"],
+            "amount": e["amount"]
+        })
+        
+    # Ordenar por fecha descendente
+    activity.sort(key=lambda x: x["date"], reverse=True)
+    
+    return {
+        "summary": summary,
+        "chart_data": chart_data,
+        "recent_activity": activity[:5]
+    }
+
 
 
 async def _run_ai_analysis_task(

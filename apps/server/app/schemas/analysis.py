@@ -16,6 +16,13 @@ class MonthlySummary(BaseModel):
     expense_count: int
 
 
+class DashboardData(BaseModel):
+    summary: MonthlySummary
+    chart_data: list[MonthlySummary]
+    recent_activity: list[dict]
+
+
+
 class AIInsightRequest(BaseModel):
     property_id: uuid.UUID
     year: int
