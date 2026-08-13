@@ -63,6 +63,14 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     // assuming the loop generated 5 months ago first, ending with current month.
     // Wait, the backend loop goes `for i in range(5, -1, -1)`, which means it appends oldest first.
     return dashboardData.chart_data.map((m: any) => {
+      if (m.day != null) {
+        return {
+          name: String(m.day),
+          Ingresos: m.gross_income ?? 0,
+          Gastos: m.total_expenses ?? 0,
+        };
+      }
+
       const d = new Date(m.year, m.month - 1, 1);
       return {
         name: d.toLocaleString("es", { month: "short" }),
@@ -93,4 +101,3 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     isLoading,
   };
 }
-

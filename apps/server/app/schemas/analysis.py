@@ -16,9 +16,17 @@ class MonthlySummary(BaseModel):
     expense_count: int
 
 
+class DailyChartPoint(BaseModel):
+    year: int
+    month: int
+    day: int
+    gross_income: float
+    total_expenses: float
+
+
 class DashboardData(BaseModel):
     summary: MonthlySummary
-    chart_data: list[MonthlySummary]
+    chart_data: list[MonthlySummary | DailyChartPoint]
     recent_activity: list[dict]
 
 

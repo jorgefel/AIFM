@@ -11,7 +11,7 @@ from app.models.user import User
 from app.models.property import Property
 from app.models.reservation import Reservation
 from app.models.expense import Expense
-from app.engine.golden_rule import calculate_monthly_summary, detect_discrepancies
+from app.engine.golden_rule import calculate_daily_chart_data, calculate_monthly_summary, detect_discrepancies
 from app.engine.deterministic_analyzer import generate_deterministic_analysis
 from app.schemas.analysis import MonthlySummary, AIInsightRequest, DashboardData
 from app.services.job_manager import create_job, update_job
@@ -128,6 +128,9 @@ async def get_dashboard_data(
             calc_m = calculate_monthly_summary(reservations, expenses, y, m)
             await set_cached_summary(property_id, y, m, calc_m)
             chart_data.append(calc_m)
+
+    if range_ == "1m":
+        chart_data = calculate_daily_chart_data(reservations, expenses, year, month)
             
     # 3. Actividad reciente (top 5 más recientes)
     from datetime import date
