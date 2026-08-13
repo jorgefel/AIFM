@@ -1,19 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, memo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { DollarSign, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import PixelBlast from "@/components/PixelBlast";
 
+const RegisterLink = memo(function RegisterLink() {
+  return (
+    <Link
+      href="/register"
+      prefetch={false}
+      className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+    >
+      Crear Cuenta
+    </Link>
+  );
+});
+
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, user, isLoading } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace("/");
+    }
+  }, [isLoading, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +49,12 @@ export default function LoginPage() {
     }
   };
 
+  if (!isLoading && user) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-obsidian relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-radial-glows relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden z-0">
         <PixelBlast
           variant="circle"
@@ -135,17 +159,9 @@ export default function LoginPage() {
           </button>
         </motion.form>
 
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="text-center text-slate-500 text-sm mt-6"
-        >
-          ¿No tienes cuenta?{" "}
-          <Link href="/register" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
-            Crear Cuenta
-          </Link>
-        </motion.p>
+        <p className="text-center text-slate-500 text-sm mt-6">
+          ¿No tienes cuenta? <RegisterLink />
+        </p>
       </motion.div>
     </div>
   );

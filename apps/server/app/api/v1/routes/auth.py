@@ -31,6 +31,14 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str 
             samesite="none",
             max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
         )
+    response.set_cookie(
+        key="session_hint",
+        value="1",
+        httponly=False,
+        secure=is_secure,
+        samesite="none",
+        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+    )
 
 
 @router.post("/register", status_code=201)
@@ -91,5 +99,6 @@ async def logout(request: Request, response: Response):
         
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
+    response.delete_cookie("session_hint")
     
     return {"message": "Logout successful"}

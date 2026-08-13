@@ -18,14 +18,10 @@ export function GlassLayout({ children }: GlassLayoutProps) {
   return (
     <ProtectedRoute>
       {/* FULL SCREEN BACKGROUND (Deep black with subtle radial glows) */}
-      <div className="flex h-screen overflow-hidden bg-[#0A0A0F] relative p-0 sm:p-4 md:p-6 lg:p-8">
+      <div className="flex h-screen overflow-hidden bg-radial-glows relative p-0 sm:p-4 md:p-6 lg:p-8">
         
-        {/* Glow Effects in background */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/10 blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-pink-600/10 blur-[150px] pointer-events-none" />
-
         {/* MASSIVE GLASS CONTAINER */}
-        <div className="flex-1 flex flex-row overflow-hidden relative rounded-none sm:rounded-[24px] border-none sm:border border-white/10 bg-[rgba(20,20,25,0.55)] backdrop-blur-[20px] shadow-2xl">
+        <div className="flex-1 flex flex-row overflow-hidden relative rounded-none sm:rounded-[24px] border-none sm:border border-white/10 glass-panel shadow-2xl">
           
           {/* Desktop Sidebar */}
           <div className="hidden md:block shrink-0">

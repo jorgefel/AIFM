@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DollarSign, Eye, EyeOff, Check, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,13 +11,20 @@ import PixelBlast from "@/components/PixelBlast";
 
 
 export default function RegisterPage() {
-  const { registerUser } = useAuth();
+  const { registerUser, user, isLoading } = useAuth();
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace("/");
+    }
+  }, [isLoading, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +41,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-obsidian relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-radial-glows relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden z-0">
         <PixelBlast
           variant="circle"

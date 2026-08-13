@@ -45,32 +45,73 @@
 }
 
 @layer utilities {
-  /* Glassmorphism base */
+  /* Fondo radial global extraído de Resumen */
+  .bg-radial-glows {
+    background-color: #0A0A0F;
+    position: relative;
+    overflow: hidden;
+  }
+  .bg-radial-glows::before {
+    content: '';
+    position: absolute;
+    top: -10%; left: -10%; width: 40%; height: 40%;
+    border-radius: 50%;
+    background-color: rgba(147, 51, 234, 0.1);
+    filter: blur(150px);
+    pointer-events: none;
+  }
+  .bg-radial-glows::after {
+    content: '';
+    position: absolute;
+    bottom: -10%; right: -10%; width: 30%; height: 30%;
+    border-radius: 50%;
+    background-color: rgba(219, 39, 119, 0.1);
+    filter: blur(150px);
+    pointer-events: none;
+  }
+
+  /* Glassmorphism base con fallback */
   .glass-panel {
-    background-color: rgba(18, 26, 47, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(18, 26, 47, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
   }
+  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+    .glass-panel {
+      background-color: rgba(18, 26, 47, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
 
-  /* Glassmorphism interactivo (tarjetas que se pueden hacer click/hover) */
+  /* Glassmorphism interactivo con fallback */
   .glass-panel-interactive {
-    background-color: rgba(18, 26, 47, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(18, 26, 47, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     @apply transition-all duration-300;
   }
+  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+    .glass-panel-interactive {
+      background-color: rgba(18, 26, 47, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
   .glass-panel-interactive:hover {
-    background-color: rgba(18, 26, 47, 0.85);
+    background-color: rgba(18, 26, 47, 0.98);
     border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.05);
   }
+  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+    .glass-panel-interactive:hover {
+      background-color: rgba(18, 26, 47, 0.85);
+    }
+  }
+
 
   /* Gradiente para textos importantes (ej. Dinero, Títulos) */
   .text-gradient-emerald {
