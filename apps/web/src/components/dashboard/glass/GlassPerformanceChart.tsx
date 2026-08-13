@@ -13,9 +13,10 @@ interface GlassPerformanceChartProps {
 
 const CustomTooltip = ({ active, payload, label, formatCurrency }: any) => {
   if (!active || !payload || payload.length === 0) return null;
+  const tooltipLabel = payload[0]?.payload?.tooltipLabel ?? label;
   return (
     <div className="bg-[#1A1A28] border border-white/10 rounded-xl px-4 py-3 shadow-xl backdrop-blur-lg">
-      <p className="text-xs text-slate-400 font-medium mb-1.5">{label}</p>
+      <p className="text-xs text-slate-400 font-medium mb-1.5">{tooltipLabel}</p>
       {payload.map((entry: any, idx: number) => (
         <div key={idx} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
@@ -29,6 +30,14 @@ const CustomTooltip = ({ active, payload, label, formatCurrency }: any) => {
 
 export function GlassPerformanceChart({ chartData, isLoading, selectedRange, onRangeChange }: GlassPerformanceChartProps) {
   const { formatCurrency, formatCurrencyCompact } = useCurrency();
+  const isDailyRange = selectedRange === "1M";
+
+  const formatXAxisTick = (value: string) => {
+    if (!isDailyRange) return value;
+
+    const day = Number(value);
+    return day === 1 || day % 5 === 0 ? String(day) : "";
+  };
 
   return (
     <div className="flex flex-col h-full p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:bg-white/[0.04] transition-colors relative overflow-hidden">
@@ -74,6 +83,7 @@ export function GlassPerformanceChart({ chartData, isLoading, selectedRange, onR
               </defs>
               <XAxis
                 dataKey="name"
+                tickFormatter={formatXAxisTick}
                 stroke="#475569"
                 fontSize={12}
                 tickLine={false}
