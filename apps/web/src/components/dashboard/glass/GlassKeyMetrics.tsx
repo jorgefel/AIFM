@@ -35,22 +35,22 @@ export function GlassKeyMetrics({ netProfit, occupancyRate, totalExpenses }: Gla
         {/* Metric 2: Tasa Ocupación */}
         <div className="flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            {occupancyRate !== null ? occupancyRate : "0"}%
+            {occupancyRate !== null ? (occupancyRate * 100).toFixed(1) : "0.0"}%
           </p>
           <p className="text-xs font-medium text-emerald-400 mt-1 mb-2">+0.0%</p>
           <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Tasa<br/>Ocupación</p>
         </div>
 
         {/* Metric 3: Gastos Totales */}
-        <div className="flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
+        <div className="col-span-2 flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             {totalExpenses !== null ? formatCurrencyCompact(totalExpenses) : "$0"}
           </p>
           <p className="text-xs font-medium text-slate-500 mt-1 mb-2">-</p>
-          <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Gastos<br/>Totales</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Gastos Totales</p>
         </div>
 
-        {/* Metric 4: ROI Proyectado */}
+        {/* Metric 4: ROI Proyectado (Desactivado temporalmente)
         <div className="flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             N/A
@@ -58,6 +58,7 @@ export function GlassKeyMetrics({ netProfit, occupancyRate, totalExpenses }: Gla
           <p className="text-xs font-medium text-slate-500 mt-1 mb-2">-</p>
           <p className="text-[10px] sm:text-xs text-slate-400 font-medium">ROI<br/>Proyectado</p>
         </div>
+        */}
       </div>
     </div>
   );

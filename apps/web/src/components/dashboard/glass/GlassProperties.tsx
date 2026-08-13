@@ -47,9 +47,8 @@ export function GlassProperties({ properties }: GlassPropertiesProps) {
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  {/* Mocked value since it's not in the model */}
-                  <p className="text-sm font-medium text-white">$ --</p>
-                  <p className="text-xs font-medium text-emerald-400 mt-0.5">-- %</p>
+                  {/* Mocked value since it's not in the model yet */}
+                  <p className="text-xs font-medium text-slate-500 italic">N/A</p>
                 </div>
               </div>
             );

@@ -46,10 +46,10 @@ export default function RegisterPage() {
         <PixelBlast
           variant="circle"
           pixelSize={5}
-          color="#10b981"
+          color="#8B5CF6"
           patternScale={3}
-          patternDensity={1.1}
-          pixelSizeJitter={0.05}
+          patternDensity={1.2}
+          pixelSizeJitter={0.5}
           enableRipples
           rippleSpeed={0.4}
           rippleThickness={0.12}
@@ -65,7 +65,7 @@ export default function RegisterPage() {
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 25, delay: 0.1 }}
-        className="w-full max-w-md p-8 glass-panel-interactive relative z-10"
+        className="w-full max-w-md p-8 relative z-10 rounded-2xl border border-white/[0.08] bg-[rgba(20,20,25,0.55)] shadow-2xl backdrop-blur-[20px] [-webkit-backdrop-filter:blur(20px)]"
       >
         <motion.div 
           initial={{ opacity: 0, scale: 0 }}
@@ -73,7 +73,7 @@ export default function RegisterPage() {
           transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.3 }}
           className="flex justify-center mb-8"
         >
-          <div className="w-12 h-12 bg-emerald-500/10 rounded-xl border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30 flex items-center justify-center text-purple-400">
             <DollarSign className="w-6 h-6" />
           </div>
         </motion.div>
@@ -111,7 +111,7 @@ export default function RegisterPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Jorge Fernández"
-              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
+              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all placeholder:text-slate-600"
               required
             />
           </div>
@@ -123,7 +123,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@correo.com"
-              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
+              className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all placeholder:text-slate-600"
               required
             />
           </div>
@@ -136,7 +136,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 pr-11 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
+                className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 pr-11 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all placeholder:text-slate-600"
                 required
                 minLength={6}
               />
@@ -154,7 +154,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all mt-6 disabled:opacity-50 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-[0.98]"
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-medium py-2.5 px-4 rounded-full transition-all mt-6 disabled:opacity-50 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 active:scale-[0.98]"
           >
             {loading ? "Creando cuenta..." : "Registrarme"}
           </button>
@@ -167,7 +167,7 @@ export default function RegisterPage() {
           className="text-center text-slate-500 text-sm mt-6"
         >
           ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
+          <Link href="/login" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
             Iniciar Sesión
           </Link>
         </motion.p>

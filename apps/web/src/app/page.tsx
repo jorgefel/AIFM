@@ -78,18 +78,18 @@ export default function Home() {
       {/* Main Grid: Row 1 - Ingresos + Propiedades + Métricas */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Column 1: Ingresos Brutos + Decisiones IA */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 h-full">
           <div className="flex-1">
             <GlassIncome
               grossIncome={summary?.gross_income ?? null}
               currency={currency}
             />
           </div>
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <GlassAiDecisions
               onExplore={() => generateReport(selectedPropertyId)}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Column 2: Propiedades */}

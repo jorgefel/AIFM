@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
@@ -26,6 +27,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformanceChartProps) {
   const { formatCurrency } = useCurrency();
+  const [selectedRange, setSelectedRange] = useState("6M");
 
   return (
     <div className="flex flex-col h-full p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:bg-white/[0.04] transition-colors relative overflow-hidden">
@@ -35,11 +37,12 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
       <div className="flex items-center justify-between mb-6 relative z-10">
         <h3 className="text-lg font-medium text-slate-300">Rendimiento Portafolio</h3>
         <div className="flex gap-1.5">
-          {["1M", "3M", "6M", "1A"].map((range, i) => (
+          {["1M", "3M", "6M", "1A"].map((range) => (
             <button
               key={range}
+              onClick={() => setSelectedRange(range)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                i === 2
+                selectedRange === range
                   ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
                   : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-transparent"
               }`}

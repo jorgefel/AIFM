@@ -13,6 +13,7 @@ interface GlassHeaderProps {
 export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   return (
     <header className="h-20 flex items-center justify-between px-4 md:px-8 bg-transparent">
@@ -32,10 +33,31 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
 
       {/* Derecha: Acciones y Perfil */}
       <div className="flex items-center gap-6">
-        {/* Notificaciones (Simplified for Glass) */}
-        <button className="p-2.5 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
-          <Bell className="w-5 h-5" />
-        </button>
+        {/* Notificaciones (Dropdown Básico) */}
+        <div className="relative">
+          <button 
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            className="p-2.5 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <Bell className="w-5 h-5" />
+          </button>
+          
+          {isNotificationsOpen && (
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setIsNotificationsOpen(false)}
+              />
+              <div className="absolute right-0 mt-3 w-64 bg-[#1A1A24] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden py-3 px-4 animate-in slide-in-from-top-2 fade-in duration-200">
+                <p className="text-sm font-medium text-white mb-2">Notificaciones</p>
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Bell className="w-8 h-8 text-slate-600 mb-2" />
+                  <p className="text-xs text-slate-400">No tienes notificaciones nuevas</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Separador */}
         <div className="w-px h-6 bg-white/10 hidden md:block" />

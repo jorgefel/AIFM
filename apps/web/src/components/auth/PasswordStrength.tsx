@@ -15,7 +15,7 @@ export function PasswordStrength({ password }: { password: string }) {
   }, [password]);
 
   const score = Object.values(checks).filter(Boolean).length;
-  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-400", "bg-emerald-400"];
+  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-400", "bg-purple-400"];
   const labels = ["Débil", "Aceptable", "Buena", "Fuerte"];
 
   if (!password) return null;
@@ -39,7 +39,7 @@ export function PasswordStrength({ password }: { password: string }) {
           </div>
         ))}
       </div>
-      <p className={`text-xs font-medium ${score <= 1 ? "text-red-400" : score === 2 ? "text-amber-400" : "text-emerald-400"}`}>
+      <p className={`text-xs font-medium ${score <= 1 ? "text-red-400" : score === 2 ? "text-amber-400" : "text-purple-400"}`}>
         {labels[score - 1] || "Muy débil"}
       </p>
 
@@ -53,7 +53,7 @@ export function PasswordStrength({ password }: { password: string }) {
         ].map((item) => (
           <div key={item.key} className="flex items-center gap-1.5 text-xs">
             {checks[item.key as keyof typeof checks] ? (
-              <Check className="w-3 h-3 text-emerald-400" />
+              <Check className="w-3 h-3 text-purple-400" />
             ) : (
               <X className="w-3 h-3 text-slate-600" />
             )}
