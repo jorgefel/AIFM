@@ -6,6 +6,8 @@ import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Button } from "@/components/ui/Button";
 import { Upload } from "lucide-react";
 
+import { Property } from "@/types/models";
+
 interface ExpenseFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,13 +18,17 @@ interface ExpenseFormProps {
   setReceiptFile: (file: File | null) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
+  properties: Property[];
+  selectedPropertyId: string;
+  onPropertyChange: (id: string) => void;
 }
 
 export function ExpenseForm({
   isOpen, onClose, editingId,
   formData, setFormData,
   receiptFile, setReceiptFile,
-  onSubmit, isSubmitting
+  onSubmit, isSubmitting,
+  properties, selectedPropertyId, onPropertyChange
 }: ExpenseFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,6 +39,13 @@ export function ExpenseForm({
       title={editingId ? "Editar Gasto" : "Nuevo Gasto"}
     >
       <form onSubmit={onSubmit} className="space-y-4">
+        <Select 
+          label="Propiedad" 
+          value={selectedPropertyId}
+          onChange={(e) => onPropertyChange(e.target.value)}
+          options={properties.map(p => ({ value: p.id, label: p.name }))}
+          required
+        />
         <Input 
           label="Descripción" 
           placeholder="Ej. Reparación de tubería" 

@@ -4,6 +4,8 @@ import { Select } from "@/components/ui/Select";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Button } from "@/components/ui/Button";
 
+import { Property } from "@/types/models";
+
 interface IncomeFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,12 +14,16 @@ interface IncomeFormProps {
   setFormData: (data: any) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
+  properties: Property[];
+  selectedPropertyId: string;
+  onPropertyChange: (id: string) => void;
 }
 
 export function IncomeForm({
   isOpen, onClose, editingId,
   formData, setFormData,
-  onSubmit, isSubmitting
+  onSubmit, isSubmitting,
+  properties, selectedPropertyId, onPropertyChange
 }: IncomeFormProps) {
   return (
     <Modal 
@@ -26,6 +32,13 @@ export function IncomeForm({
       title={editingId ? "Editar Reserva" : "Nueva Reserva"}
     >
       <form onSubmit={onSubmit} className="space-y-4">
+        <Select 
+          label="Propiedad" 
+          value={selectedPropertyId}
+          onChange={(e) => onPropertyChange(e.target.value)}
+          options={properties.map(p => ({ value: p.id, label: p.name }))}
+          required
+        />
         <Input 
           label="Huésped" 
           placeholder="Nombre del huésped" 

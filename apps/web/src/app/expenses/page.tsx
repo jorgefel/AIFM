@@ -134,6 +134,9 @@ export default function ExpensesPage() {
         setReceiptFile={setReceiptFile}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        properties={properties}
+        selectedPropertyId={selectedPropertyId}
+        onPropertyChange={setSelectedPropertyId}
       />
 
       <ConfirmDialog
