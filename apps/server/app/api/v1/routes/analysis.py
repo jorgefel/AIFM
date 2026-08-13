@@ -1,4 +1,5 @@
 import uuid
+from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -92,6 +93,7 @@ async def get_dashboard_data(
     property_id: uuid.UUID,
     year: int,
     month: int,
+    range: Literal["1m", "3m", "6m", "1y"] = "6m",
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -108,8 +110,9 @@ async def get_dashboard_data(
     summary = calculate_monthly_summary(reservations, expenses, year, month)
     
     # 2. Gráfico (6 meses)
+    months_by_range = {"1m": 1, "3m": 3, "6m": 6, "1y": 12}
     chart_data = []
-    for i in range(5, -1, -1):
+    for i in range(months_by_range[range] - 1, -1, -1):
         # Lógica para restar meses
         m = month - i
         y = year

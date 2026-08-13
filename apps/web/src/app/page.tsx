@@ -4,9 +4,10 @@ import { GlassLayout } from "@/components/layout/glass/GlassLayout";
 import { Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 // Hooks
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useDashboardData, type PerformanceRange } from "@/hooks/useDashboardData";
 import { useAIReport } from "@/hooks/useAIReport";
 
 // Glass Components
@@ -19,6 +20,7 @@ import { AIReportModal } from "@/components/dashboard/AIReportModal";
 
 export default function Home() {
   const { user } = useAuth();
+  const [performanceRange, setPerformanceRange] = useState<PerformanceRange>("6M");
 
   const {
     properties,
@@ -26,7 +28,7 @@ export default function Home() {
     summary,
     chartData,
     isLoading
-  } = useDashboardData();
+  } = useDashboardData(performanceRange);
 
   const {
     isReportModalOpen,
@@ -109,7 +111,12 @@ export default function Home() {
 
       {/* Row 2: Rendimiento Portafolio (Full Width) */}
       <div className="h-[420px]">
-        <GlassPerformanceChart chartData={chartData} isLoading={isLoading} />
+        <GlassPerformanceChart
+          chartData={chartData}
+          isLoading={isLoading}
+          selectedRange={performanceRange}
+          onRangeChange={setPerformanceRange}
+        />
       </div>
 
       {/* AI Report Modal */}

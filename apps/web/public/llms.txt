@@ -1,0 +1,12 @@
+# AIFM
+
+> AIFM es una aplicación privada para gestionar finanzas, reservas y rentabilidad de propiedades de alquiler.
+
+## Acceso público
+
+- [Iniciar sesión](/login): acceso a cuentas existentes.
+- [Crear cuenta](/register): registro de una nueva cuenta.
+
+## Navegación de la aplicación
+
+Las secciones Resumen, Ingresos y reservas, Gastos operativos, Propiedades, Reportes y análisis, Calculadora de ROI y Configuración requieren una sesión autenticada. Su contenido no es público ni debe indexarse.

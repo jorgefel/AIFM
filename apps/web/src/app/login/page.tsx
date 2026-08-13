@@ -4,9 +4,11 @@ import { useState, useEffect, memo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { DollarSign, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import PixelBlast from "@/components/PixelBlast";
+
+const PixelBlast = dynamic(() => import("@/components/PixelBlast"), { ssr: false });
 
 const RegisterLink = memo(function RegisterLink() {
   return (
@@ -96,7 +98,7 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <h2 className="text-2xl font-bold text-center text-white mb-2">Bienvenido a AIFM</h2>
+          <h1 className="text-2xl font-bold text-center text-white mb-2">Bienvenido a AIFM</h1>
           <p className="text-center text-slate-400 mb-8">Inicia sesión en tu cuenta</p>
         </motion.div>
         

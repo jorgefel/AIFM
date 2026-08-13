@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Los sourcemaps de navegador no son necesarios para la aplicación pública.
+  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;

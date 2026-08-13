@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import type { PerformanceRange } from "@/hooks/useDashboardData";
 
 interface GlassPerformanceChartProps {
   chartData: any[];
   isLoading: boolean;
+  selectedRange: PerformanceRange;
+  onRangeChange: (range: PerformanceRange) => void;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, formatCurrency }: any) => {
   if (!active || !payload || payload.length === 0) return null;
   return (
     <div className="bg-[#1A1A28] border border-white/10 rounded-xl px-4 py-3 shadow-xl backdrop-blur-lg">
@@ -18,16 +20,15 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <div key={idx} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
           <span className="text-xs text-slate-300">{entry.name}:</span>
-          <span className="text-xs font-semibold text-white">${Number(entry.value).toLocaleString()}</span>
+          <span className="text-xs font-semibold text-white">{formatCurrency(Number(entry.value))}</span>
         </div>
       ))}
     </div>
   );
 };
 
-export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformanceChartProps) {
-  const { formatCurrency } = useCurrency();
-  const [selectedRange, setSelectedRange] = useState("6M");
+export function GlassPerformanceChart({ chartData, isLoading, selectedRange, onRangeChange }: GlassPerformanceChartProps) {
+  const { formatCurrency, formatCurrencyCompact } = useCurrency();
 
   return (
     <div className="flex flex-col h-full p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:bg-white/[0.04] transition-colors relative overflow-hidden">
@@ -37,10 +38,10 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
       <div className="flex items-center justify-between mb-6 relative z-10">
         <h3 className="text-lg font-medium text-slate-300">Rendimiento Portafolio</h3>
         <div className="flex gap-1.5">
-          {["1M", "3M", "6M", "1A"].map((range) => (
+          {(["1M", "3M", "6M", "1A"] as PerformanceRange[]).map((range) => (
             <button
               key={range}
-              onClick={() => setSelectedRange(range)}
+              onClick={() => onRangeChange(range)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
                 selectedRange === range
                   ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
@@ -60,7 +61,7 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
           </div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 8, bottom: 0 }}>
               <defs>
                 <linearGradient id="glassGradientIngresos" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.35} />
@@ -83,12 +84,13 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => formatCurrency(value)}
+                width={88}
+                tickFormatter={(value) => formatCurrencyCompact(value)}
                 domain={[0, 'auto']}
                 allowDecimals={false}
               />
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
               <Area
                 type="monotone"
                 dataKey="Ingresos"

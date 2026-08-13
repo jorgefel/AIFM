@@ -3,7 +3,16 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { PROPERTIES_SWR_KEY } from "./useProperties";
 
-export function useDashboardData() {
+export type PerformanceRange = "1M" | "3M" | "6M" | "1A";
+
+const performanceRangeParam: Record<PerformanceRange, "1m" | "3m" | "6m" | "1y"> = {
+  "1M": "1m",
+  "3M": "3m",
+  "6M": "6m",
+  "1A": "1y",
+};
+
+export function useDashboardData(performanceRange: PerformanceRange = "6M") {
   // ── Properties via SWR (shared with useProperties, single request) ──
   const { data: properties = [] } = useSWR<any[]>(
     PROPERTIES_SWR_KEY,
@@ -32,7 +41,7 @@ export function useDashboardData() {
   // ── Consolidated Dashboard Data via SWR ──
   // One single endpoint to fetch summary, chart data, and recent activity
   const dashboardKey = selectedPropertyId
-    ? `/analysis/dashboard?property_id=${selectedPropertyId}&year=${dateParams.currentYear}&month=${dateParams.currentMonth}`
+    ? `/analysis/dashboard?property_id=${selectedPropertyId}&year=${dateParams.currentYear}&month=${dateParams.currentMonth}&range=${performanceRangeParam[performanceRange]}`
     : null;
 
   const { data: dashboardData = null, isLoading: isDashboardLoading } = useSWR(
@@ -84,5 +93,4 @@ export function useDashboardData() {
     isLoading,
   };
 }
-
 

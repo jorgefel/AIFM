@@ -6,8 +6,10 @@ import { DollarSign, Eye, EyeOff, Check, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import PixelBlast from "@/components/PixelBlast";
+
+const PixelBlast = dynamic(() => import("@/components/PixelBlast"), { ssr: false });
 
 
 export default function RegisterPage() {
@@ -83,7 +85,7 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <h2 className="text-2xl font-bold text-center text-white mb-2">Crear Cuenta</h2>
+          <h1 className="text-2xl font-bold text-center text-white mb-2">Crear Cuenta</h1>
           <p className="text-center text-slate-400 mb-8">Regístrate para empezar a administrar tus propiedades</p>
         </motion.div>
 
