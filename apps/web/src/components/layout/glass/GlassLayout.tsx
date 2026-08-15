@@ -6,6 +6,7 @@ import { ProtectedRoute } from "../../auth/ProtectedRoute";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 interface GlassLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,9 @@ interface GlassLayoutProps {
 export function GlassLayout({ children }: GlassLayoutProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Auto-logout after ≥5 min of tab inactivity
+  useAutoLogout();
 
   return (
     <ProtectedRoute>
