@@ -33,17 +33,17 @@ export default function ROICalculator() {
     <DashboardLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-            <Calculator className="w-8 h-8 text-emerald-400" />
+          <h1 className="text-3xl font-bold text-ink tracking-tight flex items-center gap-3">
+            <Calculator className="w-8 h-8 text-violet-600" />
             Calculadora de ROI
           </h1>
-          <p className="text-slate-400 mt-1">
+          <p className="text-ink-muted mt-1">
             Simula escenarios y descubre en cuánto tiempo recuperarás tu inversión inicial.
           </p>
         </div>
         <Button 
           onClick={resetCalculator}
-          className="bg-obsidian-light/50 border-white/10 hover:bg-white/5 text-slate-300"
+          variant="secondary"
         >
           <RefreshCcw className="w-4 h-4 mr-2" />
           Reiniciar

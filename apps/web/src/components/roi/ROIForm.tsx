@@ -33,9 +33,9 @@ export function ROIForm({
       className="lg:col-span-5 space-y-6"
     >
       {/* Inversión y Precio */}
-      <motion.div variants={itemVariants} className="glass-panel p-6 space-y-6">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-          <DollarSign className="w-5 h-5 text-emerald-400" />
+      <motion.div variants={itemVariants} className="card-surface p-6 space-y-6">
+        <h3 className="text-lg font-semibold text-ink flex items-center gap-2 mb-4">
+          <DollarSign className="w-5 h-5 text-violet-600" />
           Inversión y Tarifas
         </h3>
         
@@ -57,17 +57,17 @@ export function ROIForm({
       </motion.div>
 
       {/* Ocupación y Gastos */}
-      <motion.div variants={itemVariants} className="glass-panel p-6 space-y-6">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-teal-400" />
+      <motion.div variants={itemVariants} className="card-surface p-6 space-y-6">
+        <h3 className="text-lg font-semibold text-ink flex items-center gap-2 mb-4">
+          <Calendar className="w-5 h-5 text-teal-600" />
           Ocupación y Gastos Mensuales
         </h3>
         
         <div className="space-y-4">
           <div>
-            <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
+            <label className="flex justify-between text-sm font-medium text-ink/80 mb-2">
               <span>Días Ocupados por Mes</span>
-              <span className="text-teal-400 font-bold">{daysOccupied} días ({(daysOccupied/30*100).toFixed(0)}%)</span>
+              <span className="text-teal-600 font-bold">{daysOccupied} días ({(daysOccupied/30*100).toFixed(0)}%)</span>
             </label>
             <input 
               type="range" 
@@ -95,16 +95,16 @@ export function ROIForm({
       </motion.div>
 
       {/* Comisiones */}
-      <motion.div variants={itemVariants} className="glass-panel p-6 space-y-6">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-          <Percent className="w-5 h-5 text-amber-400" />
+      <motion.div variants={itemVariants} className="card-surface p-6 space-y-6">
+        <h3 className="text-lg font-semibold text-ink flex items-center gap-2 mb-4">
+          <Percent className="w-5 h-5 text-amber-600" />
           Comisiones
         </h3>
         
         <div>
-          <label className="flex justify-between text-sm font-medium text-slate-300 mb-2">
+          <label className="flex justify-between text-sm font-medium text-ink/80 mb-2">
             <span>Comisión de Plataforma</span>
-            <span className="text-amber-400 font-bold">{platformFee}%</span>
+            <span className="text-amber-600 font-bold">{platformFee}%</span>
           </label>
           <input 
             type="range" 

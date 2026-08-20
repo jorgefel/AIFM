@@ -6,8 +6,6 @@ import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Button } from "@/components/ui/Button";
 import { Upload } from "lucide-react";
 
-import { Property } from "@/types/models";
-
 interface ExpenseFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,17 +16,13 @@ interface ExpenseFormProps {
   setReceiptFile: (file: File | null) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
-  properties: Property[];
-  selectedPropertyId: string;
-  onPropertyChange: (id: string) => void;
 }
 
 export function ExpenseForm({
   isOpen, onClose, editingId,
   formData, setFormData,
   receiptFile, setReceiptFile,
-  onSubmit, isSubmitting,
-  properties, selectedPropertyId, onPropertyChange
+  onSubmit, isSubmitting
 }: ExpenseFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,13 +33,6 @@ export function ExpenseForm({
       title={editingId ? "Editar Gasto" : "Nuevo Gasto"}
     >
       <form onSubmit={onSubmit} className="space-y-4">
-        <Select 
-          label="Propiedad" 
-          value={selectedPropertyId}
-          onChange={(e) => onPropertyChange(e.target.value)}
-          options={properties.map(p => ({ value: p.id, label: p.name }))}
-          required
-        />
         <Input 
           label="Descripción" 
           placeholder="Ej. Reparación de tubería" 
@@ -101,7 +88,7 @@ export function ExpenseForm({
         </div>
 
         <div className="pt-2">
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Comprobante (Opcional)</label>
+          <label className="block text-sm font-medium text-ink/80 mb-1.5">Comprobante (Opcional)</label>
           <div className="flex items-center gap-4">
             <Button 
               type="button" 
@@ -124,7 +111,7 @@ export function ExpenseForm({
               }}
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">Imágenes (PNG, JPG) o PDF. Máx 5MB.</p>
+          <p className="mt-1 text-xs text-ink-muted">Imágenes (PNG, JPG) o PDF. Máx 5MB.</p>
         </div>
 
         <div className="pt-4 flex justify-end gap-3">

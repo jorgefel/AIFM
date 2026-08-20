@@ -37,7 +37,7 @@ class User(Base, UUIDMixin, TimestampMixin):
 
     # ── Relaciones ───────────────────────────────────────────
     properties: Mapped[list[Property]] = relationship(
-        "Property", back_populates="owner", lazy="raise"
+        "Property", back_populates="owner", lazy="selectin"
     )
 
     def __repr__(self) -> str:

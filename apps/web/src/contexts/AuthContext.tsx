@@ -1,22 +1,11 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { api } from "@/lib/api";
-import {
-  clearSessionHint,
-  hasSessionHint,
-  isPublicAuthRoute,
-  setSessionHint,
-} from "@/lib/session";
 import { useRouter } from "next/navigation";
+import { DEMO_USER } from "@/lib/demoData";
+
+const DEMO_FLAG = "aifm_demo_mode";
 
 export interface User {
   id: string;
@@ -28,7 +17,9 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
+  isDemoMode: boolean;
   login: (data: any) => Promise<void>;
+  loginDemo: (overrides?: Partial<User>) => void;
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -38,78 +29,85 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return !(isPublicAuthRoute() && !hasSessionHint());
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const router = useRouter();
 
-  const checkAuth = useCallback(async () => {
-    try {
-      const response = await api.get("/users/me");
-      setUser(response.data);
-      setSessionHint();
-    } catch {
-      setUser(null);
-      clearSessionHint();
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const onPublicRoute = isPublicAuthRoute();
-    const sessionHint = hasSessionHint();
-
-    if (onPublicRoute && !sessionHint) {
+  const checkAuth = async () => {
+    // Modo demo: evita golpear el backend y usa un usuario de ejemplo
+    if (typeof window !== "undefined" && localStorage.getItem(DEMO_FLAG) === "true") {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("aifm_demo_user") : null;
+      setUser(stored ? JSON.parse(stored) : (DEMO_USER as User));
+      setIsDemoMode(true);
       setIsLoading(false);
       return;
     }
 
+    try {
+      const response = await api.get("/users/me");
+      setUser(response.data);
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []);
 
-  const login = useCallback(
-    async (credentials: any) => {
-      await api.post("/auth/login", {
-        email: credentials.email,
-        password: credentials.password,
-      });
-      setSessionHint();
-      await checkAuth();
-      router.push("/");
-    },
-    [checkAuth, router]
-  );
+  const login = async (credentials: any) => {
+    // Send as JSON (backend expects Pydantic BaseModel, not form data)
+    await api.post("/auth/login", {
+      email: credentials.email,
+      password: credentials.password
+    });
+    // After successful login, fetch user profile
+    await checkAuth();
+    router.push("/");
+  };
 
-  const registerUser = useCallback(
-    async (data: any) => {
-      await api.post("/auth/register", data);
-      setSessionHint();
-      await checkAuth();
-      router.push("/");
-    },
-    [checkAuth, router]
-  );
+  const loginDemo = (overrides?: Partial<User>) => {
+    const demoUser = { ...DEMO_USER, ...overrides } as User;
+    localStorage.setItem(DEMO_FLAG, "true");
+    localStorage.setItem("aifm_demo_user", JSON.stringify(demoUser));
+    setUser(demoUser);
+    setIsDemoMode(true);
+    router.push("/");
+  };
 
-  const logout = useCallback(async () => {
+  const registerUser = async (data: any) => {
+    await api.post("/auth/register", data);
+    await checkAuth();
+    router.push("/");
+  };
+
+  const logout = async () => {
+    if (isDemoMode) {
+      localStorage.removeItem(DEMO_FLAG);
+      localStorage.removeItem("aifm_demo_user");
+      setUser(null);
+      setIsDemoMode(false);
+      router.push("/login");
+      return;
+    }
+
     try {
       await api.post("/auth/logout");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      clearSessionHint();
       setUser(null);
       router.push("/login");
     }
-  }, [router]);
+  };
 
-  const value = useMemo(
-    () => ({ user, isLoading, login, registerUser, logout, checkAuth }),
-    [user, isLoading, login, registerUser, logout, checkAuth]
+  return (
+    <AuthContext.Provider value={{ user, isLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth }}>
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

@@ -4,23 +4,21 @@ import { GlassLayout } from "@/components/layout/glass/GlassLayout";
 import { Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
 
 // Hooks
-import { useDashboardData, type PerformanceRange } from "@/hooks/useDashboardData";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAIReport } from "@/hooks/useAIReport";
 
 // Glass Components
+import { GlassStatCards } from "@/components/dashboard/glass/GlassStatCards";
 import { GlassIncome } from "@/components/dashboard/glass/GlassIncome";
 import { GlassProperties } from "@/components/dashboard/glass/GlassProperties";
-import { GlassKeyMetrics } from "@/components/dashboard/glass/GlassKeyMetrics";
 import { GlassAiDecisions } from "@/components/dashboard/glass/GlassAiDecisions";
 import { GlassPerformanceChart } from "@/components/dashboard/glass/GlassPerformanceChart";
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
 
 export default function Home() {
   const { user } = useAuth();
-  const [performanceRange, setPerformanceRange] = useState<PerformanceRange>("6M");
 
   const {
     properties,
@@ -28,7 +26,7 @@ export default function Home() {
     summary,
     chartData,
     isLoading
-  } = useDashboardData(performanceRange);
+  } = useDashboardData();
 
   const {
     isReportModalOpen,
@@ -46,11 +44,11 @@ export default function Home() {
     <GlassLayout>
       {/* Welcome Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
-          Bienvenido, {firstName}
+        <h1 className="text-2xl sm:text-3xl font-semibold text-ink tracking-tight">
+          ¡Bienvenido de vuelta, {firstName}! 👋
         </h1>
-        <p className="text-slate-400 mt-1 text-sm">
-          Resumen de tu portafolio de inversiones inmobiliarias.
+        <p className="text-ink-muted mt-1 text-sm">
+          Aquí tienes el resumen de tu negocio hoy.
         </p>
       </div>
 
@@ -59,64 +57,53 @@ export default function Home() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-12 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col items-center justify-center text-center"
+          className="card-surface p-12 flex flex-col items-center justify-center text-center"
         >
-          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-            <Building2 className="w-8 h-8 text-slate-400" />
+          <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-4">
+            <Building2 className="w-8 h-8 text-violet-600" />
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Bienvenido a AIFM</h3>
-          <p className="text-slate-400 max-w-md text-sm">
+          <h3 className="text-xl font-semibold text-ink mb-2">Bienvenido a AIFM</h3>
+          <p className="text-ink-muted max-w-md text-sm">
             Aún no tienes propiedades registradas. Para comenzar a ver tu resumen financiero, primero añade tu primera propiedad.
           </p>
           <button
             onClick={() => window.location.href='/properties'}
-            className="mt-6 px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-medium rounded-full transition-all shadow-lg shadow-purple-500/20"
+            className="mt-6 px-6 py-2.5 bg-gradient-to-r from-violet-500 to-violet-700 hover:from-violet-400 hover:to-violet-600 text-white font-medium rounded-full transition-all shadow-lg shadow-violet-500/25"
           >
             Añadir Propiedad
           </button>
         </motion.div>
       )}
 
-      {/* Main Grid: Row 1 - Ingresos + Propiedades + Métricas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Column 1: Ingresos Brutos + Decisiones IA */}
-        <div className="flex flex-col gap-6 h-full">
-          <div className="flex-1">
-            <GlassIncome
-              grossIncome={summary?.gross_income ?? null}
-              currency={currency}
-            />
-          </div>
-          {/* <div className="flex-1">
-            <GlassAiDecisions
-              onExplore={() => generateReport(selectedPropertyId)}
-            />
-          </div> */}
-        </div>
+      {/* Row 1: Tarjetas de estadísticas */}
+      <GlassStatCards
+        grossIncome={summary?.gross_income ?? null}
+        occupancyRate={summary?.occupancy_rate ?? null}
+        netProfit={summary?.net_profit ?? null}
+        totalExpenses={summary?.total_expenses ?? null}
+      />
 
-        {/* Column 2: Propiedades */}
-        <div className="min-h-[380px]">
-          <GlassProperties properties={properties} />
-        </div>
-
-        {/* Column 3: Métricas Clave */}
-        <div className="min-h-[380px]">
-          <GlassKeyMetrics
-            netProfit={summary?.net_profit ?? null}
-            occupancyRate={summary?.occupancy_rate ?? null}
-            totalExpenses={summary?.total_expenses ?? null}
+      {/* Row 2: Ingresos + Decisiones IA + Propiedades */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="min-h-[220px]">
+          <GlassIncome
+            grossIncome={summary?.gross_income ?? null}
+            currency={currency}
           />
+        </div>
+        <div className="min-h-[220px]">
+          <GlassAiDecisions
+            onExplore={() => generateReport(selectedPropertyId)}
+          />
+        </div>
+        <div className="min-h-[220px] lg:row-span-1">
+          <GlassProperties properties={properties} />
         </div>
       </div>
 
-      {/* Row 2: Rendimiento Portafolio (Full Width) */}
+      {/* Row 3: Rendimiento Portafolio (Full Width) */}
       <div className="h-[420px]">
-        <GlassPerformanceChart
-          chartData={chartData}
-          isLoading={isLoading}
-          selectedRange={performanceRange}
-          onRangeChange={setPerformanceRange}
-        />
+        <GlassPerformanceChart chartData={chartData} isLoading={isLoading} />
       </div>
 
       {/* AI Report Modal */}

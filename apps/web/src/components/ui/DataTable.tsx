@@ -17,12 +17,12 @@ interface DataTableProps<T> {
 
 export function DataTable<T>({ data, columns, isLoading, emptyMessage = "No hay datos disponibles." }: DataTableProps<T>) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-white/5 bg-obsidian-light/20 backdrop-blur-sm">
+    <div className="w-full overflow-x-auto rounded-xl border border-black/5 bg-white shadow-sm">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-white/5 bg-white/5">
+          <tr className="border-b border-black/5 bg-surface">
             {columns.map((col, idx) => (
-              <th key={idx} className="p-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <th key={idx} className="p-4 text-xs font-semibold text-ink-muted uppercase tracking-wider">
                 {col.header}
               </th>
             ))}
@@ -37,7 +37,7 @@ export function DataTable<T>({ data, columns, isLoading, emptyMessage = "No hay 
             </tr>
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="p-8 text-center text-slate-500 text-sm">
+              <td colSpan={columns.length} className="p-8 text-center text-ink-muted text-sm">
                 {emptyMessage}
               </td>
             </tr>
@@ -45,10 +45,10 @@ export function DataTable<T>({ data, columns, isLoading, emptyMessage = "No hay 
             data.map((item, rowIdx) => (
               <tr 
                 key={rowIdx} 
-                className="border-b border-white/5 hover:bg-white/5 transition-colors last:border-b-0 group"
+                className="border-b border-black/5 hover:bg-surface transition-colors last:border-b-0 group"
               >
                 {columns.map((col, colIdx) => (
-                  <td key={colIdx} className="p-4 text-sm text-slate-300">
+                  <td key={colIdx} className="p-4 text-sm text-ink/85">
                     {col.cell ? col.cell(item) : (item as any)[col.accessorKey]}
                   </td>
                 ))}

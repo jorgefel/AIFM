@@ -28,13 +28,13 @@ export function PropertyList({ properties, isLoading, onEdit, onDelete }: Proper
         <div className="flex items-center gap-2">
           <button 
             onClick={() => onEdit(item)}
-            className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors"
+            className="p-1.5 text-ink-muted hover:text-violet-600 hover:bg-violet-50 rounded-md transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button 
             onClick={() => onDelete(item.id)}
-            className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
+            className="p-1.5 text-ink-muted hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -49,11 +49,11 @@ export function PropertyList({ properties, isLoading, onEdit, onDelete }: Proper
       columns={columns} 
       isLoading={isLoading} 
       emptyMessage={
-        <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-            <Building2 className="w-8 h-8 text-slate-500" />
+        <div className="flex flex-col items-center justify-center py-12 text-ink-muted">
+          <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4">
+            <Building2 className="w-8 h-8 text-ink-muted" />
           </div>
-          <p className="text-lg font-medium text-slate-300 mb-1">Sin propiedades</p>
+          <p className="text-lg font-medium text-ink mb-1">Sin propiedades</p>
           <p className="text-sm max-w-sm mx-auto">No tienes propiedades registradas aún. Haz clic en "Nueva Propiedad" para comenzar.</p>
         </div>
       }

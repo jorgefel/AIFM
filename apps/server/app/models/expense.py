@@ -56,7 +56,7 @@ class Expense(Base, UUIDMixin, TimestampMixin):
 
     # ── Relaciones ───────────────────────────────────────────
     property: Mapped[Property] = relationship(
-        "Property", back_populates="expenses", lazy="raise"
+        "Property", back_populates="expenses", lazy="selectin"
     )
 
     def __repr__(self) -> str:

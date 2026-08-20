@@ -1,22 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta de Colores Luxe Ledger (Obsidian & Emerald) */
-  --color-obsidian: #0A0E17;
-  --color-obsidian-light: #121A2F;
-  --color-obsidian-lighter: #1E293B;
+  /* Paleta de Colores AIFM — Aurora (modo claro + acentos violeta/cian) */
+  --color-obsidian: #07080D;
+  --color-obsidian-light: #12131F;
+  --color-obsidian-lighter: #1E2033;
+  --color-violet-accent: #7C5CFC;
+  --color-violet-glow: #A78BFA;
+  --color-violet-deep: #5B3FE0;
+  --color-cyan-accent: #22D3EE;
+  --color-cyan-glow: #67E8F9;
+  --color-teal-accent: #2DD4BF;
+  --color-teal-glow: #5EEAD4;
+  /* Mantenido por compatibilidad; ya no es el acento principal de marca */
   --color-emerald-accent: #10B981;
   --color-emerald-glow: #34D399;
   --color-coral-accent: #F43F5E;
-  
-  --color-background: var(--color-obsidian);
-  --color-foreground: #E2E8F0; /* Slate 200 */
+
+  /* Superficie de la app en modo claro */
+  --color-surface: #F5F5FB;
+  --color-surface-alt: #EEEEF7;
+  --color-card: #FFFFFF;
+  --color-ink: #15131F;
+  --color-ink-muted: #6B6B7B;
+  --color-sidebar: #14121F;
+  --color-sidebar-light: #1E1B2E;
+
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-ink);
 }
 
 @layer base {
   :root {
-    --background: #0A0E17;
-    --foreground: #E2E8F0;
+    --background: #F5F5FB;
+    --foreground: #15131F;
   }
   
   body {
@@ -27,7 +44,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Scrollbar estético */
+  /* Scrollbar estético (modo claro) */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -36,86 +53,66 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1E293B;
+    background: #D9D9E8;
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #C2C2D6;
   }
 }
 
 @layer utilities {
-  /* Fondo radial global extraído de Resumen */
-  .bg-radial-glows {
-    background-color: #0A0A0F;
-    position: relative;
-    overflow: hidden;
-  }
-  .bg-radial-glows::before {
-    content: '';
-    position: absolute;
-    top: -10%; left: -10%; width: 40%; height: 40%;
-    border-radius: 50%;
-    background-color: rgba(147, 51, 234, 0.1);
-    filter: blur(150px);
-    pointer-events: none;
-  }
-  .bg-radial-glows::after {
-    content: '';
-    position: absolute;
-    bottom: -10%; right: -10%; width: 30%; height: 30%;
-    border-radius: 50%;
-    background-color: rgba(219, 39, 119, 0.1);
-    filter: blur(150px);
-    pointer-events: none;
-  }
-
-  /* Glassmorphism base con fallback */
+  /* Glassmorphism base (aún usado por páginas pendientes de migrar a modo claro) */
   .glass-panel {
-    background-color: rgba(18, 26, 47, 0.95);
+    background-color: rgba(18, 26, 47, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
   }
-  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
-    .glass-panel {
-      background-color: rgba(18, 26, 47, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-  }
 
-  /* Glassmorphism interactivo con fallback */
+  /* Glassmorphism interactivo (tarjetas que se pueden hacer click/hover) */
   .glass-panel-interactive {
-    background-color: rgba(18, 26, 47, 0.95);
+    background-color: rgba(18, 26, 47, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     @apply transition-all duration-300;
   }
-  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
-    .glass-panel-interactive {
-      background-color: rgba(18, 26, 47, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-  }
   .glass-panel-interactive:hover {
-    background-color: rgba(18, 26, 47, 0.98);
+    background-color: rgba(18, 26, 47, 0.85);
     border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.05);
-  }
-  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
-    .glass-panel-interactive:hover {
-      background-color: rgba(18, 26, 47, 0.85);
-    }
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(139, 92, 246, 0.08);
   }
 
+  /* Tarjeta blanca estilo mockup (modo claro) */
+  .card-surface {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(21, 19, 31, 0.06);
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 2px rgba(21, 19, 31, 0.04), 0 12px 24px -12px rgba(21, 19, 31, 0.08);
+    @apply transition-all duration-300;
+  }
+  .card-surface-interactive {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(21, 19, 31, 0.06);
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 2px rgba(21, 19, 31, 0.04), 0 12px 24px -12px rgba(21, 19, 31, 0.08);
+    @apply transition-all duration-300;
+  }
+  .card-surface-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1px 2px rgba(21, 19, 31, 0.04), 0 20px 32px -12px rgba(124, 92, 252, 0.18);
+    border-color: rgba(124, 92, 252, 0.25);
+  }
 
-  /* Gradiente para textos importantes (ej. Dinero, Títulos) */
+  /* Gradiente violeta -> cian para textos importantes (ej. cifras, títulos) */
   .text-gradient-emerald {
-    background: linear-gradient(to right, #34D399, #10B981);
+    background: linear-gradient(to right, #7C5CFC, #22D3EE);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -125,9 +122,9 @@
   .animate-shimmer {
     background: linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0.03) 100%
+      rgba(21, 19, 31, 0.03) 0%,
+      rgba(21, 19, 31, 0.07) 50%,
+      rgba(21, 19, 31, 0.03) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite linear;
@@ -141,6 +138,34 @@
       background-position: 200% 0;
     }
   }
+
+  /* Gradiente violeta -> cian de refuerzo (uso libre en la app) */
+  .text-gradient-aurora {
+    background: linear-gradient(to right, #7C5CFC, #22D3EE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Utilidad para altura segura en móviles (barras de navegación del navegador) */
+@supports (height: 100dvh) {
+  .h-screen-safe {
+    height: 100dvh;
+  }
+}
+@supports not (height: 100dvh) {
+  .h-screen-safe {
+    height: 100vh;
+  }
 }
 
 /* React Grid Layout Overrides */
@@ -148,7 +173,7 @@
   display: none !important;
 }
 .react-grid-item.react-grid-placeholder {
-  background: var(--color-emerald-accent) !important;
-  opacity: 0.1 !important;
+  background: var(--color-violet-accent) !important;
+  opacity: 0.15 !important;
   border-radius: 1rem !important;
 }

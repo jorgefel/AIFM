@@ -8,7 +8,7 @@ interface SkeletonProps {
 export function Skeleton({ className = "", style }: SkeletonProps) {
   return (
     <div
-      className={`animate-shimmer rounded-xl bg-white/5 ${className}`}
+      className={`animate-shimmer rounded-xl bg-black/[0.05] ${className}`}
       style={style}
     />
   );
@@ -16,7 +16,7 @@ export function Skeleton({ className = "", style }: SkeletonProps) {
 
 export function SkeletonCard() {
   return (
-    <div className="glass-panel p-6 space-y-4">
+    <div className="card-surface p-6 space-y-4">
       <div className="flex justify-between items-start">
         <Skeleton className="w-10 h-10 rounded-lg" />
       </div>
@@ -30,7 +30,7 @@ export function SkeletonCard() {
 
 export function SkeletonChart() {
   return (
-    <div className="glass-panel p-6 space-y-4 h-[400px] flex flex-col">
+    <div className="card-surface p-6 space-y-4 h-[400px] flex flex-col">
       <div className="flex justify-between">
         <Skeleton className="h-5 w-48" />
         <Skeleton className="h-4 w-32" />
@@ -46,7 +46,7 @@ export function SkeletonChart() {
 
 export function SkeletonList() {
   return (
-    <div className="glass-panel p-6 h-[400px] flex flex-col space-y-4">
+    <div className="card-surface p-6 h-[400px] flex flex-col space-y-4">
       <div className="flex justify-between">
         <Skeleton className="h-5 w-36" />
         <Skeleton className="h-4 w-16" />
@@ -67,10 +67,10 @@ export function SkeletonList() {
 
 export function SkeletonTable({ columns = 4, rows = 5 }: { columns?: number, rows?: number }) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-white/5 bg-obsidian-light/20 backdrop-blur-sm">
+    <div className="w-full overflow-x-auto rounded-xl border border-black/5 bg-white">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-white/5 bg-white/5">
+          <tr className="border-b border-black/5 bg-surface">
             {[...Array(columns)].map((_, i) => (
               <th key={i} className="p-4">
                 <Skeleton className="h-4 w-24" />
@@ -80,7 +80,7 @@ export function SkeletonTable({ columns = 4, rows = 5 }: { columns?: number, row
         </thead>
         <tbody>
           {[...Array(rows)].map((_, rowIdx) => (
-            <tr key={rowIdx} className="border-b border-white/5 last:border-b-0">
+            <tr key={rowIdx} className="border-b border-black/5 last:border-b-0">
               {[...Array(columns)].map((_, colIdx) => (
                 <td key={colIdx} className="p-4">
                   <Skeleton className="h-4 w-full max-w-[120px]" />

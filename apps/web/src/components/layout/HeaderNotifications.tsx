@@ -24,11 +24,11 @@ export function HeaderNotifications() {
     <div className="relative" ref={notifRef}>
       <button 
         onClick={() => setShowNotifications(!showNotifications)}
-        className="relative p-2 text-slate-400 hover:text-emerald-400 transition-colors"
+        className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-black/[0.06] text-ink-muted hover:text-violet-600 hover:border-violet-200 transition-colors"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-[18px] h-[18px]" />
         {notifications.length > 0 && (
-          <span className="absolute top-1 right-1 w-2 h-2 bg-coral-accent rounded-full border-2 border-obsidian" />
+          <span className="absolute top-2 right-2 w-2 h-2 bg-coral-accent rounded-full border-2 border-white" />
         )}
       </button>
 
@@ -39,24 +39,24 @@ export function HeaderNotifications() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="absolute right-0 top-full mt-2 w-80 bg-obsidian border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-80 bg-white border border-black/5 rounded-xl shadow-xl z-50 overflow-hidden"
           >
-            <div className="p-3 border-b border-white/5">
-              <h4 className="text-sm font-semibold text-white">Notificaciones</h4>
+            <div className="p-3 border-b border-black/5">
+              <h4 className="text-sm font-semibold text-ink">Notificaciones</h4>
             </div>
             <div className="max-h-72 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-6 text-center text-sm text-slate-500">
+                <div className="p-6 text-center text-sm text-ink-muted">
                   Sin alertas por ahora. ¡Todo bien! 🎉
                 </div>
               ) : (
                 notifications.map((notif) => (
-                  <div key={notif.id} className="p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0">
+                  <div key={notif.id} className="p-3 hover:bg-surface transition-colors border-b border-black/5 last:border-b-0">
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5 shrink-0">{notif.icon}</div>
                       <div>
-                        <p className="text-sm font-medium text-slate-200">{notif.title}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{notif.message}</p>
+                        <p className="text-sm font-medium text-ink">{notif.title}</p>
+                        <p className="text-xs text-ink-muted mt-0.5">{notif.message}</p>
                       </div>
                     </div>
                   </div>

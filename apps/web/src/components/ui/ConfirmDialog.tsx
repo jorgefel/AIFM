@@ -44,21 +44,21 @@ export function ConfirmDialog({
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className="fixed inset-0 flex items-center justify-center z-[95] p-4"
           >
-            <div className="w-full max-w-sm glass-panel p-6 relative">
+            <div className="w-full max-w-sm card-surface p-6 relative">
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
+                className="absolute top-4 right-4 text-ink-muted hover:text-ink transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
 
               <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mb-4 border border-red-500/20">
-                  <AlertTriangle className="w-7 h-7 text-red-400" />
+                <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mb-4 border border-red-100">
+                  <AlertTriangle className="w-7 h-7 text-red-500" />
                 </div>
 
-                <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-                <p className="text-sm text-slate-400 mb-6 max-w-xs">{message}</p>
+                <h3 className="text-lg font-bold text-ink mb-1">{title}</h3>
+                <p className="text-sm text-ink-muted mb-6 max-w-xs">{message}</p>
 
                 <div className="flex gap-3 w-full">
                   <Button

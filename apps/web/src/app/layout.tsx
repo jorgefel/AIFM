@@ -10,14 +10,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://aifmweb.vercel.app"),
-  title: {
-    default: "Resumen financiero | AIFM",
-    template: "%s | AIFM",
-  },
-  description: "Consulta el resumen financiero de tu portafolio de propiedades en AIFM.",
-  alternates: { canonical: "/" },
-  robots: { index: false, follow: false },
+  title: "AIFM | Airbnb Intelligent Finance & Management",
+  description: "Airbnb Intelligent Finance & Management",
 };
 
 import { AuthProvider } from "@/contexts/AuthContext";

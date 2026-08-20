@@ -1,6 +1,5 @@
 import uuid
-from typing import Literal
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Query
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -11,7 +10,7 @@ from app.models.user import User
 from app.models.property import Property
 from app.models.reservation import Reservation
 from app.models.expense import Expense
-from app.engine.golden_rule import calculate_daily_chart_data, calculate_monthly_summary, detect_discrepancies
+from app.engine.golden_rule import calculate_monthly_summary, detect_discrepancies
 from app.engine.deterministic_analyzer import generate_deterministic_analysis
 from app.schemas.analysis import MonthlySummary, AIInsightRequest, DashboardData
 from app.services.job_manager import create_job, update_job
@@ -93,7 +92,6 @@ async def get_dashboard_data(
     property_id: uuid.UUID,
     year: int,
     month: int,
-    range_: Literal["1m", "3m", "6m", "1y"] = Query(default="6m", alias="range"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -110,9 +108,8 @@ async def get_dashboard_data(
     summary = calculate_monthly_summary(reservations, expenses, year, month)
     
     # 2. Gráfico (6 meses)
-    months_by_range = {"1m": 1, "3m": 3, "6m": 6, "1y": 12}
     chart_data = []
-    for i in range(months_by_range[range_] - 1, -1, -1):
+    for i in range(5, -1, -1):
         # Lógica para restar meses
         m = month - i
         y = year
@@ -128,9 +125,6 @@ async def get_dashboard_data(
             calc_m = calculate_monthly_summary(reservations, expenses, y, m)
             await set_cached_summary(property_id, y, m, calc_m)
             chart_data.append(calc_m)
-
-    if range_ == "1m":
-        chart_data = calculate_daily_chart_data(reservations, expenses, year, month)
             
     # 3. Actividad reciente (top 5 más recientes)
     from datetime import date
