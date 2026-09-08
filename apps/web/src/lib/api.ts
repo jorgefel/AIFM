@@ -27,7 +27,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-const shouldAttemptRefresh = (originalRequest: { url?: string }) => {
+const shouldAttemptRefresh = () => {
   if (!hasSessionHint()) {
     return false;
   }
@@ -48,8 +48,7 @@ api.interceptors.response.use(
       originalRequest &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/login") &&
-      !originalRequest.url?.includes("/auth/refresh") &&
-      shouldAttemptRefresh(originalRequest)
+      shouldAttemptRefresh()
     ) {
       if (isRefreshing) {
         // Encolar peticiones mientras se hace el refresh

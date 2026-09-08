@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { QueryProvider } from "@/contexts/QueryProvider";
 
 export default function RootLayout({
   children,
@@ -32,13 +33,15 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${outfit.variable}`}>
       <body className="antialiased min-h-screen">
-        <AuthProvider>
-          <CurrencyProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </CurrencyProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <CurrencyProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </CurrencyProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

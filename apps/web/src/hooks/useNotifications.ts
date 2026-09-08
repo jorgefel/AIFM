@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
-import { PROPERTIES_SWR_KEY } from "./useProperties";
+import { PROPERTIES_QUERY_KEY } from "./useProperties";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import React from "react";
 
@@ -18,12 +18,12 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { formatCurrency } = useCurrency();
 
-  // Properties via SWR (shared cache, no duplicate request)
-  const { data: properties = [] } = useSWR<any[]>(
-    PROPERTIES_SWR_KEY,
-    fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 10000 }
-  );
+  // Properties via React Query
+  const { data: properties = [] } = useQuery<any[]>({
+    queryKey: PROPERTIES_QUERY_KEY,
+    queryFn: () => fetcher("/properties/"),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
   useEffect(() => {
     if (properties.length === 0) return;
@@ -76,4 +76,3 @@ export function useNotifications() {
 
   return { notifications };
 }
-

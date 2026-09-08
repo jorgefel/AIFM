@@ -14,7 +14,6 @@ import { useAIReport } from "@/hooks/useAIReport";
 import { GlassIncome } from "@/components/dashboard/glass/GlassIncome";
 import { GlassProperties } from "@/components/dashboard/glass/GlassProperties";
 import { GlassKeyMetrics } from "@/components/dashboard/glass/GlassKeyMetrics";
-import { GlassAiDecisions } from "@/components/dashboard/glass/GlassAiDecisions";
 import { GlassPerformanceChart } from "@/components/dashboard/glass/GlassPerformanceChart";
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
 
@@ -35,8 +34,7 @@ export default function Home() {
     setIsReportModalOpen,
     reportState,
     reportResult,
-    reportError,
-    generateReport
+    reportError
   } = useAIReport();
 
   const firstName = user?.full_name?.split(" ")[0] || "Usuario";

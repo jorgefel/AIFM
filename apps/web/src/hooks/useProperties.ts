@@ -1,25 +1,23 @@
 import { useState } from "react";
-import useSWR from "swr";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { useToast } from "@/contexts/ToastContext";
 import { Property } from "@/types/models";
 
 /**
- * SWR key for properties — exported so other hooks can revalidate
+ * React Query key for properties — exported so other hooks can revalidate
  * without importing the full hook.
  */
-export const PROPERTIES_SWR_KEY = "/properties/";
+export const PROPERTIES_QUERY_KEY = ["properties"];
 
 export function useProperties() {
-  const { data: properties = [], isLoading, mutate } = useSWR<Property[]>(
-    PROPERTIES_SWR_KEY,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 10000, // 10s — deduplicates across all components
-    }
-  );
+  const queryClient = useQueryClient();
+  const { data: properties = [], isLoading } = useQuery<Property[]>({
+    queryKey: PROPERTIES_QUERY_KEY,
+    queryFn: () => fetcher("/properties/"),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +40,7 @@ export function useProperties() {
         toast.success("Propiedad creada", "La propiedad se registró correctamente.");
       }
       setIsModalOpen(false);
-      mutate(); // Revalidate the SWR cache
+      queryClient.invalidateQueries({ queryKey: PROPERTIES_QUERY_KEY }); // Revalidate cache
     } catch {
       toast.error("Error", "No se pudo guardar la propiedad.");
     } finally {
@@ -55,7 +53,7 @@ export function useProperties() {
     try {
       await api.delete(`/properties/${deleteTarget}`);
       toast.success("Propiedad eliminada", "La propiedad fue eliminada correctamente.");
-      mutate(); // Revalidate the SWR cache
+      queryClient.invalidateQueries({ queryKey: PROPERTIES_QUERY_KEY }); // Revalidate cache
     } catch {
       toast.error("Error", "No se pudo eliminar la propiedad.");
     } finally {

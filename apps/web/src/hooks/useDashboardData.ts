@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { fetcher } from "@/lib/fetcher";
-import { PROPERTIES_SWR_KEY } from "./useProperties";
+import { PROPERTIES_QUERY_KEY } from "./useProperties";
 
 export type PerformanceRange = "1M" | "3M" | "6M" | "1A";
 
@@ -13,12 +13,12 @@ const performanceRangeParam: Record<PerformanceRange, "1m" | "3m" | "6m" | "1y">
 };
 
 export function useDashboardData(performanceRange: PerformanceRange = "6M") {
-  // ── Properties via SWR (shared with useProperties, single request) ──
-  const { data: properties = [] } = useSWR<any[]>(
-    PROPERTIES_SWR_KEY,
-    fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 10000 }
-  );
+  // ── Properties via React Query (shared with useProperties, single request) ──
+  const { data: properties = [] } = useQuery<any[]>({
+    queryKey: PROPERTIES_QUERY_KEY,
+    queryFn: () => fetcher("/properties/"),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
 
@@ -38,20 +38,18 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     };
   }, []);
 
-  // ── Consolidated Dashboard Data via SWR ──
+  // ── Consolidated Dashboard Data via React Query ──
   // One single endpoint to fetch summary, chart data, and recent activity
-  const dashboardKey = selectedPropertyId
+  const dashboardPath = selectedPropertyId
     ? `/analysis/dashboard?property_id=${selectedPropertyId}&year=${dateParams.currentYear}&month=${dateParams.currentMonth}&range=${performanceRangeParam[performanceRange]}`
     : null;
 
-  const { data: dashboardData = null, isLoading: isDashboardLoading } = useSWR(
-    dashboardKey,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 30000, // 30s
-    }
-  );
+  const { data: dashboardData = null, isLoading: isDashboardLoading } = useQuery({
+    queryKey: ["dashboard", selectedPropertyId, dateParams.currentYear, dateParams.currentMonth, performanceRange],
+    queryFn: () => fetcher(dashboardPath!),
+    enabled: !!dashboardPath,
+    staleTime: 1000 * 30, // 30 seconds
+  });
 
   const summary = dashboardData?.summary || null;
   
@@ -60,8 +58,6 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     if (!dashboardData?.chart_data) return [];
     
     // The backend returns it in chronological order from oldest to newest
-    // assuming the loop generated 5 months ago first, ending with current month.
-    // Wait, the backend loop goes `for i in range(5, -1, -1)`, which means it appends oldest first.
     return dashboardData.chart_data.map((m: any) => {
       if (m.day != null) {
         const date = new Date(m.year, m.month - 1, m.day);

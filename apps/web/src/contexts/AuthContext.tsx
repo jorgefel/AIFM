@@ -3,8 +3,6 @@
 import React, {
   createContext,
   useContext,
-  useState,
-  useEffect,
   useCallback,
   useMemo,
   ReactNode,
@@ -17,6 +15,7 @@ import {
   setSessionHint,
 } from "@/lib/session";
 import { useRouter } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface User {
   id: string;
@@ -37,37 +36,35 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return !(isPublicAuthRoute() && !hasSessionHint());
-  });
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const isPublic = typeof window !== "undefined" ? isPublicAuthRoute() : true;
+  const hasHint = typeof window !== "undefined" ? hasSessionHint() : false;
+  const shouldFetch = !isPublic && hasHint;
+
+  const { data: user = null, isLoading: isQueryLoading, refetch } = useQuery<User | null>({
+    queryKey: ["me"],
+    queryFn: async () => {
+      try {
+        const response = await api.get("/users/me");
+        setSessionHint();
+        return response.data;
+      } catch {
+        clearSessionHint();
+        return null;
+      }
+    },
+    enabled: shouldFetch,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false,
+  });
+
+  const isLoading = shouldFetch ? isQueryLoading : false;
 
   const checkAuth = useCallback(async () => {
-    try {
-      const response = await api.get("/users/me");
-      setUser(response.data);
-      setSessionHint();
-    } catch {
-      setUser(null);
-      clearSessionHint();
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const onPublicRoute = isPublicAuthRoute();
-    const sessionHint = hasSessionHint();
-
-    if (onPublicRoute && !sessionHint) {
-      setIsLoading(false);
-      return;
-    }
-
-    checkAuth();
-  }, [checkAuth]);
+    await refetch();
+  }, [refetch]);
 
   const login = useCallback(
     async (credentials: any) => {
@@ -76,20 +73,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password: credentials.password,
       });
       setSessionHint();
-      await checkAuth();
+      await refetch();
       router.push("/");
     },
-    [checkAuth, router]
+    [refetch, router]
   );
 
   const registerUser = useCallback(
     async (data: any) => {
       await api.post("/auth/register", data);
       setSessionHint();
-      await checkAuth();
+      await refetch();
       router.push("/");
     },
-    [checkAuth, router]
+    [refetch, router]
   );
 
   const logout = useCallback(async () => {
@@ -99,10 +96,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Logout failed:", error);
     } finally {
       clearSessionHint();
-      setUser(null);
+      queryClient.setQueryData(["me"], null);
+      queryClient.clear(); // Clear all cached queries on logout
       router.push("/login");
     }
-  }, [router]);
+  }, [router, queryClient]);
 
   const value = useMemo(
     () => ({ user, isLoading, login, registerUser, logout, checkAuth }),

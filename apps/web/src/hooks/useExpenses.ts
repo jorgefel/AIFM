@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
-import useSWR, { mutate } from "swr";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
-import { PROPERTIES_SWR_KEY } from "./useProperties";
+import { PROPERTIES_QUERY_KEY } from "./useProperties";
 import { useToast } from "@/contexts/ToastContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 import { Property, Expense } from "@/types/models";
 
 export function useExpenses() {
-  const { data: properties = [] } = useSWR<Property[]>(
-    PROPERTIES_SWR_KEY,
-    fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 10000 }
-  );
+  const queryClient = useQueryClient();
+  const { data: properties = [] } = useQuery<Property[]>({
+    queryKey: PROPERTIES_QUERY_KEY,
+    queryFn: () => fetcher("/properties/"),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,19 +38,15 @@ export function useExpenses() {
     }
   }, [properties, selectedPropertyId]);
 
-  // ── Expenses via SWR (cached + deduplicated) ──
-  const expensesKey = selectedPropertyId
-    ? `/expenses/?property_id=${selectedPropertyId}`
-    : null;
+  // ── Expenses via React Query ──
+  const expensesKey = ["expenses", selectedPropertyId];
 
-  const { data: expenses = [], isLoading } = useSWR<Expense[]>(
-    expensesKey,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 10000,
-    }
-  );
+  const { data: expenses = [], isLoading } = useQuery<Expense[]>({
+    queryKey: expensesKey,
+    queryFn: () => fetcher(`/expenses/?property_id=${selectedPropertyId}`),
+    enabled: !!selectedPropertyId,
+    staleTime: 0, // No cache for agent action dependencies
+  });
 
   const handleUploadReceipt = async (expenseId: string, file: File) => {
     const fd = new FormData();
@@ -82,8 +79,9 @@ export function useExpenses() {
       }
 
       toast.success(editingId ? "Gasto actualizado" : "Gasto registrado", "El gasto se guardó correctamente.");
-      // Revalidate the SWR cache
-      mutate(expensesKey);
+      // Revalidate cache
+      queryClient.invalidateQueries({ queryKey: expensesKey });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       return true;
     } catch {
       toast.error("Error", "No se pudo guardar el gasto.");
@@ -97,7 +95,8 @@ export function useExpenses() {
     try {
       await api.delete(`/expenses/${id}`);
       toast.success("Gasto eliminado", "El gasto fue eliminado correctamente.");
-      mutate(expensesKey);
+      queryClient.invalidateQueries({ queryKey: expensesKey });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       return true;
     } catch {
       toast.error("Error", "No se pudo eliminar el gasto.");
@@ -141,4 +140,3 @@ export function useExpenses() {
     loadForm
   };
 }
-

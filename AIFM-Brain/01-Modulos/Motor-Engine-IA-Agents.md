@@ -14,14 +14,16 @@ En progreso
 
 ## Detalles Técnicos
 - **Archivos Clave:** 
-  - `apps/server/app/engine/golden_rule.py`
+  - `apps/server/app/engine/golden_rule.py` (y sus tests `apps/server/tests/api/test_analysis_dashboard.py`)
   - `apps/server/app/engine/deterministic_analyzer.py`
   - `apps/server/app/agents/financial_advisor.py`
-- **Dependencias Principales:** langchain_openai, langchain_core
+  - `apps/server/app/services/job_manager.py` (Manejador de trabajos asíncronos con Redis Pipelines)
+- **Dependencias Principales:** langchain_openai, langchain_core, redis
 - **Endpoints / Funciones:** 
   - /analysis endpoints
   - `calculate_monthly_summary`
   - `run_financial_analysis`
+  - `update_job` (con Pipelines de Redis para evitar condiciones de carrera)
 
 ## Enlaces
 - Profundiza en el motor matemático: [[02-Motor-Financiero|Motor Financiero]]

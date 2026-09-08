@@ -16,8 +16,10 @@ En progreso
 - **Archivos Clave:** 
   - `apps/web/package.json`
   - `apps/web/src/`
-- **Dependencias Principales:** next, react, tailwindcss, framer-motion, recharts, swr
-- **Endpoints / Funciones:** Renderizado de UI y dashboards (configuración de layouts con react-grid-layout)
+  - `apps/web/src/contexts/QueryProvider.tsx` (Proveedor global de React Query)
+  - Metadatos SEO: `metadata.ts`, `sitemap.ts`, `robots.ts`, `opengraph-image.tsx`
+- **Dependencias Principales:** next, react, tailwindcss, framer-motion, recharts, @tanstack/react-query
+- **Endpoints / Funciones:** Renderizado de UI y dashboards (configuración de layouts con react-grid-layout). Gestión de estado remoto y caché mediante React Query. Mejoras recientes en SEO y metadatos dinámicos.
 
 ## Enlaces
 - Volver a [[00-Overview|Overview]]

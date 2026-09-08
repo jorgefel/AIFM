@@ -56,7 +56,11 @@ async def update_job(
         error: mensaje de error (cuando status='failed')
     """
     key = f"{_JOB_KEY_PREFIX}{job_id}"
-    raw = await redis_client.get(key)
+    pipe = redis_client.pipeline()
+    pipe.get(key)
+    pipe.ttl(key)
+    raw, ttl = await pipe.execute()
+    
     if raw is None:
         return
 
@@ -69,7 +73,6 @@ async def update_job(
     if error is not None:
         job_data["error"] = error
 
-    ttl = await redis_client.ttl(key)
     if ttl > 0:
         await redis_client.setex(key, ttl, json.dumps(job_data))
     else:

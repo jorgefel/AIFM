@@ -11,19 +11,20 @@ tags: [moc, arquitectura, overview]
 - **Fecha Generación**: 2026-08-12
 
 ## Arquitectura
-- **Stack Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS 4, Framer Motion, Recharts, Lucide React, Three.js, SWR
+- **Stack Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS 4, Framer Motion, Recharts, Lucide React, Three.js, React Query (@tanstack/react-query)
 - **Stack Backend**: FastAPI (Python 3.12), SQLAlchemy, Alembic, LangGraph / LangChain, OpenAI API, Redis 7, bcrypt, jwt
 - **Base de Datos**: PostgreSQL 16 (con Prisma para Node.js y SQLAlchemy para Python)
-- **Infraestructura y Deploy**: Vercel (Frontend), Render/Railway/Supabase (Backend), Docker Compose para desarrollo local (postgres, redis, pgadmin).
+- **Infraestructura y Deploy**: Vercel (Frontend), Render/Railway/Supabase (Backend), Cloudflare Workers (Edge Cache), Docker Compose para desarrollo local.
 
 ## Diagrama de Flujo
-Cliente Web (Next.js) se comunica vía HTTP REST a la API FastAPI. Los requests pasan por Middleware de Autenticación y llegan a Controladores. Los controladores consultan la BD PostgreSQL (vía SQLAlchemy) y Redis para Rate Limiting. Para el análisis, el Motor Determinista genera los cálculos fijos ([[10-Glosario#Regla de Oro|Regla de Oro]]), y luego el Agente IA consume estos datos vía OpenAI API para generar recomendaciones, sin modificar datos en BD.
+Cliente Web (Next.js) se comunica vía HTTP REST. Peticiones de lectura frecuentes (ej. propiedades, usuario actual) pasan primero por el Edge Cache Worker (Cloudflare), el cual valida el JWT y sirve respuestas cacheadas. Las peticiones que llegan a la API FastAPI pasan por Middleware de Autenticación y llegan a Controladores. Los controladores consultan la BD PostgreSQL (vía SQLAlchemy) y Redis para Rate Limiting. Para el análisis, el Motor Determinista genera los cálculos fijos ([[10-Glosario#Regla de Oro|Regla de Oro]]), y luego el Agente IA consume estos datos vía OpenAI API para generar recomendaciones.
 
 ## Índice del Proyecto
 - [[01-Modulos/Frontend-Web|Frontend Web]]
 - [[01-Modulos/Auth-Users|Auth & Users]]
 - [[01-Modulos/Gestion-Core|Gestión Core: Properties, Reservations, Expenses]]
 - [[01-Modulos/Motor-Engine-IA-Agents|Motor Engine & IA Agents]]
+- [[01-Modulos/Edge-Cache-Worker|Edge Cache Worker]]
 - [[02-Motor-Financiero|Motor Financiero]]
 - [[03-Agentes-IA|Agentes IA]]
 - [[04-Seguridad|Seguridad]]

@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
-import useSWR, { mutate } from "swr";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
-import { PROPERTIES_SWR_KEY } from "./useProperties";
+import { PROPERTIES_QUERY_KEY } from "./useProperties";
 import { useToast } from "@/contexts/ToastContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 import { Property, Reservation } from "@/types/models";
 
 export function useIncome() {
-  const { data: properties = [] } = useSWR<Property[]>(
-    PROPERTIES_SWR_KEY,
-    fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 10000 }
-  );
+  const queryClient = useQueryClient();
+  const { data: properties = [] } = useQuery<Property[]>({
+    queryKey: PROPERTIES_QUERY_KEY,
+    queryFn: () => fetcher("/properties/"),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,19 +39,15 @@ export function useIncome() {
     }
   }, [properties, selectedPropertyId]);
 
-  // ── Reservations via SWR (cached + deduplicated) ──
-  const reservationsKey = selectedPropertyId
-    ? `/reservations/?property_id=${selectedPropertyId}`
-    : null;
+  // ── Reservations via React Query ──
+  const reservationsKey = ["reservations", selectedPropertyId];
 
-  const { data: reservations = [], isLoading } = useSWR<Reservation[]>(
-    reservationsKey,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 10000,
-    }
-  );
+  const { data: reservations = [], isLoading } = useQuery<Reservation[]>({
+    queryKey: reservationsKey,
+    queryFn: () => fetcher(`/reservations/?property_id=${selectedPropertyId}`),
+    enabled: !!selectedPropertyId,
+    staleTime: 0, // No cache for reservation status endpoints as requested
+  });
 
   const submitReservation = async (editingId: string | null) => {
     setIsSubmitting(true);
@@ -69,8 +66,9 @@ export function useIncome() {
       }
       
       toast.success(editingId ? "Reserva actualizada" : "Reserva registrada", "La reserva se guardó correctamente.");
-      // Revalidate the SWR cache
-      mutate(reservationsKey);
+      // Revalidate cache
+      queryClient.invalidateQueries({ queryKey: reservationsKey });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       return true;
     } catch {
       toast.error("Error", "No se pudo guardar la reserva.");
@@ -84,7 +82,8 @@ export function useIncome() {
     try {
       await api.delete(`/reservations/${id}`);
       toast.success("Reserva cancelada", "La reserva fue eliminada correctamente.");
-      mutate(reservationsKey);
+      queryClient.invalidateQueries({ queryKey: reservationsKey });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       return true;
     } catch {
       toast.error("Error", "No se pudo eliminar la reserva.");
@@ -131,4 +130,3 @@ export function useIncome() {
     loadForm
   };
 }
-
