@@ -1,6 +1,6 @@
-# AIFM
+# Nomora
 
-> AIFM es una aplicación privada para gestionar finanzas, reservas y rentabilidad de propiedades de alquiler.
+> Nomora es una aplicación privada para gestionar finanzas, reservas y rentabilidad de propiedades de alquiler.
 
 ## Acceso público
 

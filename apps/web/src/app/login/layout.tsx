@@ -3,7 +3,7 @@ import { createPageMetadata } from "../metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Iniciar sesión",
-  description: "Accede a AIFM para gestionar las finanzas y el rendimiento de tus alojamientos.",
+  description: "Accede a Nomora para gestionar las finanzas y el rendimiento de tus alojamientos.",
   path: "/login",
   isPublic: true,
 });

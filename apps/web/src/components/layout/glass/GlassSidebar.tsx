@@ -8,7 +8,6 @@ import {
   Building2, 
   BarChart3, 
   Settings,
-  Calculator,
   Hexagon
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -19,7 +18,6 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
-  { name: "Calculadora ROI", href: "/roi", icon: Calculator },
 ];
 
 interface GlassSidebarProps {
@@ -36,7 +34,7 @@ export function GlassSidebar({ onClose }: GlassSidebarProps = {}) {
         <div className="flex items-center gap-3">
           <Hexagon className="w-8 h-8 text-white" />
           <span className="text-xl font-bold tracking-wide text-white">
-            AIFM
+            Nomora
           </span>
         </div>
       </div>

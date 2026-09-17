@@ -3,7 +3,7 @@ import { createPageMetadata } from "../metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Crear cuenta",
-  description: "Crea una cuenta en AIFM y empieza a gestionar tus propiedades de alquiler.",
+  description: "Crea una cuenta en Nomora y empieza a gestionar tus propiedades de alquiler.",
   path: "/register",
   isPublic: true,
 });

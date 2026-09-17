@@ -5,8 +5,7 @@ import {
   ReceiptText, 
   Building2, 
   BarChart3, 
-  Settings,
-  Calculator
+  Settings
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -15,7 +14,6 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
-  { name: "Calculadora ROI", href: "/roi", icon: Calculator },
 ];
 
 import { usePathname } from "next/navigation";
@@ -36,7 +34,7 @@ export function Sidebar({ onClose }: SidebarProps = {}) {
             <span className="text-obsidian font-extrabold text-xs leading-none tracking-tighter">AI</span>
           </div>
           <span className="text-xl font-bold tracking-wide text-white">
-            AI<span className="text-emerald-400">FM</span>
+            Nomora
           </span>
         </div>
       </div>

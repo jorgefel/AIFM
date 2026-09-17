@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { DollarSign, Eye, EyeOff } from "lucide-react";
+import { Hexagon, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import Link from "next/link";
@@ -76,7 +76,7 @@ export default function RegisterPage() {
           className="flex justify-center mb-8"
         >
           <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30 flex items-center justify-center text-purple-400">
-            <DollarSign className="w-6 h-6" />
+            <Hexagon className="w-6 h-6" />
           </div>
         </motion.div>
 
@@ -85,7 +85,7 @@ export default function RegisterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <h1 className="text-2xl font-bold text-center text-white mb-2">Crear Cuenta</h1>
+          <h1 className="text-2xl font-bold text-center text-white mb-2">Crear tu cuenta en Nomora</h1>
           <p className="text-center text-slate-400 mb-8">Regístrate para empezar a administrar tus propiedades</p>
         </motion.div>
 

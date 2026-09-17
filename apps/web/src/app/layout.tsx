@@ -10,12 +10,12 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://aifmweb.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://nomora.vercel.app"),
   title: {
-    default: "Resumen financiero | AIFM",
-    template: "%s | AIFM",
+    default: "Resumen financiero | Nomora",
+    template: "%s | Nomora",
   },
-  description: "Consulta el resumen financiero de tu portafolio de propiedades en AIFM.",
+  description: "Consulta el resumen financiero de tu portafolio de propiedades en Nomora.",
   alternates: { canonical: "/" },
   robots: { index: false, follow: false },
 };

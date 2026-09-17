@@ -19,7 +19,6 @@ import {
   ChevronDown,
   CircleDollarSign,
   Clock3,
-  Compass,
   CreditCard,
   Home,
   LayoutDashboard,
@@ -46,7 +45,6 @@ const navigation = [
   { label: "Ingresos", href: "/income", icon: WalletCards },
   { label: "Gastos", href: "/expenses", icon: ReceiptText },
   { label: "Reportes", href: "/reports", icon: BarChart3 },
-  { label: "Calculadora ROI", href: "/roi", icon: Compass },
 ];
 
 const rangeOptions: { label: string; value: PerformanceRange }[] = [
@@ -169,7 +167,7 @@ export function ReferenceDashboard() {
         <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ""}`}>
           <div className={styles.brand}>
             <div className={styles.brandMark}><Sparkles aria-hidden="true" /></div>
-            <span>AIFM</span>
+            <span>Nomora</span>
             <button className={styles.mobileClose} onClick={() => setMobileNavOpen(false)} aria-label="Cerrar menú">
               <X />
             </button>
@@ -245,15 +243,15 @@ export function ReferenceDashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartValues} margin={{ top: 12, right: 8, left: -22, bottom: 0 }}>
                       <defs>
-                        <linearGradient id="aifm-income-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="5%" stopColor="#6d45ec" stopOpacity={0.25} /><stop offset="95%" stopColor="#6d45ec" stopOpacity={0} /></linearGradient>
-                        <linearGradient id="aifm-expense-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="5%" stopColor="#f7a95a" stopOpacity={0.15} /><stop offset="95%" stopColor="#f7a95a" stopOpacity={0} /></linearGradient>
+                        <linearGradient id="nomora-income-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="5%" stopColor="#6d45ec" stopOpacity={0.25} /><stop offset="95%" stopColor="#6d45ec" stopOpacity={0} /></linearGradient>
+                        <linearGradient id="nomora-expense-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="5%" stopColor="#f7a95a" stopOpacity={0.15} /><stop offset="95%" stopColor="#f7a95a" stopOpacity={0} /></linearGradient>
                       </defs>
                       <CartesianGrid vertical={false} stroke="#eef0f5" strokeDasharray="3 4" />
                       <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: "#8d91a1", fontSize: 11 }} />
                       <YAxis tickLine={false} axisLine={false} tick={{ fill: "#8d91a1", fontSize: 11 }} width={42} tickFormatter={(value) => value === 0 ? "0" : `${Math.round(value / 1000)}k`} />
                       <Tooltip formatter={(value) => money(Number(value ?? 0), selectedCurrency)} labelStyle={{ color: "#252532" }} contentStyle={{ border: "1px solid #ebedf3", borderRadius: 12, boxShadow: "0 12px 28px rgba(32, 33, 52, .12)" }} />
-                      <Area type="monotone" dataKey="Ingresos" stroke="#6d45ec" strokeWidth={2.5} fill="url(#aifm-income-fill)" />
-                      <Area type="monotone" dataKey="Gastos" stroke="#f7a95a" strokeWidth={2} fill="url(#aifm-expense-fill)" />
+                      <Area type="monotone" dataKey="Ingresos" stroke="#6d45ec" strokeWidth={2.5} fill="url(#nomora-income-fill)" />
+                      <Area type="monotone" dataKey="Gastos" stroke="#f7a95a" strokeWidth={2} fill="url(#nomora-expense-fill)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -279,7 +277,7 @@ export function ReferenceDashboard() {
               )}
             </section>
 
-            <footer className={styles.footer}><span><Clock3 aria-hidden="true" /> Datos actualizados al cargar esta vista</span><span>AIFM · Gestión inmobiliaria inteligente</span></footer>
+            <footer className={styles.footer}><span><Clock3 aria-hidden="true" /> Datos actualizados al cargar esta vista</span><span>Nomora · Gestión inmobiliaria inteligente</span></footer>
           </section>
         </main>
       </div>
