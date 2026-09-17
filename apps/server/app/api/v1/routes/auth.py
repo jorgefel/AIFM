@@ -138,7 +138,9 @@ async def _complete_oauth_callback(
 
     try:
         nonce = verify_signed_state(state, provider)
-        stored_state = await redis_client.getdel(f"oauth_state:{nonce}")
+        stored_state = await redis_client.get(f"oauth_state:{nonce}")
+        if stored_state:
+            await redis_client.delete(f"oauth_state:{nonce}")
     except OAuthError as error:
         raise HTTPException(status_code=400, detail="Invalid OAuth state.") from error
     except Exception as error:
