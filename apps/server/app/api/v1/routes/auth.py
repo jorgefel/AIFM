@@ -138,13 +138,7 @@ async def _complete_oauth_callback(
 
     try:
         nonce = verify_signed_state(state, provider)
-        stored_state = await redis_client.eval(
-            "local value = redis.call('GET', KEYS[1]); "
-            "if value then redis.call('DEL', KEYS[1]); end; "
-            "return value",
-            1,
-            f"oauth_state:{nonce}",
-        )
+        stored_state = await redis_client.getdel(f"oauth_state:{nonce}")
     except OAuthError as error:
         raise HTTPException(status_code=400, detail="Invalid OAuth state.") from error
     except Exception as error:
@@ -156,7 +150,7 @@ async def _complete_oauth_callback(
     try:
         identity = await identity_from_code(provider, code or "")
     except OAuthError as error:
-        raise HTTPException(status_code=400, detail="OAuth authentication failed.") from error
+        raise HTTPException(status_code=400, detail=f"OAuth authentication failed: {str(error)}") from error
 
     user = await _get_or_create_oauth_user(identity, db)
     access_token = create_access_token(subject=str(user.id))
@@ -208,10 +202,13 @@ async def apple_callback(request: Request, db: AsyncSession = Depends(get_db)) -
         params = await request.form()
     else:
         params = request.query_params
+    code = params.get("code")
+    state = params.get("state")
+
     return await _complete_oauth_callback(
         "apple",
-        params.get("code"),
-        params.get("state"),
+        code if isinstance(code, str) else None,
+        state if isinstance(state, str) else None,
         request,
         db,
     )
