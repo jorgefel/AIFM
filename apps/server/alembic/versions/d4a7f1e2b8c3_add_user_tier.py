@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.add_column(
         "users",
-        sa.Column("tier", sa.String(length=20), nullable=False, server_default="free"),
+        sa.Column("tier", sa.String(length=10), nullable=False, server_default="free"),
     )
 
 

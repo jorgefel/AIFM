@@ -35,7 +35,7 @@ class User(Base, UUIDMixin, TimestampMixin):
         Boolean, nullable=False, default=True  # Soft delete
     )
     tier: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="free"  # "free" | "pro"
+        String(10), nullable=False, default="free"  # "free" | "pro"
     )
 
     # ── Relaciones ───────────────────────────────────────────

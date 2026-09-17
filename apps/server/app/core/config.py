@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
@@ -35,6 +36,18 @@ class Settings(BaseSettings):
     AI_MODEL: str = "gpt-4o-mini"
     AI_USER_DAILY_LIMIT: int = 50
     AI_GLOBAL_DAILY_LIMIT: int = 500
+
+    @model_validator(mode="after")
+    def reject_default_secret_in_production(self) -> "Settings":
+        """Prevent an application instance from starting with an unsafe JWT key."""
+        if (
+            self.APP_ENV.strip().lower() == "production"
+            and self.SECRET_KEY == "change-me-in-production"
+        ):
+            raise ValueError(
+                "SECRET_KEY must be overridden when APP_ENV is production"
+            )
+        return self
 
 
 settings = Settings()

@@ -1,5 +1,5 @@
 # docker-compose.yml
-# Infraestructura local de desarrollo para AIFM
+# Infraestructura local de desarrollo para Nomora
 # Servicios: PostgreSQL 16 + Redis 7 + pgAdmin 4
 #
 # Uso:
@@ -13,19 +13,19 @@ services:
   # ─────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
-    container_name: aifm_postgres
+    container_name: nomora_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: aifm_user
-      POSTGRES_PASSWORD: aifm_pass
-      POSTGRES_DB: aifm_db
+      POSTGRES_USER: nomora_user
+      POSTGRES_PASSWORD: nomora_pass
+      POSTGRES_DB: nomora_db
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aifm_user -d aifm_db"]
+      test: ["CMD-SHELL", "pg_isready -U nomora_user -d nomora_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,15 +35,15 @@ services:
   # ─────────────────────────────────────────
   redis:
     image: redis:7-alpine
-    container_name: aifm_redis
+    container_name: nomora_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes --requirepass aifm_redis_pass
+    command: redis-server --appendonly yes --requirepass nomora_redis_pass
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "aifm_redis_pass", "ping"]
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "nomora_redis_pass", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,10 +54,10 @@ services:
   # ─────────────────────────────────────────
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: aifm_pgadmin
+    container_name: nomora_pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@aifm.dev
+      PGADMIN_DEFAULT_EMAIL: admin@nomora.dev
       PGADMIN_DEFAULT_PASSWORD: admin123
       PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
@@ -70,12 +70,12 @@ services:
 
 volumes:
   postgres_data:
-    name: aifm_postgres_data
+    name: nomora_postgres_data
   redis_data:
-    name: aifm_redis_data
+    name: nomora_redis_data
   pgadmin_data:
-    name: aifm_pgadmin_data
+    name: nomora_pgadmin_data
 
 networks:
   default:
-    name: aifm_network
+    name: nomora_network
