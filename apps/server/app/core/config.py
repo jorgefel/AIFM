@@ -17,13 +17,13 @@ class Settings(BaseSettings):
 
     # ── Base de datos PostgreSQL ─────────────────────────────
     DATABASE_URL: str = (
-        "postgresql+asyncpg://aifm_user:aifm_pass@localhost:5432/aifm_db"
+        "postgresql+asyncpg://nomora_user:nomora_pass@localhost:5432/nomora_db"
     )
     DB_ECHO: bool = False       # Logging de SQL queries (True solo en dev)
     DB_POOL_SIZE: int = 5       # Conexiones en el pool de asyncpg
 
     # ── Redis ────────────────────────────────────────────────
-    REDIS_URL: str = "redis://:aifm_redis_pass@localhost:6379/0"
+    REDIS_URL: str = "redis://:nomora_redis_pass@localhost:6379/0"
 
     # ── CORS (orígenes permitidos) ───────────────────────────
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]

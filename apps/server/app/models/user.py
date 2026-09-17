@@ -34,6 +34,9 @@ class User(Base, UUIDMixin, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True  # Soft delete
     )
+    tier: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="free"  # "free" | "pro"
+    )
 
     # ── Relaciones ───────────────────────────────────────────
     properties: Mapped[list[Property]] = relationship(
