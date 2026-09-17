@@ -112,7 +112,7 @@ async def _get_or_create_oauth_user(identity: OAuthIdentity, db: AsyncSession) -
         )
         db.add(user)
 
-    if not user.is_active:
+    if user.is_active is False:
         raise HTTPException(status_code=400, detail="Inactive user")
 
     if identity.provider == "google":
