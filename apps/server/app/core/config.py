@@ -30,6 +30,17 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     CORS_ORIGIN_REGEX: str = ""  # e.g. r"https://.*\.vercel\.app"
 
+    # ── OAuth ────────────────────────────────────────────────
+    # Public API base URL, including /api/v1/auth. It is registered with
+    # Google and Apple as the base for their callback URLs.
+    OAUTH_REDIRECT_BASE_URL: str = "http://localhost:8000/api/v1/auth"
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    APPLE_CLIENT_ID: str = ""
+    APPLE_TEAM_ID: str = ""
+    APPLE_KEY_ID: str = ""
+    APPLE_PRIVATE_KEY: str = ""
+
     # ── IA / Agentes ─────────────────────────────────────────
     ENABLE_AI_AGENTS: bool = False
     OPENAI_API_KEY: str = ""

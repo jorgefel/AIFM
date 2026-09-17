@@ -108,7 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const startSocialLogin = useCallback((provider: SocialProvider) => {
     // OAuth must use a top-level navigation so the provider can redirect the user.
-    window.location.assign(`/api/v1/auth/${provider}`);
+    const authApiUrl = process.env.NEXT_PUBLIC_API_URL ?? "/api/v1";
+    window.location.assign(`${authApiUrl.replace(/\/$/, "")}/auth/${provider}`);
   }, []);
 
   const completeSocialLogin = useCallback(async () => {

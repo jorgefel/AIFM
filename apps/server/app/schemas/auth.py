@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Literal
+
+from pydantic import BaseModel, HttpUrl
 
 class Token(BaseModel):
     access_token: str
@@ -12,3 +14,11 @@ class RegisterPayload(BaseModel):
     email: str
     password: str
     full_name: str
+
+
+class OAuthCallbackResponse(BaseModel):
+    """Successful OAuth completion before the browser is redirected to the web app."""
+
+    message: str
+    provider: Literal["google", "apple"]
+    redirect_url: HttpUrl
