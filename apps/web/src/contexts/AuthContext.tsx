@@ -24,6 +24,8 @@ export interface User {
   role: string;
 }
 
+export type SocialProvider = "google" | "apple";
+
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
@@ -31,6 +33,8 @@ interface AuthContextType {
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  startSocialLogin: (provider: SocialProvider) => void;
+  completeSocialLogin: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -102,9 +106,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [router, queryClient]);
 
+  const startSocialLogin = useCallback((provider: SocialProvider) => {
+    // OAuth must use a top-level navigation so the provider can redirect the user.
+    window.location.assign(`/api/v1/auth/${provider}`);
+  }, []);
+
+  const completeSocialLogin = useCallback(async () => {
+    // The backend sets the auth cookies before redirecting to this application.
+    // Refetching /users/me validates that cookie and updates the React Query cache.
+    setSessionHint();
+    const result = await refetch();
+
+    if (result.data) {
+      return true;
+    }
+
+    clearSessionHint();
+    return false;
+  }, [refetch]);
+
   const value = useMemo(
-    () => ({ user, isLoading, login, registerUser, logout, checkAuth }),
-    [user, isLoading, login, registerUser, logout, checkAuth]
+    () => ({ user, isLoading, login, registerUser, logout, checkAuth, startSocialLogin, completeSocialLogin }),
+    [user, isLoading, login, registerUser, logout, checkAuth, startSocialLogin, completeSocialLogin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

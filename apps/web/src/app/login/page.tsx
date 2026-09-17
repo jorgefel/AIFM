@@ -2,7 +2,7 @@
 
 import { useState, useEffect, memo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Hexagon, Eye, EyeOff } from "lucide-react";
+import { Apple, Hexagon, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ const RegisterLink = memo(function RegisterLink() {
 });
 
 export default function LoginPage() {
-  const { login, user, isLoading } = useAuth();
+  const { login, startSocialLogin, user, isLoading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -164,6 +164,31 @@ export default function LoginPage() {
         <p className="text-center text-slate-500 text-sm mt-6">
           ¿No tienes cuenta? <RegisterLink />
         </p>
+
+        <div className="flex items-center gap-3 my-6" aria-hidden="true">
+          <div className="h-px flex-1 bg-white/10" />
+          <span className="text-xs text-slate-500">o continúa con</span>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => startSocialLogin("google")}
+            className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10"
+          >
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-900" aria-hidden="true">G</span>
+            Continuar con Google
+          </button>
+          <button
+            type="button"
+            onClick={() => startSocialLogin("apple")}
+            className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10"
+          >
+            <Apple className="h-4 w-4" aria-hidden="true" />
+            Continuar con Apple
+          </button>
+        </div>
       </motion.div>
     </div>
   );

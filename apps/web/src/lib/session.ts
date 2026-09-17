@@ -26,5 +26,5 @@ export function clearSessionHint(): void {
 export function isPublicAuthRoute(pathname?: string): boolean {
   const path =
     pathname ?? (typeof window !== "undefined" ? window.location.pathname : "");
-  return path === "/login" || path === "/register";
+  return path === "/login" || path === "/register" || path === "/auth/callback";
 }
