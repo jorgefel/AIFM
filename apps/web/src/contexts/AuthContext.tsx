@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { DEMO_USER } from "@/lib/demoData";
 
-const DEMO_FLAG = "aifm_demo_mode";
+const DEMO_FLAG = "nomora_demo_mode";
 
 export interface User {
   id: string;
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuth = async () => {
     // Modo demo: evita golpear el backend y usa un usuario de ejemplo
     if (typeof window !== "undefined" && localStorage.getItem(DEMO_FLAG) === "true") {
-      const stored = typeof window !== "undefined" ? localStorage.getItem("aifm_demo_user") : null;
+      const stored = typeof window !== "undefined" ? localStorage.getItem("nomora_demo_user") : null;
       setUser(stored ? JSON.parse(stored) : (DEMO_USER as User));
       setIsDemoMode(true);
       setIsLoading(false);
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginDemo = (overrides?: Partial<User>) => {
     const demoUser = { ...DEMO_USER, ...overrides } as User;
     localStorage.setItem(DEMO_FLAG, "true");
-    localStorage.setItem("aifm_demo_user", JSON.stringify(demoUser));
+    localStorage.setItem("nomora_demo_user", JSON.stringify(demoUser));
     setUser(demoUser);
     setIsDemoMode(true);
     router.push("/");
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     if (isDemoMode) {
       localStorage.removeItem(DEMO_FLAG);
-      localStorage.removeItem("aifm_demo_user");
+      localStorage.removeItem("nomora_demo_user");
       setUser(null);
       setIsDemoMode(false);
       router.push("/login");

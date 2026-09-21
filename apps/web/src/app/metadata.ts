@@ -20,12 +20,12 @@ export function createPageMetadata({
     robots: isPublic ? { index: true, follow: true } : { index: false, follow: false },
     openGraph: isPublic
       ? {
-          title: `${title} | AIFM`,
+          title: `${title} | Nomora`,
           description,
           url: path,
-          siteName: "AIFM",
+          siteName: "Nomora",
           type: "website",
-          images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "AIFM" }],
+          images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Nomora" }],
         }
       : undefined,
   };

@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-const HIDDEN_AT_KEY = "aifm_hidden_at";
+const HIDDEN_AT_KEY = "nomora_hidden_at";
 const INACTIVITY_THRESHOLD_MS = 300_000; // 5 minutes
 
 /**

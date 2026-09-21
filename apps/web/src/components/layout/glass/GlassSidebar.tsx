@@ -8,7 +8,6 @@ import {
   Building2,
   BarChart3,
   Settings,
-  Calculator,
   Sparkles
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -20,7 +19,6 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
-  { name: "ROI", href: "/roi", icon: Calculator },
 ];
 
 interface GlassSidebarProps {
@@ -50,7 +48,7 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <span className={`text-xl font-bold tracking-wide text-white ${logoLabelClasses}`}>
-            AIFM
+            Nomora
           </span>
         </div>
       </div>

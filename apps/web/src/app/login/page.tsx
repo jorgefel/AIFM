@@ -62,7 +62,7 @@ export default function LoginPage() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shadow-[0_4px_12px_rgba(124,92,252,0.4)]">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-white tracking-wide">AIFM</span>
+            <span className="text-xl font-bold text-white tracking-wide">Nomora</span>
           </motion.div>
 
           <motion.div variants={itemVariants}>

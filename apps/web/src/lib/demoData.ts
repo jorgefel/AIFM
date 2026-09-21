@@ -5,7 +5,7 @@
 
 export const DEMO_USER = {
   id: "demo-user-1",
-  email: "demo@aifm.app",
+  email: "demo@nomora.app",
   full_name: "Conor McGregor",
   role: "Admin",
 };

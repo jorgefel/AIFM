@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta de Colores AIFM — Aurora (modo claro + acentos violeta/cian) */
-  --color-obsidian: #07080D;
+  /* Paleta de Colores Nomora — Aurora (modo claro + acentos violeta/cian) */
   --color-obsidian-light: #12131F;
   --color-obsidian-lighter: #1E2033;
   --color-violet-accent: #7C5CFC;

@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: ["/login", "/register", "/opengraph-image"],
-      disallow: ["/income", "/expenses", "/properties", "/reports", "/roi", "/settings"],
+      disallow: ["/income", "/expenses", "/properties", "/reports", "/settings"],
     },
     sitemap: "/sitemap.xml",
   };

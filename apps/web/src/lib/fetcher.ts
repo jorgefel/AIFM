@@ -1,7 +1,7 @@
 import { api } from "./api";
 import { DEMO_PROPERTIES, demoDashboardData, demoReservations, demoExpenses } from "./demoData";
 
-const DEMO_FLAG = "aifm_demo_mode";
+const DEMO_FLAG = "nomora_demo_mode";
 
 function isDemoMode() {
   return typeof window !== "undefined" && localStorage.getItem(DEMO_FLAG) === "true";

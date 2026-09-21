@@ -1,4 +1,4 @@
-const SESSION_HINT_KEY = "aifm_session";
+const SESSION_HINT_KEY = "nomora_session";
 const SESSION_HINT_COOKIE = "session_hint";
 
 export function hasSessionHint(): boolean {

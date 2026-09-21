@@ -19,7 +19,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Load from local storage on mount
-    const saved = localStorage.getItem("aifm_currency") as CurrencyCode;
+    const saved = localStorage.getItem("nomora_currency") as CurrencyCode;
     if (saved && ["USD", "COP", "EUR"].includes(saved)) {
       setCurrencyState(saved);
     }
@@ -28,7 +28,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
   const setCurrency = (code: CurrencyCode) => {
     setCurrencyState(code);
-    localStorage.setItem("aifm_currency", code);
+    localStorage.setItem("nomora_currency", code);
   };
 
   const formatCurrency = (amount: number, overrideCurrency?: CurrencyCode) => {

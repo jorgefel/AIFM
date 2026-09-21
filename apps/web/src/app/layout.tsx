@@ -10,7 +10,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "AIFM | Airbnb Intelligent Finance & Management",
+  title: "Nomora | Airbnb Intelligent Finance & Management",
   description: "Airbnb Intelligent Finance & Management",
 };
 
