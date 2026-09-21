@@ -17,8 +17,8 @@ async def lifespan(app: FastAPI):
     await redis_client.close()
 
 app = FastAPI(
-    title="AIFM API",
-    description="Airbnb Intelligent Finance & Management — Backend API",
+    title="Nomora API",
+    description="Nomora — Backend API",
     version="0.1.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -45,7 +45,7 @@ async def health_check():
     """Endpoint de salud — verifica que la API está corriendo."""
     return {
         "status": "ok",
-        "service": "aifm-api",
+        "service": "nomora-api",
         "version": "0.1.0",
         "environment": settings.APP_ENV,
     }

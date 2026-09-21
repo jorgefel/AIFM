@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
@@ -17,17 +18,28 @@ class Settings(BaseSettings):
 
     # ── Base de datos PostgreSQL ─────────────────────────────
     DATABASE_URL: str = (
-        "postgresql+asyncpg://aifm_user:aifm_pass@localhost:5432/aifm_db"
+        "postgresql+asyncpg://nomora_user:nomora_pass@localhost:5432/nomora_db"
     )
     DB_ECHO: bool = False       # Logging de SQL queries (True solo en dev)
     DB_POOL_SIZE: int = 5       # Conexiones en el pool de asyncpg
 
     # ── Redis ────────────────────────────────────────────────
-    REDIS_URL: str = "redis://:aifm_redis_pass@localhost:6379/0"
+    REDIS_URL: str = "redis://:nomora_redis_pass@localhost:6379/0"
 
     # ── CORS (orígenes permitidos) ───────────────────────────
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     CORS_ORIGIN_REGEX: str = ""  # e.g. r"https://.*\.vercel\.app"
+
+    # ── OAuth ────────────────────────────────────────────────
+    # Public API base URL, including /api/v1/auth. It is registered with
+    # Google and Apple as the base for their callback URLs.
+    OAUTH_REDIRECT_BASE_URL: str = "http://localhost:8000/api/v1/auth"
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    APPLE_CLIENT_ID: str = ""
+    APPLE_TEAM_ID: str = ""
+    APPLE_KEY_ID: str = ""
+    APPLE_PRIVATE_KEY: str = ""
 
     # ── IA / Agentes ─────────────────────────────────────────
     ENABLE_AI_AGENTS: bool = False
@@ -35,6 +47,18 @@ class Settings(BaseSettings):
     AI_MODEL: str = "gpt-4o-mini"
     AI_USER_DAILY_LIMIT: int = 50
     AI_GLOBAL_DAILY_LIMIT: int = 500
+
+    @model_validator(mode="after")
+    def reject_default_secret_in_production(self) -> "Settings":
+        """Prevent an application instance from starting with an unsafe JWT key."""
+        if (
+            self.APP_ENV.strip().lower() == "production"
+            and self.SECRET_KEY == "change-me-in-production"
+        ):
+            raise ValueError(
+                "SECRET_KEY must be overridden when APP_ENV is production"
+            )
+        return self
 
 
 settings = Settings()

@@ -98,6 +98,24 @@ async def verify_refresh_token(request: Request) -> uuid.UUID:
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
+
+def require_tier(min_tier: str):
+    """Return a FastAPI dependency that requires the requested subscription tier."""
+    tier_order = {"free": 0, "pro": 1}
+    if min_tier not in tier_order:
+        raise ValueError(f"Unsupported tier: {min_tier}")
+
+    def dependency(current_user: User = Depends(get_current_user)) -> User:
+        if tier_order.get(current_user.tier, 0) < tier_order[min_tier]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"This feature requires the '{min_tier}' plan",
+            )
+        return current_user
+
+    return dependency
+
+
 async def verify_property_access(property_id: uuid.UUID, current_user: User, db: AsyncSession) -> Property:
     result = await db.execute(
         select(Property).where(Property.id == property_id, Property.owner_id == current_user.id, Property.is_active == True)

@@ -3,7 +3,6 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { User, Mail, Shield, LogOut, Globe } from "lucide-react";
 import { useCurrency, CurrencyCode } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";

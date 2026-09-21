@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
-import { PROPERTIES_SWR_KEY } from "./useProperties";
+import { PROPERTIES_QUERY_KEY } from "./useProperties";
 
 export function useReports() {
-  const { data: properties = [], isLoading } = useSWR<any[]>(
-    PROPERTIES_SWR_KEY,
-    fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 10000 }
-  );
+  const { data: properties = [], isLoading } = useQuery<any[]>({
+    queryKey: PROPERTIES_QUERY_KEY,
+    queryFn: () => fetcher("/properties/"),
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
   const [isExporting, setIsExporting] = useState(false);
@@ -90,7 +90,7 @@ export function useReports() {
             setReportState("error");
             setReportError(jobStatus.error || "Error desconocido en el agente de IA");
           }
-        } catch (pollErr) {
+        } catch {
           clearInterval(pollInterval);
           setReportState("error");
           setReportError("Error al consultar el estado del reporte.");

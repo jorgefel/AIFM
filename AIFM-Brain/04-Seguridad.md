@@ -12,6 +12,9 @@ Cada tabla de entidad de negocio (`Property`, `Reservation`, `Expense`) guarda u
 ## Rate Limiting
 Implementado con Redis y `fastapi-limiter` (Ej. la ruta `/auth/login` restringe a 5 intentos por minuto para mitigar fuerza bruta).
 
+## Edge Cache Security (Cloudflare Worker)
+El Cloudflare Worker intercepta peticiones GET sensibles (ej. `/api/v1/users/me`) y sirve respuestas cacheadas. Para prevenir **Cache Poisoning** (donde un atacante podría intentar obtener caché de otro usuario o inyectar un payload malicioso enviando un JWT alterado), el Worker usa la librería `jose` para validar criptográficamente la firma del JWT (con HS256) directamente en el edge. Si el JWT es inválido, carece de firma, o fue alterado, se ignora el caché y la petición se reenvía al backend para rechazarla adecuadamente (401).
+
 ## Vulnerabilidades Conocidas
 No se encontraron carpetas `/security` ni reportes explícitos de vulnerabilidades en el código fuente. Se asume que no hay vulnerabilidades reportadas, mitigándose las comunes con bcrypt y fastapilimiter.
 

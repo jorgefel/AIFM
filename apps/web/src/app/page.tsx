@@ -62,7 +62,7 @@ export default function Home() {
           <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-4">
             <Building2 className="w-8 h-8 text-violet-600" />
           </div>
-          <h3 className="text-xl font-semibold text-ink mb-2">Bienvenido a AIFM</h3>
+          <h3 className="text-xl font-semibold text-ink mb-2">Bienvenido a Nomora</h3>
           <p className="text-ink-muted max-w-md text-sm">
             Aún no tienes propiedades registradas. Para comenzar a ver tu resumen financiero, primero añade tu primera propiedad.
           </p>

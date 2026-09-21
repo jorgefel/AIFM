@@ -14,6 +14,8 @@ export interface User {
   role: string;
 }
 
+export type SocialProvider = "google" | "apple";
+
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;

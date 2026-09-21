@@ -17,12 +17,14 @@ Completo
   - `apps/server/app/api/v1/routes/auth.py`
   - `apps/server/app/core/security.py`
   - `apps/server/app/models/user.py`
-- **Dependencias Principales:** bcrypt, jwt, fastapi_limiter
+  - `apps/web/src/hooks/useAutoLogout.ts` (Logout automático en el cliente)
+- **Dependencias Principales:** bcrypt, jwt, fastapi_limiter, jose (en el Edge)
 - **Endpoints / Funciones:** 
   - POST /auth/register
   - POST /auth/login
   - POST /auth/refresh
   - POST /auth/logout
+- **Edge Cache (Cloudflare Worker):** Intercepta peticiones de lectura cacheadas, validando firmas de JWT (`jose` con HS256) directamente en el edge para prevenir envenenamiento de caché.
 
 ## Enlaces
 - Ver también: [[04-Seguridad|Seguridad]] y [[05-Base-de-Datos|Base de Datos]]

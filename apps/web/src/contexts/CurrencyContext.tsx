@@ -66,7 +66,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(amount);
-    } catch (error) {
+    } catch {
       return `$${Number(amount).toLocaleString()}`;
     }
   };

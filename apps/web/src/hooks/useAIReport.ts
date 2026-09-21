@@ -40,7 +40,7 @@ export function useAIReport() {
             setReportState("error");
             setReportError(jobStatus.error || "Error desconocido en el agente de IA");
           }
-        } catch (pollErr) {
+        } catch {
           clearInterval(pollInterval);
           setReportState("error");
           setReportError("Error al consultar el estado del reporte.");

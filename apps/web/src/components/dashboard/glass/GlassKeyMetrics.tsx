@@ -49,15 +49,6 @@ export function GlassKeyMetrics({ netProfit, occupancyRate, totalExpenses }: Gla
           <p className="text-xs font-medium text-slate-500 mt-1 mb-2">-</p>
           <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Gastos<br/>Totales</p>
         </div>
-
-        {/* Metric 4: ROI Proyectado */}
-        <div className="flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
-          <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            N/A
-          </p>
-          <p className="text-xs font-medium text-slate-500 mt-1 mb-2">-</p>
-          <p className="text-[10px] sm:text-xs text-slate-400 font-medium">ROI<br/>Proyectado</p>
-        </div>
       </div>
     </div>
   );

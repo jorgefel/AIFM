@@ -14,6 +14,7 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: uuid.UUID
     is_active: bool
+    tier: str
     created_at: datetime
     updated_at: datetime
 

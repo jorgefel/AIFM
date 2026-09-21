@@ -10,13 +10,20 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Nomora | Airbnb Intelligent Finance & Management",
-  description: "Airbnb Intelligent Finance & Management",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://nomora.vercel.app"),
+  title: {
+    default: "Resumen financiero | Nomora",
+    template: "%s | Nomora",
+  },
+  description: "Consulta el resumen financiero de tu portafolio de propiedades en Nomora.",
+  alternates: { canonical: "/" },
+  robots: { index: false, follow: false },
 };
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { QueryProvider } from "@/contexts/QueryProvider";
 
 export default function RootLayout({
   children,
@@ -26,13 +33,15 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${outfit.variable}`}>
       <body className="antialiased min-h-screen">
-        <AuthProvider>
-          <CurrencyProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </CurrencyProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <CurrencyProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </CurrencyProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
