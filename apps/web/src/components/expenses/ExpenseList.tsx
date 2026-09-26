@@ -36,7 +36,7 @@ export function ExpenseList({ expenses, isLoading, formatCurrency, onEdit, onDel
       cell: (item: Expense) => (
         item.receipt_url ? (
           <a 
-            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${item.receipt_url}`} 
+            href={`/api${item.receipt_url}`} 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
