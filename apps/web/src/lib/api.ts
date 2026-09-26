@@ -1,8 +1,9 @@
 import axios from "axios";
 import { hasSessionHint, isPublicAuthRoute } from "./session";
 
-// Determine base URL, fallback to localhost for dev
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+// Usamos URL relativa por defecto para que pase por el Proxy de Next.js (rewrites en next.config.ts)
+// y evitemos bloqueos de cookies de terceros.
+const API_URL = process.env.NEXT_PUBLIC_PROXY_API_URL || "/api/v1";
 
 export const api = axios.create({
   baseURL: API_URL,
