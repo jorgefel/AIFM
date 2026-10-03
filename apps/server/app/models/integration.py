@@ -30,6 +30,7 @@ class ChannelConnection(Base, UUIDMixin, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     bookings_cursor: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_bookings_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_inventory_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     user: Mapped[User] = relationship("User", back_populates="channels", lazy="raise")
     sync_logs: Mapped[list[SyncLog]] = relationship("SyncLog", back_populates="connection", lazy="raise", cascade="all, delete-orphan")
@@ -109,6 +110,7 @@ class ChannelInventoryDay(Base, UUIDMixin, TimestampMixin):
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     available_units: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     price: Mapped[float | None] = mapped_column(Numeric(10, 2), nullable=True)
+    source: Mapped[str] = mapped_column(String(30), nullable=False, default="beds24", server_default="beds24")
 
     connection: Mapped[ChannelConnection] = relationship("ChannelConnection", back_populates="inventory_days", lazy="raise")
     property: Mapped[Property] = relationship("Property", lazy="raise")
