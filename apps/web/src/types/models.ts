@@ -45,3 +45,17 @@ export interface Reservation {
   sync_source?: string | null;
   synced_at?: string | null;
 }
+
+export interface CalendarDay {
+  property_id: string;
+  date: string;
+  available_units: number | null;
+  price: number | null;
+  availability: "available" | "unavailable" | "unknown";
+  source: "manual" | "synced";
+  channel: string | null;
+  synced_at: string | null;
+  is_stale: boolean;
+}
+
+export interface CalendarSnapshot { days: CalendarDay[]; generated_at: string; }

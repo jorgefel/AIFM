@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, BedDouble, Building2, CalendarDays, MapPin, Users } from "lucide-react";
+import { ArrowLeft, BedDouble, CalendarDays, MapPin, Users } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { fetcher } from "@/lib/fetcher";
 import type { Property } from "@/types/models";

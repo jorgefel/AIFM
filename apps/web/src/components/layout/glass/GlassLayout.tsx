@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
+import { AIChatCopilot } from "../../chat/AIChatCopilot";
 
 interface GlassLayoutProps {
   children: React.ReactNode;
@@ -73,6 +74,9 @@ export function GlassLayout({ children }: GlassLayoutProps) {
                 </motion.div>
               </AnimatePresence>
             </main>
+            
+            {/* Widget flotante de Copiloto IA */}
+            <AIChatCopilot />
           </div>
         </div>
       </div>

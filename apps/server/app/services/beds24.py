@@ -2,7 +2,7 @@
 # app/services/beds24.py — Cliente para Beds24 API V2
 # ─────────────────────────────────────────────────────────────
 import asyncio
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import logging
 from typing import Any
 
@@ -94,6 +94,25 @@ class Beds24Client:
         return bookings
 
     @classmethod
+    async def get_room_calendar(cls, start: date, end: date) -> list[dict[str, Any]]:
+        """Read raw daily room values only; this client never writes inventory."""
+        token = await cls.get_access_token()
+        response_data: list[dict[str, Any]] = []
+        params = {
+            "from": start.isoformat(), "to": end.isoformat(),
+            "includePrices": "true", "includeNumAvail": "true", "includeOverrides": "true",
+        }
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await cls._get_with_retry(
+                client, f"{cls.BASE_URL}/inventory/rooms/calendar",
+                headers={"token": token, "accept": "application/json"}, params=params,
+            )
+            payload = response.json()
+            response_data.extend(payload.get("data", payload if isinstance(payload, list) else []))
+            cls._update_quota_metrics(response.headers)
+        return response_data
+
+    @classmethod
     async def _get_with_retry(cls, client: httpx.AsyncClient, url: str, *, headers: dict[str, str], params: dict[str, str]) -> httpx.Response:
         last_error: Exception | None = None
         for attempt in range(3):
@@ -119,7 +138,7 @@ class Beds24Client:
         """Lee los headers de cuota de Beds24 y los registra."""
         # Beds24 devuelve X-RateLimit-Remaining u otros headers, dependiendo de su API.
         # Simulamos la extracción de métricas
-        remaining = headers.get("x-ratelimit-remaining")
+        remaining = headers.get("x-five-min-limit-remaining") or headers.get("x-ratelimit-remaining")
         if remaining:
             logger.info(f"Cuota Beds24 restante: {remaining}")
             # Idealmente se guardaría en Redis o DataDog

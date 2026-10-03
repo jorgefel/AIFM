@@ -9,7 +9,8 @@ import {
   BarChart3, 
   Settings,
   Crown,
-  Hexagon
+  Hexagon,
+  Zap
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
+  { name: "Automatizaciones", href: "/automations", icon: Zap },
   { name: "Planes", href: "/plans", icon: Crown },
 ];
 

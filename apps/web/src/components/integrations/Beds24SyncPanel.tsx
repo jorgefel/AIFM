@@ -10,7 +10,8 @@ import { useToast } from "@/contexts/ToastContext";
 import type { Property } from "@/types/models";
 
 type Link = { id: string; property_id: string; beds24_property_id: string };
-type Connection = { id: string; channel_account_id: string; last_bookings_sync_at: string | null; property_links: Link[] };
+type Connection = { id: string; channel_account_id: string; last_bookings_sync_at: string | null; last_inventory_sync_at: string | null; property_links: Link[] };
+type SyncLog = { id: string; sync_type: string; status: string; records_processed: number; completed_at: string | null };
 
 export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
   const toast = useToast();
@@ -46,20 +47,36 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
       toast.error("La sincronización falló", error?.response?.data?.detail || "Intenta de nuevo en unos minutos.");
     } finally { setSyncing(null); }
   };
+  const syncInventory = async (connectionId: string) => {
+    setSyncing(`inventory-${connectionId}`);
+    try {
+      const result = await api.post(`/integrations/beds24/connections/${connectionId}/sync-inventory`);
+      await queryClient.invalidateQueries({ queryKey: ["beds24-connections"] });
+      await queryClient.invalidateQueries({ queryKey: ["calendar-snapshot"] });
+      toast.success("Inventario actualizado", `${result.data.records_processed} días quedaron disponibles en el calendario local.`);
+    } catch (error: any) { toast.error("No pudimos actualizar el inventario", error?.response?.data?.detail || "Intenta de nuevo más tarde."); }
+    finally { setSyncing(null); }
+  };
 
   if (!isPro) return null;
   return <section className="mt-8 rounded-2xl border border-white/10 bg-obsidian/80 p-6">
-    <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-lg font-semibold text-white">Sincronización de reservas</h2><p className="mt-1 text-sm text-slate-400">La importación es de solo lectura: Nomora nunca modifica Beds24 ni tus OTAs.</p></div><span className="rounded-full bg-sky-400/10 px-3 py-1 text-xs font-medium text-sky-300">Beds24</span></div>
-    {connections.length === 0 && !isLoading ? <form onSubmit={createConnection} className="mt-5 flex flex-col gap-3 sm:flex-row"><input value={accountId} onChange={(event) => setAccountId(event.target.value)} placeholder="Identificador de cuenta Beds24" className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-sky-400/60" /><Button type="submit" isLoading={isCreating}><Link2 className="mr-2 h-4 w-4" />Añadir conexión</Button></form> : <div className="mt-5 space-y-3">{connections.map((connection) => <ConnectionCard key={connection.id} connection={connection} properties={properties} syncing={syncing === connection.id} onSync={() => sync(connection.id)} onLinked={() => queryClient.invalidateQueries({ queryKey: ["beds24-connections"] })} />)}</div>}
+    <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-lg font-semibold text-white">Sincronización Beds24</h2><p className="mt-1 text-sm text-slate-400">La importación es de solo lectura: Nomora nunca modifica Beds24 ni tus OTAs.</p></div><span className="rounded-full bg-sky-400/10 px-3 py-1 text-xs font-medium text-sky-300">Beds24</span></div>
+    {connections.length === 0 && !isLoading ? <form onSubmit={createConnection} className="mt-5 flex flex-col gap-3 sm:flex-row"><input value={accountId} onChange={(event) => setAccountId(event.target.value)} placeholder="Identificador de cuenta Beds24" className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-sky-400/60" /><Button type="submit" isLoading={isCreating}><Link2 className="mr-2 h-4 w-4" />Añadir conexión</Button></form> : <div className="mt-5 space-y-3">{connections.map((connection) => <ConnectionCard key={connection.id} connection={connection} properties={properties} syncing={syncing === connection.id || syncing === `inventory-${connection.id}`} onSync={() => sync(connection.id)} onSyncInventory={() => syncInventory(connection.id)} onLinked={() => queryClient.invalidateQueries({ queryKey: ["beds24-connections"] })} />)}</div>}
   </section>;
 }
 
-function ConnectionCard({ connection, properties, syncing, onSync, onLinked }: { connection: Connection; properties: Property[]; syncing: boolean; onSync: () => void; onLinked: () => void }) {
+function ConnectionCard({ connection, properties, syncing, onSync, onSyncInventory, onLinked }: { connection: Connection; properties: Property[]; syncing: boolean; onSync: () => void; onSyncInventory: () => void; onLinked: () => void }) {
   const toast = useToast();
   const [propertyId, setPropertyId] = useState("");
   const [remoteId, setRemoteId] = useState("");
   const [saving, setSaving] = useState(false);
   const link = async (event: FormEvent) => { event.preventDefault(); if (!propertyId || !remoteId.trim()) return; setSaving(true); try { await api.put(`/integrations/beds24/connections/${connection.id}/property-links`, { property_id: propertyId, beds24_property_id: remoteId.trim() }); setRemoteId(""); await onLinked(); toast.success("Propiedad vinculada", "Ya puedes importar sus reservas."); } catch (error: any) { toast.error("No pudimos vincular", error?.response?.data?.detail || "Revisa los identificadores."); } finally { setSaving(false); } };
-  const lastSync = connection.last_bookings_sync_at ? new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short" }).format(new Date(connection.last_bookings_sync_at)) : "Primera importación pendiente";
-  return <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-medium text-white">Cuenta {connection.channel_account_id}</p><p className="mt-1 text-xs text-slate-400">Última sincronización: {lastSync}</p></div><Button onClick={onSync} disabled={connection.property_links.length === 0} isLoading={syncing}><RefreshCw className="mr-2 h-4 w-4" />Sincronizar ahora</Button></div><div className="mt-3 text-xs text-slate-400">{connection.property_links.length ? <span className="inline-flex items-center gap-1 text-emerald-300"><CheckCircle2 className="h-4 w-4" />{connection.property_links.length} propiedad(es) vinculada(s)</span> : "Vincula una propiedad antes de importar."}</div><form onSubmit={link} className="mt-4 grid gap-2 sm:grid-cols-[1fr_1fr_auto]"><select value={propertyId} onChange={(event) => setPropertyId(event.target.value)} className="rounded-lg border border-white/10 bg-obsidian px-3 py-2 text-sm text-white"><option value="">Propiedad Nomora</option>{properties.map((property) => <option value={property.id} key={property.id}>{property.name}</option>)}</select><input value={remoteId} onChange={(event) => setRemoteId(event.target.value)} placeholder="ID de propiedad Beds24" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white" /><Button type="submit" variant="secondary" isLoading={saving}>Vincular</Button></form></div>;
+  const format = (value: string | null) => value ? new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "Pendiente";
+  return <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-medium text-white">Cuenta {connection.channel_account_id}</p><p className="mt-1 text-xs text-slate-400">Reservas: {format(connection.last_bookings_sync_at)} · Inventario: {format(connection.last_inventory_sync_at)}</p></div><div className="flex gap-2"><Button onClick={onSync} disabled={connection.property_links.length === 0} isLoading={syncing}><RefreshCw className="mr-2 h-4 w-4" />Reservas</Button><Button variant="secondary" onClick={onSyncInventory} disabled={connection.property_links.length === 0} isLoading={syncing}><RefreshCw className="mr-2 h-4 w-4" />Inventario</Button></div></div><div className="mt-3 text-xs text-slate-400">{connection.property_links.length ? <span className="inline-flex items-center gap-1 text-emerald-300"><CheckCircle2 className="h-4 w-4" />{connection.property_links.length} propiedad(es) vinculada(s)</span> : "Vincula una propiedad antes de importar."}</div><SyncHistory connectionId={connection.id} /><form onSubmit={link} className="mt-4 grid gap-2 sm:grid-cols-[1fr_1fr_auto]"><select value={propertyId} onChange={(event) => setPropertyId(event.target.value)} className="rounded-lg border border-white/10 bg-obsidian px-3 py-2 text-sm text-white"><option value="">Propiedad Nomora</option>{properties.map((property) => <option value={property.id} key={property.id}>{property.name}</option>)}</select><input value={remoteId} onChange={(event) => setRemoteId(event.target.value)} placeholder="ID de propiedad Beds24" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white" /><Button type="submit" variant="secondary" isLoading={saving}>Vincular</Button></form></div>;
+}
+
+function SyncHistory({ connectionId }: { connectionId: string }) {
+  const { data: logs = [] } = useQuery<SyncLog[]>({ queryKey: ["beds24-sync-history", connectionId], queryFn: () => fetcher(`/integrations/beds24/connections/${connectionId}/sync-history`) });
+  if (!logs.length) return <p className="mt-3 text-xs text-slate-500">Aún no hay sincronizaciones registradas.</p>;
+  return <div className="mt-3 text-xs text-slate-400"><p className="mb-1 font-medium text-slate-300">Historial reciente</p>{logs.slice(0, 3).map((log) => <p key={log.id}>{log.sync_type === "inventory" ? "Inventario" : "Reservas"}: {log.status === "success" ? `${log.records_processed} registros` : "error"}{log.completed_at ? ` · ${new Date(log.completed_at).toLocaleString("es-CO")}` : ""}</p>)}</div>;
 }

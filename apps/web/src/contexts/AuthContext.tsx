@@ -31,6 +31,8 @@ export interface User {
   preferences: Record<string, unknown>;
   onboarding_completed: boolean;
   onboarding_completed_at: string | null;
+  ai_usage_count?: number;
+  ai_limit_monthly?: number;
 }
 
 export interface ProfileUpdate {
@@ -57,6 +59,7 @@ export type SocialProvider = "google" | "apple";
 
 interface AuthContextType {
   user: User | null;
+  isPro: boolean;
   isLoading: boolean;
   login: (data: any) => Promise<void>;
   registerUser: (data: any) => Promise<void>;
@@ -95,7 +98,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     retry: false,
   });
 
-  const isLoading = shouldFetch ? isQueryLoading : false;
 
   const checkAuth = useCallback(async () => {
     await refetch();
@@ -171,8 +173,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refetch]);
 
   const value = useMemo(
-    () => ({ user, isLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
-    [user, isLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
+    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
+    [user, isQueryLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

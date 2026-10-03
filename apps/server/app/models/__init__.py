@@ -15,3 +15,7 @@ __all__ = [
     "Subscription", "BillingEvent", "ChannelConnection", "SyncLog", 
     "ChannelInventoryDay", "Beds24PropertyLink", "OtaConnection"
 ]
+
+from app.models.chat import AIChatSession, AIChatMessage
+
+from app.models.automation import AutomationAction, AuditLog

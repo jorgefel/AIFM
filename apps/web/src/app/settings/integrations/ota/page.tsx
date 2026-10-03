@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/Button";
-import { ArrowLeft, Crown, AlertTriangle, CheckCircle, RefreshCw, HelpCircle, ExternalLink, Home } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, RefreshCw, HelpCircle, ExternalLink, Home } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { containerVariants } from "@/lib/animations";
@@ -15,13 +15,12 @@ import { useProperties } from "@/hooks/useProperties";
 type OtaStatus = "pending" | "waiting_action" | "connected" | "error";
 
 export default function OtaSetupPage() {
-  const { user } = useAuth();
-  const toast = useToast();
-  const isPro = user?.tier === "pro";
+  useAuth();
+  useToast();
   const { properties } = useProperties();
   
   const [selectedProperty, setSelectedProperty] = useState<string>("");
-  const [selectedOta, setSelectedOta] = useState<"airbnb" | "booking" | null>(null);
+  const [, setSelectedOta] = useState<"airbnb" | "booking" | null>(null);
   const [step, setStep] = useState<"select_property" | "select_ota" | "airbnb_flow" | "booking_flow" | "connecting" | "status" | "help">("select_property");
   const [status, setStatus] = useState<OtaStatus>("pending");
 
@@ -34,7 +33,7 @@ export default function OtaSetupPage() {
   const handleConnectAirbnb = async () => {
     setStep("connecting");
     try {
-      const response = await api.post("/integrations/ota-connections", {
+      await api.post("/integrations/ota-connections", {
         property_id: selectedProperty,
         beds24_property_link_id: "00000000-0000-0000-0000-000000000000", // In reality, fetch actual link ID
         ota_name: "airbnb",
@@ -51,7 +50,7 @@ export default function OtaSetupPage() {
   const handleConnectBooking = async () => {
     setStep("connecting");
     try {
-      const response = await api.post("/integrations/ota-connections", {
+      await api.post("/integrations/ota-connections", {
         property_id: selectedProperty,
         beds24_property_link_id: "00000000-0000-0000-0000-000000000000", // Mock
         ota_name: "booking",

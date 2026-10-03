@@ -68,3 +68,30 @@ class OtaConnectionRead(BaseModel):
     error_message: str | None
 
     model_config = ConfigDict(from_attributes=True)
+
+class CalendarSnapshotRead(BaseModel):
+    date: date
+    available_units: int
+    price: float | None
+    source: str
+    channel: str | None
+    synced_at: datetime | None
+    is_stale: bool
+
+class OtaConnectionCreate(BaseModel):
+    property_id: uuid.UUID
+    beds24_property_link_id: uuid.UUID
+    ota_name: str
+    ota_listing_id: str | None = None
+
+class OtaConnectionRead(BaseModel):
+    id: uuid.UUID
+    property_id: uuid.UUID
+    beds24_property_link_id: uuid.UUID
+    ota_name: str
+    ota_listing_id: str | None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

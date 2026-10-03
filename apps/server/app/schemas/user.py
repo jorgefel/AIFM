@@ -50,3 +50,7 @@ class OnboardingProgressUpdate(BaseModel):
     average_monthly_reservations: int | None = Field(default=None, ge=0, le=100_000)
     previous_platforms: list[Platform] | None = Field(default=None, max_length=10)
     complete: bool = False
+
+class UserPasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8)

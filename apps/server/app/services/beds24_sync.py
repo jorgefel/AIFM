@@ -1,14 +1,14 @@
 """Idempotent Beds24 booking import. No OTA writes are performed here."""
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.integration import Beds24PropertyLink, ChannelConnection
+from app.models.integration import Beds24PropertyLink, ChannelConnection, ChannelInventoryDay
 from app.models.reservation import Reservation
 from app.services.beds24 import Beds24Client
 from app.services.cache import invalidate_summary_cache
@@ -71,6 +71,34 @@ def normalize_beds24_booking(remote: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def normalize_beds24_inventory(remote: dict[str, Any]) -> list[dict[str, Any]]:
+    """Flatten a Beds24 room calendar response into daily, property-scoped rows.
+
+    Beds24 responses have varied slightly between API versions, so accept both
+    ``calendar`` and ``dates`` while requiring the immutable property id.
+    """
+    property_id = _first(remote, "propertyId", "property_id")
+    if property_id is None:
+        raise ValueError("Beds24 inventory row is missing propertyId")
+    calendar = _first(remote, "calendar", "dates", default=[])
+    if not isinstance(calendar, list):
+        raise ValueError("Beds24 inventory calendar must be a list")
+    normalized: list[dict[str, Any]] = []
+    for row in calendar:
+        value_date = _first(row, "date", "from")
+        if not value_date:
+            continue
+        available = _first(row, "numAvail", "available", "availableUnits")
+        price = _first(row, "price1", "price", "dailyPrice")
+        normalized.append({
+            "beds24_property_id": str(property_id),
+            "date": _as_date(value_date),
+            "available_units": max(0, int(available)) if available is not None else 0,
+            "price": _as_decimal(price) if price is not None else None,
+        })
+    return normalized
+
+
 async def sync_beds24_bookings(connection: ChannelConnection, db: AsyncSession) -> dict[str, int | datetime]:
     """Fetch, upsert and soft-cancel remote bookings for one mapped connection."""
     links_result = await db.execute(
@@ -123,3 +151,44 @@ async def sync_beds24_bookings(connection: ChannelConnection, db: AsyncSession) 
     for property_id in changed_properties:
         await invalidate_summary_cache(property_id)
     return {"records_processed": len(remote_bookings), **counters, "last_synced_at": sync_started_at}
+
+
+async def sync_beds24_inventory(connection: ChannelConnection, db: AsyncSession, *, start: date | None = None, end: date | None = None) -> dict[str, int | datetime]:
+    """Persist a cached read-only snapshot of Beds24 prices and availability."""
+    start = start or date.today()
+    end = end or start + timedelta(days=365)
+    if end <= start or (end - start).days > 366:
+        raise ValueError("Inventory sync range must be between 1 and 366 days")
+    links = (await db.execute(select(Beds24PropertyLink).where(Beds24PropertyLink.channel_connection_id == connection.id))).scalars().all()
+    property_by_remote_id = {link.beds24_property_id: link.property_id for link in links}
+    if not property_by_remote_id:
+        raise ValueError("Connect at least one Nomora property to a Beds24 property before syncing.")
+
+    synced_at = datetime.now(timezone.utc)
+    rows = await Beds24Client.get_room_calendar(start, end)
+    by_day: dict[tuple[object, date], dict[str, Any]] = {}
+    for remote in rows:
+        for item in normalize_beds24_inventory(remote):
+            property_id = property_by_remote_id.get(item.pop("beds24_property_id"))
+            if property_id is None:
+                continue
+            key = (property_id, item["date"])
+            # Several rooms belonging to a property aggregate their inventory.
+            aggregate = by_day.setdefault(key, {"available_units": 0, "price": None})
+            aggregate["available_units"] += item["available_units"]
+            if item["price"] is not None:
+                aggregate["price"] = item["price"] if aggregate["price"] is None else min(aggregate["price"], item["price"])
+
+    for (property_id, inventory_date), values in by_day.items():
+        existing = (await db.execute(select(ChannelInventoryDay).where(
+            ChannelInventoryDay.channel_connection_id == connection.id,
+            ChannelInventoryDay.property_id == property_id,
+            ChannelInventoryDay.date == inventory_date,
+        ))).scalars().first()
+        if existing:
+            existing.available_units, existing.price, existing.source = values["available_units"], values["price"], "beds24"
+        else:
+            db.add(ChannelInventoryDay(channel_connection_id=connection.id, property_id=property_id, date=inventory_date, source="beds24", **values))
+    connection.last_inventory_sync_at = synced_at
+    await db.commit()
+    return {"records_processed": len(by_day), "last_synced_at": synced_at}

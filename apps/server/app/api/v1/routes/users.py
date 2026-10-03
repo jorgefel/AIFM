@@ -6,7 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
-from app.schemas.user import OnboardingProgressUpdate, UserProfileUpdate, UserRead
+from app.schemas.user import OnboardingProgressUpdate, UserProfileUpdate, UserRead, UserPasswordUpdate
+from app.core.security import verify_password, get_password_hash
+from app.models.automation import AuditLog
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -68,3 +70,20 @@ async def update_onboarding(
     await db.commit()
     await db.refresh(current_user)
     return current_user
+
+@router.put('/me/password', status_code=status.HTTP_204_NO_CONTENT)
+async def update_password(
+    payload: UserPasswordUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if not current_user.hashed_password:
+        raise HTTPException(status_code=400, detail='Esta cuenta utiliza inicio de sesion social y no tiene contrasena.')
+        
+    if not verify_password(payload.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail='La contrasena actual es incorrecta.')
+        
+    current_user.hashed_password = get_password_hash(payload.new_password)
+    db.add(AuditLog(user_id=current_user.id, action='password_changed', details={}))
+    await db.commit()
+    return None
