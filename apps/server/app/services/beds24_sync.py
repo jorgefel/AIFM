@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
-from typing import Any
+from typing import Any, TypedDict
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +12,19 @@ from app.models.integration import Beds24PropertyLink, ChannelConnection, Channe
 from app.models.reservation import Reservation
 from app.services.beds24 import Beds24Client
 from app.services.cache import invalidate_summary_cache
+
+
+class BookingSyncSummary(TypedDict):
+    records_processed: int
+    created: int
+    updated: int
+    cancelled: int
+    last_synced_at: datetime
+
+
+class InventorySyncSummary(TypedDict):
+    records_processed: int
+    last_synced_at: datetime
 
 
 def _first(data: dict[str, Any], *keys: str, default: Any = None) -> Any:
@@ -99,7 +112,7 @@ def normalize_beds24_inventory(remote: dict[str, Any]) -> list[dict[str, Any]]:
     return normalized
 
 
-async def sync_beds24_bookings(connection: ChannelConnection, db: AsyncSession) -> dict[str, int | datetime]:
+async def sync_beds24_bookings(connection: ChannelConnection, db: AsyncSession) -> BookingSyncSummary:
     """Fetch, upsert and soft-cancel remote bookings for one mapped connection."""
     links_result = await db.execute(
         select(Beds24PropertyLink).where(Beds24PropertyLink.channel_connection_id == connection.id)
@@ -150,10 +163,22 @@ async def sync_beds24_bookings(connection: ChannelConnection, db: AsyncSession) 
     await db.commit()
     for property_id in changed_properties:
         await invalidate_summary_cache(property_id)
-    return {"records_processed": len(remote_bookings), **counters, "last_synced_at": sync_started_at}
+    return {
+        "records_processed": len(remote_bookings),
+        "created": counters["created"],
+        "updated": counters["updated"],
+        "cancelled": counters["cancelled"],
+        "last_synced_at": sync_started_at,
+    }
 
 
-async def sync_beds24_inventory(connection: ChannelConnection, db: AsyncSession, *, start: date | None = None, end: date | None = None) -> dict[str, int | datetime]:
+async def sync_beds24_inventory(
+    connection: ChannelConnection,
+    db: AsyncSession,
+    *,
+    start: date | None = None,
+    end: date | None = None,
+) -> InventorySyncSummary:
     """Persist a cached read-only snapshot of Beds24 prices and availability."""
     start = start or date.today()
     end = end or start + timedelta(days=365)

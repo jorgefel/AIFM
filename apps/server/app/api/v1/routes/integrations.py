@@ -148,7 +148,7 @@ async def sync_inventory_now(connection_id: uuid.UUID, db: AsyncSession = Depend
     await db.commit()
     try:
         result = await sync_beds24_inventory(connection, db)
-        log.status, log.records_processed, log.completed_at = "success", int(result["records_processed"]), datetime.now(timezone.utc)
+        log.status, log.records_processed, log.completed_at = "success", result["records_processed"], datetime.now(timezone.utc)
         await db.commit()
         return InventorySyncResult(status="success", **result)
     except Exception as exc:
@@ -212,7 +212,7 @@ async def sync_bookings_now(connection_id: uuid.UUID, db: AsyncSession = Depends
     await db.commit()
     try:
         result = await sync_beds24_bookings(connection, db)
-        log.status, log.records_processed, log.completed_at = "success", int(result["records_processed"]), datetime.now(timezone.utc)
+        log.status, log.records_processed, log.completed_at = "success", result["records_processed"], datetime.now(timezone.utc)
         await db.commit()
         return BookingSyncResult(status="success", **result)
     except Exception as exc:
