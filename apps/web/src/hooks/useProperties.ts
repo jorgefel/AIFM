@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
@@ -31,6 +32,46 @@ const emptyProperty: PropertyFormData = {
   max_guests: 1, bedrooms: 1, bathrooms: 1, description: "", nightly_rate: "",
   amenities: [], published_platforms: [], photo_urls: [],
 };
+
+const propertyFieldLabels: Record<string, string> = {
+  name: "nombre de la propiedad",
+  address: "ubicación o dirección",
+  currency: "moneda principal",
+  property_type: "tipo de propiedad",
+  max_guests: "número de huéspedes",
+  bedrooms: "número de habitaciones",
+  bathrooms: "número de baños",
+  nightly_rate: "valor por noche",
+  published_platforms: "plataformas publicadas",
+  photo_urls: "fotos",
+};
+
+function propertySaveError(error: unknown) {
+  if (!isAxiosError(error)) {
+    return "No se pudo conectar con el servidor. Inténtalo de nuevo.";
+  }
+
+  const detail = error.response?.data?.detail;
+  if (typeof detail === "string") {
+    return detail;
+  }
+
+  if (Array.isArray(detail)) {
+    const fields = [...new Set(detail
+      .map((item) => item?.loc?.at(-1))
+      .filter((field): field is string => typeof field === "string")
+      .map((field) => propertyFieldLabels[field] ?? field))];
+    if (fields.length) {
+      return `Revisa: ${fields.join(", ")}.`;
+    }
+  }
+
+  if (error.response?.status && error.response.status >= 500) {
+    return "El servidor no pudo guardar la propiedad. Verifica que las migraciones estén actualizadas.";
+  }
+
+  return "No se pudo guardar la propiedad. Revisa los datos e inténtalo de nuevo.";
+}
 
 export function useProperties() {
   const queryClient = useQueryClient();
@@ -70,8 +111,8 @@ export function useProperties() {
       }
       setIsModalOpen(false);
       queryClient.invalidateQueries({ queryKey: PROPERTIES_QUERY_KEY }); // Revalidate cache
-    } catch {
-      toast.error("Error", "No se pudo guardar la propiedad.");
+    } catch (error) {
+      toast.error("No se pudo guardar", propertySaveError(error));
     } finally {
       setIsSubmitting(false);
     }
