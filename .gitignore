@@ -8,9 +8,7 @@ node_modules/
 dist/
 build/
 out/
-graphify-out/
-AGENTS.md
-hooks.json 
+
 
 # Environment (NUNCA commitear estos archivos)
 .env
