@@ -194,7 +194,7 @@ Al utilizar Turborepo, Vercel gestiona las dependencias de forma eficiente.
 1. Crea un proyecto en Vercel e impórtalo desde GitHub/GitLab.
 2. **Root Directory**: Configúralo en `apps/web`.
 3. **Build Command**: Vercel detectará el comando correcto o usa `npx turbo run build --filter=web`.
-4. Añade variables de entorno como `NEXT_PUBLIC_API_URL` apuntando a tu backend en producción.
+4. En Vercel, define `BACKEND_API_ORIGIN=https://tu-backend/api/v1` (solo servidor, para el proxy en `apps/web`). No uses `NEXT_PUBLIC_API_URL` apuntando al backend: el navegador no enviará las cookies de sesión y verás 401.
 
 ### Backend (Render, Railway, Supabase)
 El backend requiere un entorno con Python y Redis.

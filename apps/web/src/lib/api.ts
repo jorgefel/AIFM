@@ -1,9 +1,8 @@
 import axios from "axios";
 import { hasSessionHint, isPublicAuthRoute } from "./session";
 
-// Siempre usamos la ruta relativa para pasar por el proxy de Next.js
-// (rewrites en next.config.ts). Así las cookies de sesión quedan en el mismo
-// origen que la aplicación y no dependen de cookies de terceros entre Vercel y Render.
+// Siempre ruta relativa → Route Handler en app/api/v1/[...path]/route.ts.
+// No usar NEXT_PUBLIC_* apuntando a Render: el navegador no enviaría las cookies HttpOnly.
 const API_URL = "/api/v1";
 
 export const api = axios.create({
