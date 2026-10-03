@@ -195,6 +195,41 @@ def calculate_daily_chart_data(
     return daily_points
 
 
+def calculate_expense_breakdown(expenses: list[dict], year: int, month: int) -> list[dict]:
+    """Return the monthly expense total grouped by category, without mixing currencies."""
+    month_start = date(year, month, 1)
+    month_end = date(year, month, calendar.monthrange(year, month)[1])
+    totals: dict[str, Decimal] = {}
+    for expense in expenses:
+        if expense.get("is_deleted", False):
+            continue
+        expense_date = expense["date"] if isinstance(expense["date"], date) else date.fromisoformat(str(expense["date"]))
+        if month_start <= expense_date <= month_end:
+            category = expense.get("category", "other")
+            totals[category] = totals.get(category, Decimal("0.00")) + to_decimal(expense["amount"])
+    return [
+        {"category": category, "amount": float(to_decimal(amount))}
+        for category, amount in sorted(totals.items(), key=lambda item: item[1], reverse=True)
+    ]
+
+
+def aggregate_monthly_summaries(summaries: list[dict], year: int, month: int) -> dict:
+    """Combine per-property summaries without counting occupancy across properties as one calendar."""
+    money_fields = ("gross_income", "total_fees", "net_income", "total_expenses", "net_profit")
+    result = {"year": year, "month": month, **{field: 0.0 for field in money_fields}}
+    result["reservation_count"] = 0
+    result["expense_count"] = 0
+    for summary in summaries:
+        for field in money_fields:
+            result[field] += float(summary[field])
+        result["reservation_count"] += int(summary["reservation_count"])
+        result["expense_count"] += int(summary["expense_count"])
+    result["occupancy_rate"] = round(
+        sum(float(summary["occupancy_rate"]) for summary in summaries) / len(summaries), 4
+    ) if summaries else 0.0
+    return result
+
+
 def detect_discrepancies(reservations: list[dict]) -> list[dict]:
     """
     Detecta reservaciones donde net_amount != total_amount - platform_fee.

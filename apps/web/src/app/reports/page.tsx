@@ -11,11 +11,15 @@ import { useReports } from "@/hooks/useReports";
 // Components
 import { ReportCards } from "@/components/reports/ReportCards";
 import { ReportModal } from "@/components/reports/ReportModal";
+import { MonthlyReportSummary } from "@/components/reports/MonthlyReportSummary";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ReportsPage() {
+  const { user } = useAuth();
   const {
     properties,
     selectedPropertyId, setSelectedPropertyId,
+    period, setPeriod,
     isLoading,
     isExporting,
     exportCSV,
@@ -35,6 +39,8 @@ export default function ReportsPage() {
             <p className="text-slate-400 mt-1">Exporta tus datos o solicita un análisis inteligente.</p>
           </div>
           {properties.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3">
+              <input type="month" value={period} onChange={(event) => setPeriod(event.target.value)} aria-label="Período del reporte" className="rounded-lg border border-white/10 bg-obsidian-light/50 px-3 py-2 text-sm text-white outline-none focus:border-emerald-400/50" />
             <div className="flex items-center bg-obsidian-light/50 border border-white/10 rounded-lg px-3 py-1">
               <Filter className="w-4 h-4 text-slate-400 mr-2" />
               <select 
@@ -47,6 +53,7 @@ export default function ReportsPage() {
                 ))}
               </select>
             </div>
+            </div>
           )}
         </motion.div>
 
@@ -57,11 +64,13 @@ export default function ReportsPage() {
         )}
 
         {selectedPropertyId && (
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="space-y-6">
+            <MonthlyReportSummary propertyId={selectedPropertyId} period={period} />
             <ReportCards 
               handleExportCSV={exportCSV}
               isExporting={isExporting}
               handleGenerateReport={generateReport}
+              isPro={user?.tier === "pro"}
             />
           </motion.div>
         )}

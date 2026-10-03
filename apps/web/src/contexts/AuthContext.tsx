@@ -22,6 +22,35 @@ export interface User {
   email: string;
   full_name: string;
   role: string;
+  tier: "free" | "pro";
+  phone: string | null;
+  age: number | null;
+  rental_experience_years: number | null;
+  average_monthly_reservations: number | null;
+  previous_platforms: string[];
+  preferences: Record<string, unknown>;
+  onboarding_completed: boolean;
+  onboarding_completed_at: string | null;
+}
+
+export interface ProfileUpdate {
+  full_name?: string;
+  phone?: string | null;
+  preferences?: Record<string, unknown>;
+}
+
+export interface OnboardingUpdate {
+  full_name?: string;
+  age?: number;
+  rental_experience_years?: number;
+  average_monthly_reservations?: number;
+  previous_platforms?: string[];
+  complete?: boolean;
+}
+
+/** New accounts start the questionnaire; saved drafts remain resumable from Settings. */
+export function shouldStartOnboarding(user: User | null): boolean {
+  return Boolean(user && !user.onboarding_completed && user.age === null);
 }
 
 export type SocialProvider = "google" | "apple";
@@ -33,8 +62,10 @@ interface AuthContextType {
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  updateProfile: (data: ProfileUpdate) => Promise<User>;
+  updateOnboarding: (data: OnboardingUpdate) => Promise<User>;
   startSocialLogin: (provider: SocialProvider) => void;
-  completeSocialLogin: () => Promise<boolean>;
+  completeSocialLogin: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -77,8 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password: credentials.password,
       });
       setSessionHint();
-      await refetch();
-      router.push("/");
+      const result = await refetch();
+      router.push(shouldStartOnboarding(result.data ?? null) ? "/onboarding" : "/");
     },
     [refetch, router]
   );
@@ -87,8 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (data: any) => {
       await api.post("/auth/register", data);
       setSessionHint();
-      await refetch();
-      router.push("/");
+      const result = await refetch();
+      router.push(shouldStartOnboarding(result.data ?? null) ? "/onboarding" : "/");
     },
     [refetch, router]
   );
@@ -106,6 +137,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [router, queryClient]);
 
+  const updateProfile = useCallback(async (data: ProfileUpdate) => {
+    const response = await api.patch<User>("/users/me", data);
+    queryClient.setQueryData(["me"], response.data);
+    return response.data;
+  }, [queryClient]);
+
+  const updateOnboarding = useCallback(async (data: OnboardingUpdate) => {
+    const response = await api.patch<User>("/users/me/onboarding", data);
+    queryClient.setQueryData(["me"], response.data);
+    return response.data;
+  }, [queryClient]);
+
   const startSocialLogin = useCallback((provider: SocialProvider) => {
     // OAuth must use a top-level navigation so the provider can redirect the user.
     // Always use the relative path so the request goes through the Vercel proxy,
@@ -120,16 +163,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const result = await refetch();
 
     if (result.data) {
-      return true;
+      return result.data;
     }
 
     clearSessionHint();
-    return false;
+    return null;
   }, [refetch]);
 
   const value = useMemo(
-    () => ({ user, isLoading, login, registerUser, logout, checkAuth, startSocialLogin, completeSocialLogin }),
-    [user, isLoading, login, registerUser, logout, checkAuth, startSocialLogin, completeSocialLogin]
+    () => ({ user, isLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
+    [user, isLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

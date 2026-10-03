@@ -11,6 +11,27 @@ import { Property } from "@/types/models";
  */
 export const PROPERTIES_QUERY_KEY = ["properties"];
 
+export type PropertyFormData = {
+  name: string;
+  address: string;
+  currency: string;
+  property_type: string;
+  max_guests: number;
+  bedrooms: number;
+  bathrooms: number;
+  description: string;
+  nightly_rate: string;
+  amenities: string[];
+  published_platforms: string[];
+  photo_urls: string[];
+};
+
+const emptyProperty: PropertyFormData = {
+  name: "", address: "", currency: "USD", property_type: "apartment",
+  max_guests: 1, bedrooms: 1, bathrooms: 1, description: "", nightly_rate: "",
+  amenities: [], published_platforms: [], photo_urls: [],
+};
+
 export function useProperties() {
   const queryClient = useQueryClient();
   const { data: properties = [], isLoading } = useQuery<Property[]>({
@@ -23,20 +44,28 @@ export function useProperties() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({ name: "", address: "", currency: "USD" });
+  const [formData, setFormData] = useState<PropertyFormData>(emptyProperty);
   const [editingId, setEditingId] = useState<string | null>(null);
   
   const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.published_platforms.length) {
+      toast.warning("Elige una plataforma", "Indica dónde está publicada la propiedad.");
+      return;
+    }
     setIsSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        nightly_rate: formData.nightly_rate === "" ? null : Number(formData.nightly_rate),
+      };
       if (editingId) {
-        await api.put(`/properties/${editingId}`, formData);
+        await api.put(`/properties/${editingId}`, payload);
         toast.success("Propiedad actualizada", "Los cambios se guardaron correctamente.");
       } else {
-        await api.post("/properties/", formData);
+        await api.post("/properties/", payload);
         toast.success("Propiedad creada", "La propiedad se registró correctamente.");
       }
       setIsModalOpen(false);
@@ -63,13 +92,19 @@ export function useProperties() {
 
   const openNewModal = () => {
     setEditingId(null);
-    setFormData({ name: "", address: "", currency: "USD" });
+    setFormData(emptyProperty);
     setIsModalOpen(true);
   };
 
   const openEditModal = (prop: Property) => {
     setEditingId(prop.id);
-    setFormData({ name: prop.name, address: prop.address, currency: prop.currency });
+    setFormData({
+      name: prop.name, address: prop.address, currency: prop.currency,
+      property_type: prop.property_type ?? "apartment",
+      max_guests: prop.max_guests ?? 1, bedrooms: prop.bedrooms ?? 1, bathrooms: prop.bathrooms ?? 1,
+      description: prop.description ?? "", nightly_rate: prop.nightly_rate?.toString() ?? "",
+      amenities: prop.amenities ?? [], published_platforms: prop.published_platforms ?? [], photo_urls: prop.photo_urls ?? [],
+    });
     setIsModalOpen(true);
   };
 

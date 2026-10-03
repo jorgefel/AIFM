@@ -8,7 +8,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, Integer, JSON, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -32,6 +32,29 @@ class Property(Base, UUIDMixin, TimestampMixin):
     )
     currency: Mapped[str] = mapped_column(
         String(3), nullable=False, default="MXN"  # "USD" | "MXN" | "EUR"
+    )
+    property_type: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="apartment", server_default="apartment"
+    )
+    max_guests: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+    bedrooms: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+    bathrooms: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1, server_default="1"
+    )
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    nightly_rate: Mapped[float | None] = mapped_column(Numeric(10, 2), nullable=True)
+    amenities: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, default=list, server_default="[]"
+    )
+    published_platforms: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, default=list, server_default="[]"
+    )
+    photo_urls: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, default=list, server_default="[]"
     )
     owner_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),

@@ -8,6 +8,7 @@ import {
   Building2, 
   BarChart3, 
   Settings,
+  Crown,
   Hexagon
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
+  { name: "Planes", href: "/plans", icon: Crown },
 ];
 
 interface GlassSidebarProps {

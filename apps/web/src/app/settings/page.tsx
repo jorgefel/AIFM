@@ -1,18 +1,51 @@
 "use client";
 
+import Link from "next/link";
+import { FormEvent, useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/Button";
-import { User, Mail, Shield, LogOut, Globe } from "lucide-react";
+import { User, Mail, Shield, LogOut, Globe, Phone, ClipboardList, Crown } from "lucide-react";
 import { useCurrency, CurrencyCode } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const { currency, setCurrency } = useCurrency();
+  const toast = useToast();
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      setFullName(user.full_name ?? "");
+      setPhone(user.phone ?? "");
+    }
+  }, [user]);
 
+  const saveProfile = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!fullName.trim()) {
+      toast.warning("Ingresa tu nombre", "Necesitamos un nombre para identificar tu cuenta.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateProfile({
+        full_name: fullName.trim(),
+        phone: phone.trim() || null,
+        preferences: { ...user?.preferences, currency },
+      });
+      toast.success("Perfil actualizado", "Tus cambios ya están guardados.");
+    } catch {
+      toast.error("No pudimos guardar", "Inténtalo de nuevo en unos segundos.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -45,6 +78,10 @@ export default function SettingsPage() {
               <Shield className="w-5 h-5" />
               Seguridad (Próximamente)
             </button>
+            <Link href="/plans" className="w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-white/5 rounded-xl font-medium transition-colors">
+              <Crown className="w-5 h-5 text-amber-300" />
+              Plan y facturación
+            </Link>
           </div>
 
           {/* Formulario / Detalles */}
@@ -66,7 +103,7 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-6" onSubmit={saveProfile}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">Nombre Completo</label>
@@ -76,9 +113,10 @@ export default function SettingsPage() {
                       </div>
                       <input 
                         type="text" 
-                        defaultValue={user.full_name || ""} 
-                        disabled
-                        className="w-full bg-obsidian-light/50 border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-colors opacity-70 cursor-not-allowed"
+                        value={fullName}
+                        onChange={(event) => setFullName(event.target.value)}
+                        maxLength={150}
+                        className="w-full bg-obsidian-light/50 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
                       />
                     </div>
                   </div>
@@ -96,6 +134,21 @@ export default function SettingsPage() {
                       />
                     </div>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Número de teléfono</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Phone className="h-5 w-5 text-slate-500" /></div>
+                      <input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} maxLength={30} placeholder="Opcional" className="w-full bg-obsidian-light/50 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-colors" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex gap-3"><ClipboardList className="mt-0.5 h-5 w-5 shrink-0 text-teal-400" /><div><p className="font-medium text-white">Cuestionario inicial</p><p className="mt-1 text-sm text-slate-400">{user.onboarding_completed ? `${user.rental_experience_years ?? 0} años de experiencia · ${user.average_monthly_reservations ?? 0} reservas al mes` : "Aún puedes completar tu información de anfitrión."}</p></div></div>
+                    <Link href="/onboarding" className="shrink-0 text-sm font-medium text-emerald-400 hover:text-emerald-300">{user.onboarding_completed ? "Ver datos" : "Completar"}</Link>
+                  </div>
+                  {user.previous_platforms.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{user.previous_platforms.map((platform) => <span key={platform} className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-slate-300">{platform === "booking" ? "Booking.com" : platform === "vrbo" ? "Vrbo" : platform === "direct" ? "Reservas directas" : platform === "airbnb" ? "Airbnb" : "Otra plataforma"}</span>)}</div>}
                 </div>
 
                 {/* Preferencias Globales */}
@@ -122,14 +175,31 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
+                <div className="pt-6 border-t border-white/5 space-y-6">
+                  <h4 className="text-white font-semibold flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-teal-400" />
+                    Integraciones y Canales
+                  </h4>
+                  
+                  <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                    <div>
+                      <p className="font-medium text-white flex items-center gap-2">
+                        Gestor de Canales (Channel Manager)
+                        <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-400 uppercase">PRO</span>
+                      </p>
+                      <p className="mt-1 text-sm text-slate-400">
+                        Sincroniza Airbnb, Booking y VRBO a través de Beds24.
+                      </p>
+                    </div>
+                    <Link href="/settings/integrations" className="shrink-0 text-sm font-medium px-4 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors border border-emerald-500/20">
+                      Configurar
+                    </Link>
+                  </div>
+                </div>
+
                 <div className="pt-6 border-t border-white/5 flex justify-between items-center">
-                  <p className="text-xs text-slate-500 max-w-xs">
-                    La edición de perfil se habilitará en una futura actualización.
-                  </p>
-                  <Button variant="ghost" className="text-coral-accent border-coral-accent/30 hover:bg-coral-accent/10 hover:border-coral-accent" onClick={() => logout()}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Cerrar Sesión
-                  </Button>
+                  <Button type="button" variant="ghost" className="text-coral-accent border-coral-accent/30 hover:bg-coral-accent/10 hover:border-coral-accent" onClick={() => logout()}><LogOut className="w-4 h-4 mr-2" />Cerrar Sesión</Button>
+                  <Button type="submit" isLoading={saving}>Guardar cambios</Button>
                 </div>
               </form>
             </div>

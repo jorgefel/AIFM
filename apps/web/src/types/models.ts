@@ -3,6 +3,15 @@ export interface Property {
   name: string;
   address: string;
   currency: string;
+  property_type: string;
+  max_guests: number;
+  bedrooms: number;
+  bathrooms: number;
+  description?: string | null;
+  nightly_rate?: number | string | null;
+  amenities: string[];
+  published_platforms: string[];
+  photo_urls: string[];
   created_at: string;
   is_active?: boolean;
 }

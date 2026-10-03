@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Hexagon } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { shouldStartOnboarding, useAuth } from "@/contexts/AuthContext";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -15,11 +15,11 @@ export default function AuthCallbackPage() {
 
     const completeAuthentication = async () => {
       try {
-        const isAuthenticated = await completeSocialLogin();
+        const authenticatedUser = await completeSocialLogin();
         if (!isActive) return;
 
-        if (isAuthenticated) {
-          router.replace("/");
+        if (authenticatedUser) {
+          router.replace(shouldStartOnboarding(authenticatedUser) ? "/onboarding" : "/");
           return;
         }
       } catch {

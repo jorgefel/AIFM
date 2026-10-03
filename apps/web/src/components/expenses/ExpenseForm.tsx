@@ -87,6 +87,9 @@ export function ExpenseForm({
               { value: "utilities", label: "Servicios (Agua, Luz)" },
               { value: "supplies", label: "Insumos" },
               { value: "taxes", label: "Impuestos" },
+              { value: "platform_fees", label: "Comisiones de plataforma" },
+              { value: "insurance", label: "Seguros" },
+              { value: "marketing", label: "Marketing" },
               { value: "other", label: "Otro" },
             ]}
             required

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Bell } from "lucide-react";
+import { AlertTriangle, Bell, Info } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNotifications } from "@/hooks/useNotifications";
 
@@ -53,7 +53,9 @@ export function HeaderNotifications() {
                 notifications.map((notif) => (
                   <div key={notif.id} className="p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0">
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 shrink-0">{notif.icon}</div>
+                      <div className={`mt-0.5 shrink-0 ${notif.severity === "high" ? "text-coral-accent" : notif.severity === "medium" ? "text-amber-300" : "text-sky-300"}`}>
+                        {notif.severity === "info" ? <Info className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+                      </div>
                       <div>
                         <p className="text-sm font-medium text-slate-200">{notif.title}</p>
                         <p className="text-xs text-slate-500 mt-0.5">{notif.message}</p>

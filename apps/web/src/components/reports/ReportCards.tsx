@@ -1,13 +1,15 @@
-import { FileSpreadsheet, Zap, BrainCircuit, Download, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { FileSpreadsheet, Zap, BrainCircuit, Download, Sparkles, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface ReportCardsProps {
   handleExportCSV: () => void;
   isExporting: boolean;
   handleGenerateReport: (type: "ai" | "deterministic") => void;
+  isPro: boolean;
 }
 
-export function ReportCards({ handleExportCSV, isExporting, handleGenerateReport }: ReportCardsProps) {
+export function ReportCards({ handleExportCSV, isExporting, handleGenerateReport, isPro }: ReportCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Tarjeta de Exportación CSV */}
@@ -51,10 +53,17 @@ export function ReportCards({ handleExportCSV, isExporting, handleGenerateReport
         <p className="text-slate-400 text-sm mb-6 max-w-sm">
           Deja que nuestro agente financiero de IA revise tus métricas del mes de manera profunda y personalizada.
         </p>
-        <Button onClick={() => handleGenerateReport("ai")} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20">
-          <Sparkles className="w-4 h-4 mr-2" />
-          Consultar IA
-        </Button>
+        {isPro ? (
+          <Button onClick={() => handleGenerateReport("ai")} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Consultar IA
+          </Button>
+        ) : (
+          <Link href="/plans" className="inline-flex w-full sm:w-auto items-center justify-center rounded-full bg-emerald-500/15 px-4 py-2 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-500/25">
+            <LockKeyhole className="mr-2 h-4 w-4" />
+            Disponible con Pro
+          </Link>
+        )}
       </div>
     </div>
   );

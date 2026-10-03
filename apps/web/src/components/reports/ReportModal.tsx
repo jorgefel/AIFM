@@ -12,7 +12,7 @@ interface ReportModalProps {
 
 export function ReportModal({ isOpen, onClose, reportState, reportResult, reportError, reportType }: ReportModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Análisis de IA Financiero">
+    <Modal isOpen={isOpen} onClose={onClose} title={reportType === "ai" ? "Análisis financiero con IA" : "Análisis financiero verificable"}>
       <div className="p-2 space-y-6">
         {reportState === "loading" && (
           <div className="flex flex-col items-center justify-center py-10 space-y-4">

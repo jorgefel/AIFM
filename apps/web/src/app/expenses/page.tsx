@@ -15,11 +15,13 @@ import { Expense } from "@/types/models";
 // Components
 import { ExpenseForm } from "@/components/expenses/ExpenseForm";
 import { ExpenseList } from "@/components/expenses/ExpenseList";
+import { FinanceOverview } from "@/components/expenses/FinanceOverview";
 
 export default function ExpensesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [period, setPeriod] = useState(() => new Date().toISOString().slice(0, 7));
   
   const { formatCurrency } = useCurrency();
 
@@ -36,6 +38,7 @@ export default function ExpensesPage() {
     resetForm,
     loadForm
   } = useExpenses();
+  const [year, month] = period.split("-").map(Number);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -87,6 +90,7 @@ export default function ExpensesPage() {
             <p className="text-slate-400 mt-1">Registra y controla los egresos de tus propiedades.</p>
           </div>
           <div className="flex items-center gap-3">
+            <input type="month" value={period} onChange={(event) => setPeriod(event.target.value)} className="rounded-lg border border-white/10 bg-obsidian-light/50 px-3 py-2 text-sm text-white outline-none focus:border-emerald-400/50" aria-label="Período financiero" />
             {properties.length > 0 && (
               <div className="flex items-center bg-obsidian-light/50 border border-white/10 rounded-lg px-3 py-1">
                 <Filter className="w-4 h-4 text-slate-400 mr-2" />
@@ -113,6 +117,8 @@ export default function ExpensesPage() {
             No tienes propiedades registradas. Crea una propiedad antes de añadir gastos.
           </motion.div>
         )}
+
+        {selectedPropertyId && <motion.div variants={itemVariants}><FinanceOverview propertyId={selectedPropertyId} year={year} month={month} /></motion.div>}
 
         <ExpenseList 
           expenses={expenses}

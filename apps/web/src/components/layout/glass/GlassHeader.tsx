@@ -1,10 +1,11 @@
 "use client";
 
-import { Menu, LogOut, Settings, User as UserIcon, ChevronDown, Bell } from "lucide-react";
+import { Menu, LogOut, Settings, User as UserIcon, ChevronDown, Bell, AlertTriangle, Info, XCircle } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { HeaderSearch } from "../HeaderSearch";
+import { useNotifications } from "@/hooks/useNotifications";
 
 interface GlassHeaderProps {
   onMenuClick?: () => void;
@@ -14,6 +15,7 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const { notifications } = useNotifications();
 
   return (
     <header className="h-20 flex items-center justify-between px-4 md:px-8 bg-transparent">
@@ -37,9 +39,10 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
         <div className="relative">
           <button 
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="p-2.5 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="relative p-2.5 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <Bell className="w-5 h-5" />
+            {notifications.length > 0 && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-coral-accent ring-2 ring-[#1A1A24]" />}
           </button>
           
           {isNotificationsOpen && (
@@ -48,12 +51,9 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
                 className="fixed inset-0 z-40" 
                 onClick={() => setIsNotificationsOpen(false)}
               />
-              <div className="absolute right-0 mt-3 w-64 bg-[#1A1A24] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden py-3 px-4 animate-in slide-in-from-top-2 fade-in duration-200">
-                <p className="text-sm font-medium text-white mb-2">Notificaciones</p>
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <Bell className="w-8 h-8 text-slate-600 mb-2" />
-                  <p className="text-xs text-slate-400">No tienes notificaciones nuevas</p>
-                </div>
+              <div className="absolute right-0 mt-3 w-80 bg-[#1A1A24] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="flex items-center justify-between border-b border-white/5 px-4 py-3"><p className="text-sm font-medium text-white">Alertas operativas</p><span className="text-xs text-slate-500">{notifications.length}</span></div>
+                <div className="max-h-80 overflow-y-auto">{notifications.length === 0 ? <div className="flex flex-col items-center justify-center py-7 text-center"><Bell className="mb-2 h-8 w-8 text-slate-600" /><p className="text-xs text-slate-400">No hay alertas operativas por ahora.</p></div> : notifications.map((notification) => <Link key={notification.id} href={notification.action_url} onClick={() => setIsNotificationsOpen(false)} className="flex gap-3 border-b border-white/5 px-4 py-3 last:border-b-0 hover:bg-white/5"><span className={`mt-0.5 ${notification.severity === "high" ? "text-coral-accent" : notification.severity === "medium" ? "text-amber-400" : "text-teal-400"}`}>{notification.severity === "high" ? <XCircle className="h-4 w-4" /> : notification.severity === "medium" ? <AlertTriangle className="h-4 w-4" /> : <Info className="h-4 w-4" />}</span><span><strong className="block text-xs text-slate-200">{notification.title}</strong><span className="mt-1 block text-xs leading-relaxed text-slate-500">{notification.message}</span></span></Link>)}</div>
               </div>
             </>
           )}

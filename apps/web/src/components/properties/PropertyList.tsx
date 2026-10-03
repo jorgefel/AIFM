@@ -1,7 +1,8 @@
 "use client";
 
 import { DataTable } from "@/components/ui/DataTable";
-import { Edit2, Trash2, Building2 } from "lucide-react";
+import Link from "next/link";
+import { Edit2, Trash2, Building2, Eye, Users } from "lucide-react";
 import { Property } from "@/types/models";
 
 interface PropertyListProps {
@@ -15,6 +16,9 @@ export function PropertyList({ properties, isLoading, onEdit, onDelete }: Proper
   const columns = [
     { header: "Nombre", accessorKey: "name" },
     { header: "Dirección", accessorKey: "address" },
+    { header: "Tipo", accessorKey: "property_type", cell: (item: Property) => <span className="capitalize">{item.property_type}</span> },
+    { header: "Capacidad", accessorKey: "max_guests", cell: (item: Property) => <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5" />{item.max_guests}</span> },
+    { header: "Por noche", accessorKey: "nightly_rate", cell: (item: Property) => item.nightly_rate == null ? "—" : `${item.currency} ${Number(item.nightly_rate).toLocaleString()}` },
     { header: "Moneda", accessorKey: "currency" },
     {
       header: "Fecha de Creación",
@@ -26,6 +30,7 @@ export function PropertyList({ properties, isLoading, onEdit, onDelete }: Proper
       accessorKey: "actions",
       cell: (item: Property) => (
         <div className="flex items-center gap-2">
+          <Link href={`/properties/${item.id}`} aria-label={`Ver ${item.name}`} className="p-1.5 text-slate-400 hover:bg-white/5 hover:text-white rounded-md transition-colors"><Eye className="w-4 h-4" /></Link>
           <button 
             onClick={() => onEdit(item)}
             className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors"

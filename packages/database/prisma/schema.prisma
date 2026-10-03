@@ -1,0 +1,106 @@
+// Prisma is an additive, read-only mirror for tooling in this monorepo.
+// Alembic remains the migration authority while the Python API owns writes.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                         String    @id @db.Uuid
+  email                      String    @unique @db.VarChar(255)
+  hashedPassword             String?   @map("hashed_password") @db.VarChar(255)
+  googleId                   String?   @unique @map("google_id") @db.VarChar(255)
+  appleId                    String?   @unique @map("apple_id") @db.VarChar(255)
+  authProvider               String    @default("email") @map("auth_provider") @db.VarChar(20)
+  fullName                   String    @map("full_name") @db.VarChar(150)
+  role                       String    @default("admin") @db.VarChar(20)
+  isActive                   Boolean   @default(true) @map("is_active")
+  tier                       String    @default("free") @db.VarChar(10)
+  phone                      String?   @db.VarChar(30)
+  age                        Int?
+  rentalExperienceYears      Int?      @map("rental_experience_years")
+  averageMonthlyReservations Int?      @map("average_monthly_reservations")
+  previousPlatforms          Json      @default("[]") @map("previous_platforms")
+  preferences                Json      @default("{}")
+  onboardingCompleted        Boolean   @default(false) @map("onboarding_completed")
+  onboardingCompletedAt      DateTime? @map("onboarding_completed_at") @db.Timestamptz(6)
+  createdAt                  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  properties                 Property[]
+  subscriptions              Subscription[]
+
+  @@map("users")
+}
+
+model Subscription {
+  id                     String   @id @db.Uuid
+  userId                 String   @map("user_id") @db.Uuid
+  provider               String   @default("stripe") @db.VarChar(30)
+  customerId             String?  @map("customer_id") @db.VarChar(255)
+  providerSubscriptionId String?  @unique @map("provider_subscription_id") @db.VarChar(255)
+  checkoutSessionId      String?  @unique @map("checkout_session_id") @db.VarChar(255)
+  status                 String   @default("inactive") @db.VarChar(30)
+  priceId                String?  @map("price_id") @db.VarChar(255)
+  currentPeriodEnd       DateTime? @map("current_period_end") @db.Timestamptz(6)
+  cancelAtPeriodEnd      Boolean  @default(false) @map("cancel_at_period_end")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([customerId])
+  @@map("subscriptions")
+}
+
+model Property {
+  id                 String    @id @db.Uuid
+  name               String    @db.VarChar(200)
+  address            String    @db.VarChar(500)
+  currency           String    @default("MXN") @db.VarChar(3)
+  propertyType       String    @default("apartment") @map("property_type") @db.VarChar(30)
+  maxGuests          Int       @default(1) @map("max_guests")
+  bedrooms           Int       @default(1)
+  bathrooms          Int       @default(1)
+  description        String?
+  nightlyRate        Decimal?  @map("nightly_rate") @db.Decimal(10, 2)
+  amenities          Json      @default("[]")
+  publishedPlatforms Json      @default("[]") @map("published_platforms")
+  photoUrls          Json      @default("[]") @map("photo_urls")
+  ownerId            String    @map("owner_id") @db.Uuid
+  isActive           Boolean   @default(true) @map("is_active")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  owner              User      @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  reservations       Reservation[]
+
+  @@index([ownerId])
+  @@map("properties")
+}
+
+model Reservation {
+  id          String   @id @db.Uuid
+  propertyId  String   @map("property_id") @db.Uuid
+  guestName   String   @map("guest_name") @db.VarChar(200)
+  checkIn     DateTime @map("check_in") @db.Date
+  checkOut    DateTime @map("check_out") @db.Date
+  totalAmount Decimal  @map("total_amount") @db.Decimal(10, 2)
+  platformFee Decimal  @default(0) @map("platform_fee") @db.Decimal(10, 2)
+  netAmount   Decimal  @map("net_amount") @db.Decimal(10, 2)
+  currency    String   @default("MXN") @db.VarChar(3)
+  platform    String   @db.VarChar(20)
+  status      String   @default("confirmed") @db.VarChar(20)
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+
+  @@index([propertyId])
+  @@index([checkIn])
+  @@index([checkOut])
+  @@map("reservations")
+}
