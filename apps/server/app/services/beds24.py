@@ -1,9 +1,12 @@
 # ─────────────────────────────────────────────────────────────
 # app/services/beds24.py — Cliente para Beds24 API V2
 # ─────────────────────────────────────────────────────────────
-import httpx
-import logging
 import asyncio
+from datetime import datetime, timezone
+import logging
+from typing import Any
+
+import httpx
 from app.core.config import settings
 from app.core.redis import redis_client
 
@@ -40,7 +43,7 @@ class Beds24Client:
         if not refresh_token:
             raise ValueError("BEDS24_REFRESH_TOKEN no configurado en el servidor")
         
-        headers = {"token": refresh_token}
+        headers = {"refreshToken": refresh_token, "accept": "application/json"}
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{cls.BASE_URL}/authentication/token", headers=headers)
             if resp.status_code != 200:
@@ -61,6 +64,55 @@ class Beds24Client:
             # Actualizar métricas de cuota desde los headers de la respuesta
             cls._update_quota_metrics(resp.headers)
             return resp.json().get("data", [])
+
+    @classmethod
+    async def get_bookings(cls, modified_since: datetime | None = None) -> list[dict[str, Any]]:
+        """Fetch all changed bookings with pagination and bounded retry/backoff.
+
+        Beds24 API V2 paginates GET /bookings. The cursor is intentionally a
+        timestamp a few seconds before the prior successful run, making an
+        overlap safe because Nomora upserts by the immutable Beds24 booking ID.
+        """
+        token = await cls.get_access_token()
+        params: dict[str, str] = {}
+        if modified_since:
+            params["modifiedSince"] = modified_since.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        url = f"{cls.BASE_URL}/bookings"
+        bookings: list[dict[str, Any]] = []
+        pages = 0
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            while url:
+                pages += 1
+                if pages > 100:
+                    raise RuntimeError("Beds24 returned more than 100 booking pages; sync was stopped safely.")
+                response = await cls._get_with_retry(client, url, headers={"token": token, "accept": "application/json"}, params=params)
+                params = {}
+                payload = response.json()
+                bookings.extend(payload.get("data", []))
+                url = payload.get("nextPageLink")
+                cls._update_quota_metrics(response.headers)
+        return bookings
+
+    @classmethod
+    async def _get_with_retry(cls, client: httpx.AsyncClient, url: str, *, headers: dict[str, str], params: dict[str, str]) -> httpx.Response:
+        last_error: Exception | None = None
+        for attempt in range(3):
+            try:
+                response = await client.get(url, headers=headers, params=params)
+                if response.status_code < 400:
+                    return response
+                if response.status_code not in {408, 429, 500, 502, 503, 504}:
+                    response.raise_for_status()
+                retry_after = response.headers.get("retry-after")
+                delay = float(retry_after) if retry_after and retry_after.isdigit() else 2 ** attempt
+                last_error = httpx.HTTPStatusError("Beds24 transient response", request=response.request, response=response)
+            except (httpx.TimeoutException, httpx.TransportError) as exc:
+                last_error = exc
+                delay = 2 ** attempt
+            if attempt < 2:
+                await asyncio.sleep(delay)
+        assert last_error is not None
+        raise last_error
 
     @classmethod
     def _update_quota_metrics(cls, headers: httpx.Headers):

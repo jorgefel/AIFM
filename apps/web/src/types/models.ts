@@ -41,4 +41,7 @@ export interface Reservation {
   platform: string;
   status: string;
   notes?: string;
+  beds24_booking_id?: string | null;
+  sync_source?: string | null;
+  synced_at?: string | null;
 }

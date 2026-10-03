@@ -41,5 +41,8 @@ class ReservationRead(ReservationBase):
     net_amount: float
     created_at: datetime
     updated_at: datetime
+    beds24_booking_id: str | None = None
+    sync_source: str | None = None
+    synced_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)

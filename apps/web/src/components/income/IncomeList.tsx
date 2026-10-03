@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/ui/DataTable";
-import { Wallet, Edit2, Trash2 } from "lucide-react";
+import { Wallet, Edit2, Trash2, RefreshCw } from "lucide-react";
 import { Reservation } from "@/types/models";
 import { motion, Variants } from "framer-motion";
 
@@ -18,7 +18,7 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
     { 
       header: "Plataforma", 
       accessorKey: "platform",
-      cell: (item: Reservation) => <span className="capitalize">{item.platform}</span>
+      cell: (item: Reservation) => <div className="flex items-center gap-2"><span className="capitalize">{item.platform}</span>{item.sync_source === "beds24" && <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/20 bg-sky-400/10 px-2 py-0.5 text-xs text-sky-300"><RefreshCw className="h-3 w-3" />Sincronizada</span>}</div>
     },
     { 
       header: "Fechas", 
@@ -57,15 +57,15 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
       accessorKey: "actions",
       cell: (item: Reservation) => (
         <div className="flex items-center gap-2">
-          <button 
+          <button disabled={item.sync_source === "beds24"}
             onClick={() => onEdit(item)}
             className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
-          <button 
+          <button disabled={item.sync_source === "beds24"}
             onClick={() => onDelete(item.id)}
-            className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
+            className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-30"
           >
             <Trash2 className="w-4 h-4" />
           </button>

@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { api } from "@/lib/api";
 import { useToast } from "@/contexts/ToastContext";
+import { Beds24SyncPanel } from "@/components/integrations/Beds24SyncPanel";
 
 export default function IntegrationsPage() {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ export default function IntegrationsPage() {
     
     setStep("checking");
     try {
-      const response = await api.get("/api/v1/integrations/beds24/properties");
+      const response = await api.get("/integrations/beds24/properties");
       if (response.data.status === "success" || response.status === 200) {
         setStep("success");
       } else {
@@ -131,9 +132,16 @@ export default function IntegrationsPage() {
                 <p className="text-slate-300 mb-8">
                   El conector está activo. Pronto comenzaremos a sincronizar el inventario y las reservas de tus propiedades.
                 </p>
-                <Button variant="secondary" onClick={() => setStep("intro")} className="w-full sm:w-auto">
-                  Ver estado
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button variant="secondary" onClick={() => setStep("intro")} className="w-full sm:w-auto">
+                    Ver estado
+                  </Button>
+                  <Link href="/settings/integrations/ota">
+                    <Button className="w-full sm:w-auto">
+                      Conectar Airbnb / Booking
+                    </Button>
+                  </Link>
+                </div>
               </motion.div>
             )}
 
@@ -160,6 +168,7 @@ export default function IntegrationsPage() {
           </AnimatePresence>
           
         </div>
+        <Beds24SyncPanel isPro={isPro} />
       </motion.div>
     </DashboardLayout>
   );
