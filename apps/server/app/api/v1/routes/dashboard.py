@@ -26,5 +26,40 @@ DEFAULT_LAYOUT = [
     {"i": "recent_activity", "x": 2, "y": 1, "w": 2, "h": 2, "minW": 2, "minH": 2},
 ]
 
+@router.get("/", response_model=DashboardLayoutRead)
+async def get_dashboard_layout(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(select(DashboardLayout).where(DashboardLayout.user_id == current_user.id))
+    layout = result.scalars().first()
+    if not layout:
+        # Devolvemos el default layout si el usuario no tiene uno guardado
+        import datetime
+        return DashboardLayoutRead(
+            id=uuid.uuid4(),
+            user_id=current_user.id,
+            layout_data=DEFAULT_LAYOUT,
+            created_at=datetime.datetime.now(datetime.timezone.utc),
+            updated_at=datetime.datetime.now(datetime.timezone.utc)
+        )
+    return layout
 
-
+@router.put("/", response_model=DashboardLayoutRead)
+async def update_dashboard_layout(
+    payload: DashboardLayoutUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(select(DashboardLayout).where(DashboardLayout.user_id == current_user.id))
+    layout = result.scalars().first()
+    
+    if not layout:
+        layout = DashboardLayout(user_id=current_user.id, layout_data=payload.layout_data)
+        db.add(layout)
+    else:
+        layout.layout_data = payload.layout_data
+        
+    await db.commit()
+    await db.refresh(layout)
+    return layout

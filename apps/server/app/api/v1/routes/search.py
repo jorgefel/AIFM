@@ -62,15 +62,15 @@ async def search_all(q: str, db: AsyncSession = Depends(get_db), current_user: U
 
     return {
         "properties": [
-            {"id": p.id, "name": p.name, "type": "property", "subtitle": p.address}
+            {"id": str(p.id), "name": p.name, "type": "property", "subtitle": p.address}
             for p in properties
         ],
         "reservations": [
-            {"id": r.id, "name": r.guest_name, "type": "reservation", "subtitle": f"{r.check_in} a {r.check_out}", "property_id": r.property_id}
+            {"id": str(r.id), "name": r.guest_name, "type": "reservation", "subtitle": f"{r.check_in} a {r.check_out}", "property_id": str(r.property_id)}
             for r in reservations
         ],
         "expenses": [
-            {"id": e.id, "name": e.description, "type": "expense", "subtitle": f"${e.amount} - {e.category}", "property_id": e.property_id}
+            {"id": str(e.id), "name": e.description, "type": "expense", "subtitle": f"${e.amount} - {e.category}", "property_id": str(e.property_id)}
             for e in expenses
         ]
     }

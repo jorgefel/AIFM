@@ -29,7 +29,7 @@ async def export_csv(
     Exporta todas las transacciones (reservas y gastos) de una propiedad en formato CSV.
     """
     if start and end and end < start:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="end must not be before start")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="end must not be before start")
 
     # Verificar propiedad
     result = await db.execute(

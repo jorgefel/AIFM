@@ -11,7 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.models.property import Property
-from app.api.v1.routes.analysis import _get_property_data, _get_portfolio_data, _build_operational_alerts
+from app.models.user import User
+from app.api.v1.routes.analysis import _get_property_data, _get_portfolio_data, _build_operational_alerts, _portfolio_summary
 from app.engine.golden_rule import calculate_monthly_summary
 
 # Estas variables globales temporales permiten que las herramientas accedan al contexto
@@ -31,10 +32,7 @@ class CopilotContext:
         self.property_id = property_id
         self.period = period
 
-def get_context_summary(context: CopilotContext) -> dict:
-    """Helper to fetch metrics for context injection without direct LangChain @tool if we prefer a single shot,
-    but let's return a structured string."""
-    return {} # will be implemented inside the run_copilot
+
 
 SYSTEM_PROMPT = """Eres el Asistente IA Pro de Nomora (Copiloto Analítico), diseñado para administradores de propiedades.
 Tu objetivo es responder de manera clara, basada SIEMPRE en los datos estructurados provistos por el motor determinístico de Nomora.
@@ -73,7 +71,9 @@ async def run_copilot(
         if alerts:
             context_data += "Alertas Operativas (HOY):\n" + json.dumps(alerts, default=str)
     else:
-        properties, reservations, expenses, summary, _ = await _get_portfolio_data(user_id, db, year, month)
+        user = await db.get(User, user_id)
+        properties, reservations, expenses = await _get_portfolio_data(user, db)
+        summary, _ = _portfolio_summary(properties, reservations, expenses, year, month)
         context_data += f"Portafolio Completo ({len(properties)} propiedades vinculadas)\n"
         context_data += f"Periodo analizado: {year}-{month:02d}\n"
         context_data += f"Métricas Consolidadas: Ingresos netos: {summary['net_income']}, Gastos: {summary['total_expenses']}, Beneficio neto: {summary['net_profit']}, Ocupación promedio: {summary['occupancy_rate']*100}%\n"
@@ -93,6 +93,7 @@ async def run_copilot(
     llm = ChatOpenAI(
         model=settings.AI_MODEL,
         api_key=settings.OPENAI_API_KEY,
+        base_url=settings.OPENAI_BASE_URL if settings.OPENAI_BASE_URL else None,
         temperature=0.2,
         max_tokens=1000
     )

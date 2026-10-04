@@ -1,4 +1,4 @@
-﻿from pydantic import model_validator
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     # â”€â”€ IA / Agentes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     ENABLE_AI_AGENTS: bool = False
     OPENAI_API_KEY: str = ""
+    OPENAI_BASE_URL: str = ""
     AI_MODEL: str = "gpt-4o-mini"
     AI_USER_DAILY_LIMIT: int = 50
     AI_GLOBAL_DAILY_LIMIT: int = 500

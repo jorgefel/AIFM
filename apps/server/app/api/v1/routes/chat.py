@@ -47,8 +47,8 @@ async def send_chat_message(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_tier("pro"))
 ):
-    await check_global_ai_limit(db)
-    await check_user_ai_limit(current_user.id, db)
+    await check_global_ai_limit()
+    await check_user_ai_limit(str(current_user.id))
     
     if payload.property_id:
         await verify_property_access(payload.property_id, current_user, db)
@@ -104,7 +104,7 @@ async def send_chat_message(
     db.add(assistant_msg)
     session.message_count += 1
     
-    await increment_ai_usage(current_user.id, db)
+    await increment_ai_usage(str(current_user.id))
     await db.commit()
     await db.refresh(assistant_msg)
     
