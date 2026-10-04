@@ -1,7 +1,7 @@
-# Graph Report - AIFM  (2026-10-03)
+# Graph Report - AIFM  (2026-10-04)
 
 ## Corpus Check
-- 312 files · ~203,368 words
+- 312 files · ~203,484 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 15 file(s) not represented in the graph (top: (none) 5, .css 3, .mdc 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3069a8ca`
+- Built from commit: `77b87546`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -753,7 +753,7 @@ Nodes (4): devDependencies, @cloudflare/workers-types, typescript, wrangler
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `User` connect `User` to `routes/auth.py`, `test_billing.py`, `export_csv`, `integrations.py`, `sqlalchemy`, `expenses.py`, `routes/billing.py`, `routes/chat.py`, `routes/analysis.py`, `test_user_onboarding.py`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **Why does `Detalles Técnicos` connect `routes/analysis.py` to `AIFM System Overview`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `Motor Engine & IA Agents` connect `AIFM System Overview` to `routes/analysis.py`?**

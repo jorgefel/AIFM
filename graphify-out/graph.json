@@ -3170,7 +3170,7 @@
       "file_type": "code",
       "norm_label": "verify_property_access()",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L119"
+      "source_location": "L126"
     },
     {
       "id": "apps_server_app_models_expense_expense_repr",
@@ -5486,7 +5486,7 @@
       "file_type": "code",
       "norm_label": "create_property()",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L23"
+      "source_location": "L25"
     },
     {
       "id": "apps_server_app_api_v1_routes_properties_delete_property",
@@ -5498,7 +5498,7 @@
       "file_type": "code",
       "norm_label": "delete_property()",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L58"
+      "source_location": "L60"
     },
     {
       "id": "apps_server_app_api_v1_routes_properties_get_properties",
@@ -5510,7 +5510,7 @@
       "file_type": "code",
       "norm_label": "get_properties()",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L16"
+      "source_location": "L17"
     },
     {
       "id": "apps_server_app_api_v1_routes_properties_get_property",
@@ -5522,7 +5522,7 @@
       "file_type": "code",
       "norm_label": "get_property()",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L31"
+      "source_location": "L33"
     },
     {
       "id": "apps_server_app_api_v1_routes_properties_update_property",
@@ -5534,7 +5534,7 @@
       "file_type": "code",
       "norm_label": "update_property()",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L41"
+      "source_location": "L43"
     },
     {
       "id": "apps_server_app_api_v1_routes_reservations_create_reservation",
@@ -6302,7 +6302,7 @@
       "file_type": "code",
       "norm_label": "require_tier()",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L102"
+      "source_location": "L109"
     },
     {
       "id": "apps_server_app_core_dependencies_require_tier_dependency",
@@ -6314,7 +6314,7 @@
       "file_type": "code",
       "norm_label": "dependency()",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L108"
+      "source_location": "L115"
     },
     {
       "id": "apps_server_app_core_dependencies_verify_refresh_token",
@@ -6326,7 +6326,7 @@
       "file_type": "code",
       "norm_label": "verify_refresh_token()",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L67"
+      "source_location": "L74"
     },
     {
       "id": "apps_server_alembic_versions_0a1b2c3d4e5f_add_property_details_downgrade",
@@ -29477,7 +29477,7 @@
       "file_type": "code",
       "norm_label": "delete",
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L63"
+      "source_location": "L81"
     },
     {
       "id": "apps_web_src_app_api_v1_path_route_dynamic",
@@ -29499,7 +29499,7 @@
       "file_type": "code",
       "norm_label": "get",
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L59"
+      "source_location": "L77"
     },
     {
       "id": "apps_web_src_app_api_v1_path_route_options",
@@ -29510,7 +29510,7 @@
       "file_type": "code",
       "norm_label": "options",
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L64"
+      "source_location": "L82"
     },
     {
       "id": "apps_web_src_app_api_v1_path_route_patch",
@@ -29521,7 +29521,7 @@
       "file_type": "code",
       "norm_label": "patch",
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L62"
+      "source_location": "L80"
     },
     {
       "id": "apps_web_src_app_api_v1_path_route_post",
@@ -29532,7 +29532,7 @@
       "file_type": "code",
       "norm_label": "post",
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L60"
+      "source_location": "L78"
     },
     {
       "id": "apps_web_src_app_api_v1_path_route_put",
@@ -29543,7 +29543,7 @@
       "file_type": "code",
       "norm_label": "put",
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L61"
+      "source_location": "L79"
     },
     {
       "id": "apps_server_app_core_config_py_model_validator",
@@ -29898,7 +29898,7 @@
       "source_location": "L41"
     },
     {
-      "id": "apps_server_app_core_dependencies_rationale_103",
+      "id": "apps_server_app_core_dependencies_rationale_110",
       "label": "Return a FastAPI dependency that requires the requested subscription tier.",
       "_origin": "ast",
       "community": 83,
@@ -29906,7 +29906,7 @@
       "file_type": "rationale",
       "norm_label": "return a fastapi dependency that requires the requested subscription tier.",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L103"
+      "source_location": "L110"
     },
     {
       "id": "agents_skills_context_engineering_skill",
@@ -39522,7 +39522,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L22",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -39534,7 +39534,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -39546,7 +39546,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -39558,7 +39558,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -39570,7 +39570,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L40",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -58755,7 +58755,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -58767,7 +58767,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L58",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -58779,7 +58779,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L58",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -58791,7 +58791,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -58803,7 +58803,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -58815,7 +58815,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -58827,7 +58827,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -58839,7 +58839,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -59079,7 +59079,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L119",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -59091,7 +59091,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L119",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -59103,7 +59103,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L67",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -59523,7 +59523,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L67",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -69336,7 +69336,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -69347,7 +69347,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -69358,7 +69358,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -69369,7 +69369,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -69380,7 +69380,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L58",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -69556,7 +69556,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L102",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -69567,7 +69567,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L119",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -69589,7 +69589,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L67",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -72185,7 +72185,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L59",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -72196,7 +72196,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L60",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -72207,7 +72207,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L61",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -72218,7 +72218,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L62",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -72229,7 +72229,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L63",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -72240,7 +72240,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/app/api/v1/[...path]/route.ts",
-      "source_location": "L64",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -85748,14 +85748,14 @@
       "weight": 1.0
     },
     {
-      "source": "apps_server_app_core_dependencies_rationale_103",
+      "source": "apps_server_app_core_dependencies_rationale_110",
       "target": "apps_server_app_core_dependencies_require_tier",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L103",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -86923,7 +86923,7 @@
       "confidence_score": 0.85,
       "context": "return",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L116",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -87655,7 +87655,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 0.8
     },
     {
@@ -87667,7 +87667,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 0.8
     },
     {
@@ -87679,7 +87679,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L58",
+      "source_location": "L60",
       "weight": 0.8
     },
     {
@@ -87691,7 +87691,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 0.8
     },
     {
@@ -87703,7 +87703,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 0.8
     },
     {
@@ -87715,7 +87715,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 0.8
     },
     {
@@ -87727,7 +87727,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 0.8
     },
     {
@@ -87931,7 +87931,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L119",
+      "source_location": "L126",
       "weight": 0.8
     },
     {
@@ -88027,7 +88027,7 @@
       "confidence_score": 0.95,
       "context": "return_type",
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L119",
+      "source_location": "L126",
       "weight": 0.8
     },
     {
@@ -88722,7 +88722,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L24",
+      "source_location": "L26",
       "weight": 0.8
     },
     {
@@ -88733,7 +88733,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L60",
+      "source_location": "L62",
       "weight": 0.8
     },
     {
@@ -88744,7 +88744,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 0.8
     },
     {
@@ -88755,7 +88755,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L33",
+      "source_location": "L35",
       "weight": 0.8
     },
     {
@@ -88766,7 +88766,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "apps/server/app/api/v1/routes/properties.py",
-      "source_location": "L43",
+      "source_location": "L45",
       "weight": 0.8
     },
     {
@@ -88920,7 +88920,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "apps/server/app/core/dependencies.py",
-      "source_location": "L108",
+      "source_location": "L115",
       "weight": 0.8
     },
     {
@@ -89170,5 +89170,5 @@
       "source_file": "AIFM-Brain/00-Overview.md"
     }
   ],
-  "built_at_commit": "3069a8cabca03e22e5da5ed086a8e05367f76644"
+  "built_at_commit": "77b87546550b2850ee2462a6ecf193fd8903b2ba"
 }
