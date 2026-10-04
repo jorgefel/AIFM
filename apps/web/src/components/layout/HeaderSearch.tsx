@@ -41,11 +41,11 @@ export function HeaderSearch() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => { if (query.trim().length >= 2) setShowResults(true); }}
-        className="w-full bg-white border border-black/[0.06] shadow-sm rounded-full py-2.5 pl-9 pr-4 text-sm text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-ink-muted/70"
+        className="w-full bg-card border border-line-soft shadow-sm rounded-full py-2.5 pl-9 pr-4 text-sm text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/10 transition-all placeholder:text-ink-muted/70"
       />
 
       {showResults && (
-        <div className="absolute top-full mt-2 w-full max-h-96 overflow-y-auto bg-white border border-black/5 rounded-xl shadow-xl z-50 p-2">
+        <div className="absolute top-full mt-2 w-full max-h-96 overflow-y-auto bg-card border border-line-soft rounded-xl shadow-xl z-50 p-2">
           {!hasResults && !isSearching && (
             <div className="p-4 text-sm text-ink-muted text-center">No se encontraron resultados</div>
           )}

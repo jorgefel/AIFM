@@ -5,6 +5,7 @@ import { Sparkles, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { AuthShowcasePanel } from "@/components/auth/AuthShowcasePanel";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -141,6 +142,16 @@ export default function RegisterPage() {
               {loading ? "Creando cuenta..." : "Registrarme"}
             </motion.button>
           </form>
+
+          <motion.div variants={itemVariants} className="flex items-center gap-3 my-6">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="text-xs text-slate-500">o continúa con</span>
+            <div className="h-px flex-1 bg-white/10" />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <SocialAuthButtons />
+          </motion.div>
 
           <motion.p variants={itemVariants} className="text-center text-slate-500 text-sm mt-8">
             ¿Ya tienes cuenta?{" "}

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { HeaderSearch } from "../HeaderSearch";
 import { HeaderNotifications } from "../HeaderNotifications";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface GlassHeaderProps {
   onMenuClick?: () => void;
@@ -25,7 +26,7 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
           {/* Botón de Menú (Solo en móvil/tablet) */}
           <button
             onClick={onMenuClick}
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-black/[0.06] text-ink-muted hover:text-violet-600 transition-colors shrink-0"
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-card shadow-sm border border-line-soft text-ink-muted hover:text-violet-600 transition-colors shrink-0"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
@@ -42,11 +43,14 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
           {/* Buscador - icono en móvil */}
           <button
             onClick={() => setIsMobileSearchOpen((v) => !v)}
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-black/[0.06] text-ink-muted hover:text-violet-600 transition-colors"
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-card shadow-sm border border-line-soft text-ink-muted hover:text-violet-600 transition-colors"
             aria-label="Buscar"
           >
             {isMobileSearchOpen ? <X className="w-[18px] h-[18px]" /> : <Search className="w-[18px] h-[18px]" />}
           </button>
+
+          {/* Tema claro / oscuro */}
+          <ThemeToggle />
 
           {/* Notificaciones */}
           <HeaderNotifications />
@@ -55,7 +59,7 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
           <div className="relative">
             <div
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-2.5 cursor-pointer group bg-white pl-1 pr-1 lg:pr-3 py-1 rounded-full shadow-sm border border-black/[0.06] hover:border-violet-200 transition-colors"
+              className="flex items-center gap-2.5 cursor-pointer group bg-card pl-1 pr-1 lg:pr-3 py-1 rounded-full shadow-sm border border-line-soft hover:border-violet-200 transition-colors"
             >
               <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center overflow-hidden shrink-0">
                 <span className="text-xs font-bold text-white">
@@ -80,7 +84,7 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
                   className="fixed inset-0 z-40"
                   onClick={() => setIsProfileOpen(false)}
                 />
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-black/5 rounded-xl shadow-xl z-50 overflow-hidden py-2 animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="absolute right-0 mt-2 w-56 bg-card border border-line-soft rounded-xl shadow-xl z-50 overflow-hidden py-2 animate-in slide-in-from-top-2 fade-in duration-200">
                   <Link
                     href="/settings?tab=profile"
                     onClick={() => setIsProfileOpen(false)}
@@ -99,7 +103,7 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
                     Configuración
                   </Link>
 
-                  <div className="h-px bg-black/5 my-1" />
+                  <div className="h-px bg-ink/5 my-1" />
 
                   <button
                     onClick={() => {

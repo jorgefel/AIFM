@@ -38,7 +38,7 @@ export function ReportModal({ isOpen, onClose, reportState, reportResult, report
                   {reportType === "ai" ? "Veredicto de IA" : "Veredicto Financiero"}
                 </h4>
                 {reportResult.health_score !== undefined && (
-                  <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-black/5 shadow-sm">
+                  <div className="flex items-center gap-2 bg-card px-3 py-1.5 rounded-lg border border-line-soft shadow-sm">
                     <span className="text-xs text-ink-muted font-medium">Salud Financiera:</span>
                     <span className={`text-sm font-bold ${
                       reportResult.health_score >= 70 ? "text-teal-600" :

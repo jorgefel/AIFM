@@ -16,10 +16,10 @@ interface DataTableProps<T> {
 
 export function DataTable<T>({ data, columns, isLoading, emptyMessage = "No hay datos disponibles." }: DataTableProps<T>) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-black/5 bg-white shadow-sm">
+    <div className="w-full overflow-x-auto rounded-xl border border-line-soft bg-card shadow-sm">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-black/5 bg-surface">
+          <tr className="border-b border-line-soft bg-surface">
             {columns.map((col, idx) => (
               <th key={idx} className="p-4 text-xs font-semibold text-ink-muted uppercase tracking-wider">
                 {col.header}
@@ -44,7 +44,7 @@ export function DataTable<T>({ data, columns, isLoading, emptyMessage = "No hay 
             data.map((item, rowIdx) => (
               <tr 
                 key={rowIdx} 
-                className="border-b border-black/5 hover:bg-surface transition-colors last:border-b-0 group"
+                className="border-b border-line-soft hover:bg-surface transition-colors last:border-b-0 group"
               >
                 {columns.map((col, colIdx) => (
                   <td key={colIdx} className="p-4 text-sm text-ink/85">

@@ -25,6 +25,7 @@ interface AuthContextType {
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  completeSocialLogin: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,6 +71,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push("/");
   };
 
+  const completeSocialLogin = async () => {
+    // El backend deja los tokens en cookies HttpOnly; solo hay que cargar el perfil
+    localStorage.removeItem(DEMO_FLAG);
+    localStorage.removeItem("nomora_demo_user");
+    setIsDemoMode(false);
+
+    try {
+      const response = await api.get("/users/me");
+      setUser(response.data);
+      return true;
+    } catch (error) {
+      setUser(null);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const loginDemo = (overrides?: Partial<User>) => {
     const demoUser = { ...DEMO_USER, ...overrides } as User;
     localStorage.setItem(DEMO_FLAG, "true");
@@ -106,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth }}>
+    <AuthContext.Provider value={{ user, isLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth, completeSocialLogin }}>
       {children}
     </AuthContext.Provider>
   );

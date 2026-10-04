@@ -35,7 +35,7 @@ export function CurrencyInput({ label, value, onChange, currency, required }: Cu
         prefix={prefix}
         decimalScale={2}
         allowNegative={false}
-        className="w-full bg-surface border border-black/10 rounded-lg px-4 py-2.5 text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15 focus:bg-white transition-all placeholder:text-ink-muted/60"
+        className="w-full bg-surface border border-line rounded-lg px-4 py-2.5 text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15 focus:bg-card transition-all placeholder:text-ink-muted/60"
         placeholder={`${prefix}0${decimalSeparator}00`}
         required={required}
       />

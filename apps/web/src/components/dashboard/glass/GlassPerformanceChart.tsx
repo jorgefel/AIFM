@@ -2,6 +2,7 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useChartTheme } from "@/hooks/useChartTheme";
 
 interface GlassPerformanceChartProps {
   chartData: any[];
@@ -11,7 +12,7 @@ interface GlassPerformanceChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload || payload.length === 0) return null;
   return (
-    <div className="bg-white border border-black/5 rounded-xl px-4 py-3 shadow-xl">
+    <div className="bg-card border border-line-soft rounded-xl px-4 py-3 shadow-xl">
       <p className="text-xs text-ink-muted font-medium mb-1.5">{label}</p>
       {payload.map((entry: any, idx: number) => (
         <div key={idx} className="flex items-center gap-2">
@@ -26,6 +27,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformanceChartProps) {
   const { formatCurrency } = useCurrency();
+  const chartTheme = useChartTheme();
 
   return (
     <div className="card-surface-interactive flex flex-col h-full p-6 relative overflow-hidden">
@@ -67,13 +69,13 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
               </defs>
               <XAxis
                 dataKey="name"
-                stroke="#9C9CAF"
+                stroke={chartTheme.axis}
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                stroke="#9C9CAF"
+                stroke={chartTheme.axis}
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
@@ -81,7 +83,7 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
                 domain={[0, 'auto']}
                 allowDecimals={false}
               />
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(21,19,31,0.06)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
@@ -91,7 +93,7 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
                 fillOpacity={1}
                 fill="url(#glassGradientIngresos)"
                 dot={false}
-                activeDot={{ r: 5, fill: "#7C5CFC", stroke: "#FFFFFF", strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: "#7C5CFC", stroke: chartTheme.dotStroke, strokeWidth: 2 }}
               />
               <Area
                 type="monotone"
@@ -101,12 +103,12 @@ export function GlassPerformanceChart({ chartData, isLoading }: GlassPerformance
                 fillOpacity={1}
                 fill="url(#glassGradientGastos)"
                 dot={false}
-                activeDot={{ r: 4, fill: "#F43F5E", stroke: "#FFFFFF", strokeWidth: 2 }}
+                activeDot={{ r: 4, fill: "#F43F5E", stroke: chartTheme.dotStroke, strokeWidth: 2 }}
               />
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-ink-muted text-sm border border-black/5 border-dashed rounded-xl bg-surface">
+          <div className="w-full h-full flex items-center justify-center text-ink-muted text-sm border border-line-soft border-dashed rounded-xl bg-surface">
             No hay datos suficientes para mostrar el gráfico.
           </div>
         )}

@@ -8,7 +8,7 @@ interface SkeletonProps {
 export function Skeleton({ className = "", style }: SkeletonProps) {
   return (
     <div
-      className={`animate-shimmer rounded-xl bg-black/[0.05] ${className}`}
+      className={`animate-shimmer rounded-xl bg-ink/[0.05] ${className}`}
       style={style}
     />
   );
@@ -67,10 +67,10 @@ export function SkeletonList() {
 
 export function SkeletonTable({ columns = 4, rows = 5 }: { columns?: number, rows?: number }) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-black/5 bg-white">
+    <div className="w-full overflow-x-auto rounded-xl border border-line-soft bg-card">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-black/5 bg-surface">
+          <tr className="border-b border-line-soft bg-surface">
             {[...Array(columns)].map((_, i) => (
               <th key={i} className="p-4">
                 <Skeleton className="h-4 w-24" />
@@ -80,7 +80,7 @@ export function SkeletonTable({ columns = 4, rows = 5 }: { columns?: number, row
         </thead>
         <tbody>
           {[...Array(rows)].map((_, rowIdx) => (
-            <tr key={rowIdx} className="border-b border-black/5 last:border-b-0">
+            <tr key={rowIdx} className="border-b border-line-soft last:border-b-0">
               {[...Array(columns)].map((_, colIdx) => (
                 <td key={colIdx} className="p-4">
                   <Skeleton className="h-4 w-full max-w-[120px]" />

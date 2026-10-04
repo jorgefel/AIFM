@@ -24,7 +24,7 @@ export function HeaderNotifications() {
     <div className="relative" ref={notifRef}>
       <button 
         onClick={() => setShowNotifications(!showNotifications)}
-        className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-black/[0.06] text-ink-muted hover:text-violet-600 hover:border-violet-200 transition-colors"
+        className="relative w-10 h-10 flex items-center justify-center rounded-full bg-card shadow-sm border border-line-soft text-ink-muted hover:text-violet-600 hover:border-violet-200 transition-colors"
       >
         <Bell className="w-[18px] h-[18px]" />
         {notifications.length > 0 && (
@@ -39,9 +39,9 @@ export function HeaderNotifications() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="absolute right-0 top-full mt-2 w-80 bg-white border border-black/5 rounded-xl shadow-xl z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-80 bg-card border border-line-soft rounded-xl shadow-xl z-50 overflow-hidden"
           >
-            <div className="p-3 border-b border-black/5">
+            <div className="p-3 border-b border-line-soft">
               <h4 className="text-sm font-semibold text-ink">Notificaciones</h4>
             </div>
             <div className="max-h-72 overflow-y-auto">
@@ -51,7 +51,7 @@ export function HeaderNotifications() {
                 </div>
               ) : (
                 notifications.map((notif) => (
-                  <div key={notif.id} className="p-3 hover:bg-surface transition-colors border-b border-black/5 last:border-b-0">
+                  <div key={notif.id} className="p-3 hover:bg-surface transition-colors border-b border-line-soft last:border-b-0">
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5 shrink-0">{notif.icon}</div>
                       <div>

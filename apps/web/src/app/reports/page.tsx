@@ -35,7 +35,7 @@ export default function ReportsPage() {
             <p className="text-ink-muted mt-1">Exporta tus datos o solicita un análisis inteligente.</p>
           </div>
           {properties.length > 0 && (
-            <div className="flex items-center bg-white border border-black/10 rounded-lg px-3 py-1 shadow-sm">
+            <div className="flex items-center bg-card border border-line rounded-lg px-3 py-1 shadow-sm">
               <Filter className="w-4 h-4 text-ink-muted mr-2" />
               <select 
                 className="bg-transparent text-ink text-sm focus:outline-none border-none py-1"
@@ -43,7 +43,7 @@ export default function ReportsPage() {
                 onChange={(e) => setSelectedPropertyId(e.target.value)}
               >
                 {properties.map(p => (
-                  <option key={p.id} value={p.id} className="bg-white text-ink">{p.name}</option>
+                  <option key={p.id} value={p.id} className="bg-card text-ink">{p.name}</option>
                 ))}
               </select>
             </div>

@@ -6,6 +6,7 @@ import { Sparkles, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { AuthShowcasePanel } from "@/components/auth/AuthShowcasePanel";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -132,21 +133,8 @@ export default function LoginPage() {
             <div className="h-px flex-1 bg-white/10" />
           </motion.div>
 
-          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              title="Próximamente"
-              className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors opacity-60 cursor-not-allowed"
-            >
-              Google
-            </button>
-            <button
-              type="button"
-              title="Próximamente"
-              className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors opacity-60 cursor-not-allowed"
-            >
-              Apple
-            </button>
+          <motion.div variants={itemVariants}>
+            <SocialAuthButtons />
           </motion.div>
 
           <motion.p variants={itemVariants} className="text-center text-slate-500 text-sm mt-8">

@@ -30,6 +30,11 @@ function mockResponse(url: string): any {
     return DEMO_PROPERTIES;
   }
 
+  const propertyMatch = url.match(/^\/properties\/([^/?]+)$/);
+  if (propertyMatch) {
+    return DEMO_PROPERTIES.find((p) => p.id === propertyMatch[1]) ?? null;
+  }
+
   if (url.startsWith("/analysis/dashboard")) {
     const propertyId = new URLSearchParams(url.split("?")[1]).get("property_id") || "";
     return demoDashboardData(propertyId);

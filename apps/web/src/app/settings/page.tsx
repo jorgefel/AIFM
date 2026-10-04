@@ -7,6 +7,8 @@ import { User, Mail, Shield, LogOut, Globe } from "lucide-react";
 import { useCurrency, CurrencyCode } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
+import { AppearanceSection } from "@/components/settings/AppearanceSection";
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
@@ -45,6 +47,9 @@ export default function SettingsPage() {
               <Shield className="w-5 h-5" />
               Seguridad (Próximamente)
             </button>
+            <div className="pt-4">
+              <SubscriptionCard />
+            </div>
           </div>
 
           {/* Formulario / Detalles */}
@@ -78,7 +83,7 @@ export default function SettingsPage() {
                         type="text" 
                         defaultValue={user.full_name || ""} 
                         disabled
-                        className="w-full bg-surface border border-black/5 rounded-xl py-2.5 pl-10 pr-4 text-ink-muted focus:outline-none focus:border-violet-400 transition-colors opacity-70 cursor-not-allowed"
+                        className="w-full bg-surface border border-line-soft rounded-xl py-2.5 pl-10 pr-4 text-ink-muted focus:outline-none focus:border-violet-400 transition-colors opacity-70 cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -92,14 +97,16 @@ export default function SettingsPage() {
                         type="email" 
                         defaultValue={user.email} 
                         disabled
-                        className="w-full bg-surface border border-black/5 rounded-xl py-2.5 pl-10 pr-4 text-ink-muted focus:outline-none focus:border-violet-400 transition-colors opacity-70 cursor-not-allowed"
+                        className="w-full bg-surface border border-line-soft rounded-xl py-2.5 pl-10 pr-4 text-ink-muted focus:outline-none focus:border-violet-400 transition-colors opacity-70 cursor-not-allowed"
                       />
                     </div>
                   </div>
                 </div>
 
+                <AppearanceSection />
+
                 {/* Preferencias Globales */}
-                <div className="pt-6 border-t border-black/5 space-y-6">
+                <div className="pt-6 border-t border-line-soft space-y-6">
                   <h4 className="text-ink font-semibold flex items-center gap-2">
                     <Globe className="w-5 h-5 text-teal-600" />
                     Preferencias Regionales
@@ -110,7 +117,7 @@ export default function SettingsPage() {
                     <select 
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                      className="w-full bg-surface border border-black/10 rounded-xl py-3 px-4 text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15 transition-colors"
+                      className="w-full bg-surface border border-line rounded-xl py-3 px-4 text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15 transition-colors"
                     >
                       <option value="USD">Dólar Estadounidense (USD)</option>
                       <option value="EUR">Euro (EUR)</option>
@@ -122,7 +129,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-black/5 flex justify-between items-center">
+                <div className="pt-6 border-t border-line-soft flex justify-between items-center">
                   <p className="text-xs text-ink-muted max-w-xs">
                     La edición de perfil se habilitará en una futura actualización.
                   </p>

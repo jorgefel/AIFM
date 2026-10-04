@@ -19,7 +19,7 @@ export function Button({
   
   const variants = {
     primary: "bg-gradient-to-r from-violet-500 to-violet-600 text-white hover:from-violet-400 hover:to-violet-500 shadow-[0_4px_14px_rgba(124,92,252,0.3)] border border-violet-400/30",
-    secondary: "bg-white text-ink border border-black/10 hover:bg-surface shadow-sm",
+    secondary: "bg-card text-ink border border-line hover:bg-surface shadow-sm",
     danger: "bg-coral-accent/10 text-coral-accent hover:bg-coral-accent/20 border border-coral-accent/20",
     ghost: "bg-transparent text-ink-muted hover:text-ink hover:bg-surface",
   };

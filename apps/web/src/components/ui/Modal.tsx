@@ -48,10 +48,10 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
-            className="relative bg-white border border-black/5 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative bg-card border border-line-soft rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-black/5">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-line-soft">
               <h3 className="text-lg font-semibold text-ink">{title}</h3>
               <button
                 onClick={onClose}

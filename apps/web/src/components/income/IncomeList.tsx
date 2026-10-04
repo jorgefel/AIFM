@@ -44,7 +44,7 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
           cancelled: "text-coral-accent bg-coral-accent/10 border-coral-accent/20",
           completed: "text-blue-700 bg-blue-50 border-blue-200"
         };
-        const color = colors[item.status] || "text-ink-muted bg-surface border-black/10";
+        const color = colors[item.status] || "text-ink-muted bg-surface border-line";
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${color} capitalize`}>
             {item.status}

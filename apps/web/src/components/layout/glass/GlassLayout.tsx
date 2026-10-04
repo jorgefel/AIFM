@@ -2,6 +2,7 @@
 
 import { GlassSidebar } from "./GlassSidebar";
 import { GlassHeader } from "./GlassHeader";
+import { MobileBottomNav } from "./MobileBottomNav";
 import { ProtectedRoute } from "../../auth/ProtectedRoute";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
@@ -56,7 +57,7 @@ export function GlassLayout({ children }: GlassLayoutProps) {
         <div className="flex-1 flex flex-col relative overflow-hidden min-w-0">
           <GlassHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
 
-          <main className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 sm:px-5 sm:py-5 md:px-8 md:py-6 relative z-1 scrollbar-hide">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden px-3 pt-4 pb-24 sm:px-5 sm:pt-5 md:px-8 md:py-6 relative z-1 scrollbar-hide">
             <AnimatePresence mode="wait">
               <motion.div
                 key={pathname}
@@ -71,6 +72,8 @@ export function GlassLayout({ children }: GlassLayoutProps) {
             </AnimatePresence>
           </main>
         </div>
+
+        <MobileBottomNav onMore={() => setIsMobileMenuOpen(true)} />
       </div>
     </ProtectedRoute>
   );

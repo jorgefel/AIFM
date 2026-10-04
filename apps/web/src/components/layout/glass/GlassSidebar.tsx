@@ -4,21 +4,57 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Wallet,
-  ReceiptText,
   Building2,
   BarChart3,
   Settings,
-  Sparkles
+  Sparkles,
+  CalendarCheck,
+  Calendar,
+  Users,
+  Zap,
+  Plug,
+  type LucideIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-const NAV_ITEMS = [
+interface NavItem {
+  name: string;
+  icon: LucideIcon;
+  href?: string;
+  soon?: boolean;
+  matchPrefixes?: string[];
+  children?: { name: string; href: string }[];
+}
+
+const NAV_ITEMS: NavItem[] = [
   { name: "Inicio", href: "/", icon: LayoutDashboard },
-  { name: "Ingresos", href: "/income", icon: Wallet },
-  { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
-  { name: "Reportes", href: "/reports", icon: BarChart3 },
+  { name: "Reservas", href: "/reservations", icon: CalendarCheck },
+  { name: "Calendario", href: "/calendar", icon: Calendar },
+  { name: "Huéspedes", icon: Users, soon: true },
+  {
+    name: "Finanzas",
+    href: "/income",
+    icon: Wallet,
+    matchPrefixes: ["/income", "/expenses"],
+    children: [
+      { name: "Ingresos", href: "/income" },
+      { name: "Gastos", href: "/expenses" },
+    ],
+  },
+  {
+    name: "Análisis",
+    href: "/analytics",
+    icon: BarChart3,
+    matchPrefixes: ["/analytics", "/reports"],
+    children: [
+      { name: "Resumen", href: "/analytics" },
+      { name: "Reportes", href: "/reports" },
+    ],
+  },
+  { name: "Automatizaciones", icon: Zap, soon: true },
+  { name: "Integraciones", href: "/integrations", icon: Plug },
 ];
 
 interface GlassSidebarProps {
@@ -57,25 +93,70 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
       <nav className={`flex-1 py-4 space-y-1.5 overflow-y-auto scrollbar-hide ${expanded ? "px-4" : "px-2.5 lg:px-4"}`}>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
-          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const rowClasses = `flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 group relative ${
+            expanded ? "px-3.5" : "px-3 lg:px-3.5 justify-center lg:justify-start"
+          }`;
+
+          if (!item.href) {
+            return (
+              <div
+                key={item.name}
+                aria-disabled="true"
+                title={`${item.name} (próximamente)`}
+                className={`${rowClasses} cursor-not-allowed text-slate-600`}
+              >
+                <Icon className="w-[18px] h-[18px] shrink-0" />
+                <span className={`text-sm font-medium whitespace-nowrap ${labelClasses}`}>{item.name}</span>
+                <span className={`ml-auto rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-slate-400 ${labelClasses}`}>
+                  Pronto
+                </span>
+              </div>
+            );
+          }
+
+          const prefixes = item.matchPrefixes ?? [item.href];
+          const isActive =
+            item.href === "/" ? pathname === "/" : prefixes.some((prefix) => pathname.startsWith(prefix));
 
           return (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={onClose}
-              title={item.name}
-              className={`flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 group relative ${
-                expanded ? "px-3.5" : "px-3 lg:px-3.5 justify-center lg:justify-start"
-              } ${
-                isActive
-                  ? "bg-violet-600 text-white shadow-[0_4px_14px_rgba(124,92,252,0.35)]"
-                  : "text-slate-400 hover:text-white hover:bg-white/[0.06]"
-              }`}
-            >
-              <Icon className="w-[18px] h-[18px] shrink-0 transition-transform duration-300 group-hover:scale-110" />
-              <span className={`text-sm font-medium whitespace-nowrap ${labelClasses}`}>{item.name}</span>
-            </Link>
+            <div key={item.name}>
+              <Link
+                href={item.href}
+                onClick={onClose}
+                title={item.name}
+                aria-current={isActive && !item.children ? "page" : undefined}
+                className={`${rowClasses} ${
+                  isActive
+                    ? "bg-violet-600 text-white shadow-[0_4px_14px_rgba(124,92,252,0.35)]"
+                    : "text-slate-400 hover:text-white hover:bg-white/[0.06]"
+                }`}
+              >
+                <Icon className="w-[18px] h-[18px] shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                <span className={`text-sm font-medium whitespace-nowrap ${labelClasses}`}>{item.name}</span>
+              </Link>
+
+              {item.children && isActive && (
+                <ul className={`mt-1 ml-5 space-y-0.5 border-l border-white/[0.08] pl-3 ${expanded ? "block" : "hidden lg:block"}`}>
+                  {item.children.map((child) => {
+                    const childActive = pathname.startsWith(child.href);
+                    return (
+                      <li key={child.href}>
+                        <Link
+                          href={child.href}
+                          onClick={onClose}
+                          aria-current={childActive ? "page" : undefined}
+                          className={`block rounded-lg px-3 py-1.5 text-[13px] transition-colors ${
+                            childActive ? "text-white font-medium" : "text-slate-500 hover:text-white"
+                          }`}
+                        >
+                          {child.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           );
         })}
       </nav>

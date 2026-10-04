@@ -1,3 +1,10 @@
+export interface PropertyPhoto {
+  id: string;
+  url: string;
+  position?: number;
+  is_cover?: boolean;
+}
+
 export interface Property {
   id: string;
   name: string;
@@ -5,6 +12,15 @@ export interface Property {
   currency: string;
   created_at: string;
   is_active?: boolean;
+  price_per_night?: number | string | null;
+  max_guests?: number | null;
+  bedrooms?: number | null;
+  beds?: number | null;
+  bathrooms?: number | string | null;
+  description?: string | null;
+  amenities?: string[];
+  channels?: string[];
+  photos?: PropertyPhoto[];
 }
 
 export interface Expense {
