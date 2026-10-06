@@ -1,3 +1,9 @@
+export interface PropertyPhoto {
+  url: string;
+  caption?: string;
+  is_cover?: boolean;
+}
+
 export interface Property {
   id: string;
   name: string;
