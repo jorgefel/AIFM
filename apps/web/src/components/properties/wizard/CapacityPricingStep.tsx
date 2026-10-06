@@ -17,16 +17,17 @@ export function CapacityPricingStep({ draft, errors, onChange }: StepProps) {
         step="any"
         label={`Precio por noche (${draft.currency})`}
         placeholder="450"
-        value={draft.price_per_night}
-        error={errors.price_per_night}
-        onChange={(e) => onChange({ price_per_night: e.target.value })}
+        value={draft.nightly_rate}
+        error={errors.nightly_rate}
+        onChange={(e) => onChange({ nightly_rate: e.target.value })}
         autoFocus
       />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Input
           type="number"
           inputMode="numeric"
           min={1}
+          max={100}
           step={1}
           label="Huéspedes máximos"
           value={draft.max_guests}
@@ -37,6 +38,7 @@ export function CapacityPricingStep({ draft, errors, onChange }: StepProps) {
           type="number"
           inputMode="numeric"
           min={0}
+          max={50}
           step={1}
           label="Habitaciones"
           value={draft.bedrooms}
@@ -46,18 +48,9 @@ export function CapacityPricingStep({ draft, errors, onChange }: StepProps) {
         <Input
           type="number"
           inputMode="numeric"
-          min={1}
+          min={0}
+          max={50}
           step={1}
-          label="Camas"
-          value={draft.beds}
-          error={errors.beds}
-          onChange={(e) => onChange({ beds: e.target.value })}
-        />
-        <Input
-          type="number"
-          inputMode="decimal"
-          min={0.5}
-          step={0.5}
           label="Baños"
           value={draft.bathrooms}
           error={errors.bathrooms}

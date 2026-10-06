@@ -1,4 +1,6 @@
-import { API_URL } from "@/lib/api";
+"use client";
+
+import { useAuth } from "@/contexts/AuthContext";
 
 const buttonClass =
   "flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-400";
@@ -23,16 +25,18 @@ function AppleIcon() {
 }
 
 export function SocialAuthButtons() {
+  const { startSocialLogin } = useAuth();
+
   return (
     <div className="grid grid-cols-1 gap-3">
-      <a href={`${API_URL}/auth/google`} className={buttonClass}>
+      <button type="button" onClick={() => startSocialLogin("google")} className={buttonClass}>
         <GoogleIcon />
         Continuar con Google
-      </a>
-      <a href={`${API_URL}/auth/apple`} className={buttonClass}>
+      </button>
+      <button type="button" onClick={() => startSocialLogin("apple")} className={buttonClass}>
         <AppleIcon />
         Continuar con Apple
-      </a>
+      </button>
     </div>
   );
 }

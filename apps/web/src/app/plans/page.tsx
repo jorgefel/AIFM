@@ -1,64 +1,203 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { AlertTriangle } from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle, CheckCircle2, CreditCard, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { BillingToggle } from "@/components/billing/BillingToggle";
 import { PlanCard } from "@/components/billing/PlanCard";
 import { PlanComparison } from "@/components/billing/PlanComparison";
 import { PlanGuide } from "@/components/billing/PlanGuide";
-import { useSubscription } from "@/hooks/useSubscription";
+import { api } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import { containerVariants, itemVariants } from "@/lib/animations";
-import type { BillingPeriod } from "@/lib/plans";
+
+interface Subscription {
+  id: string;
+  provider: string;
+  status: string;
+  price_id: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  created_at: string;
+}
+
+interface BillingStatus {
+  tier: "free" | "pro";
+  subscription: Subscription | null;
+}
+
+const longDate = new Intl.DateTimeFormat("es-CO", { dateStyle: "long" });
+const shortDate = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium" });
+
+function Banner({
+  tone,
+  children,
+}: {
+  tone: "info" | "success" | "warning" | "error";
+  children: React.ReactNode;
+}) {
+  const styles = {
+    info: "border-blue-200 bg-blue-50 text-blue-700",
+    success: "border-teal-200 bg-teal-50 text-teal-700",
+    warning: "border-amber-200 bg-amber-50 text-amber-700",
+    error: "border-red-200 bg-red-50 text-red-700",
+  };
+  return (
+    <div role="status" className={`mx-auto flex max-w-3xl items-center justify-center gap-3 rounded-xl border p-4 text-sm ${styles[tone]}`}>
+      {children}
+    </div>
+  );
+}
 
 function PlansContent() {
-  const router = useRouter();
+  const { checkAuth, isDemoMode } = useAuth();
+  const toast = useToast();
   const params = useSearchParams();
-  const { isPro } = useSubscription();
-  const [billing, setBilling] = useState<BillingPeriod>("monthly");
+  const checkoutState = params.get("checkout");
+  const awaitingWebhook = checkoutState === "success";
 
-  const wasCancelled = params.get("checkout") === "cancelled";
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
+
+  const { data, isLoading, error } = useQuery<BillingStatus>({
+    queryKey: ["billing-status"],
+    queryFn: async () => (await api.get("/billing/status")).data,
+    enabled: !isDemoMode,
+    refetchInterval: (query) => (awaitingWebhook && query.state.data?.tier !== "pro" ? 3000 : false),
+  });
+
+  const { data: history = [] } = useQuery<Subscription[]>({
+    queryKey: ["billing-history"],
+    queryFn: async () => (await api.get("/billing/history")).data,
+    enabled: !isDemoMode,
+  });
+
+  const isPro = data?.tier === "pro";
+
+  useEffect(() => {
+    if (isPro) void checkAuth();
+  }, [checkAuth, isPro]);
+
+  const redirectTo = async (path: string, setBusy: (value: boolean) => void) => {
+    if (isDemoMode) {
+      toast.info("Modo demo", "El pago no está disponible en modo demo.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const response = await api.post<{ url: string }>(path);
+      const url = response.data?.url;
+      if (typeof url !== "string" || !url.startsWith("https://")) throw new Error("Invalid url");
+      window.location.assign(url);
+    } catch {
+      toast.error("No se pudo continuar", "Inténtalo de nuevo en unos minutos.");
+      setBusy(false);
+    }
+  };
+
+  const periodEnd = data?.subscription?.current_period_end
+    ? longDate.format(new Date(data.subscription.current_period_end))
+    : null;
+
+  const proAction = isPro
+    ? {
+        label: "Gestionar facturación",
+        onClick: () => redirectTo("/billing/portal-session", setIsOpeningPortal),
+        isLoading: isOpeningPortal,
+        variant: "secondary" as const,
+      }
+    : {
+        label: "Activar Pro",
+        onClick: () => redirectTo("/billing/checkout-session", setIsRedirecting),
+        isLoading: isRedirecting,
+        variant: "primary" as const,
+      };
 
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="mx-auto max-w-5xl space-y-14"
+      className="mx-auto max-w-5xl space-y-12"
     >
-      <motion.header variants={itemVariants} className="space-y-4 text-center">
+      <motion.header variants={itemVariants} className="space-y-3 text-center">
         <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-          Elige el plan para tu operación
+          Elige cómo administrar tu alquiler
         </h1>
         <p className="mx-auto max-w-xl text-ink-muted">
-          Empieza gratis con el registro manual y pasa a Pro cuando quieras conectar tus canales y
-          automatizar el trabajo.
+          Empieza gratis con el registro manual y activa Pro cuando necesites automatización e
+          inteligencia.
         </p>
-        <BillingToggle value={billing} onChange={setBilling} />
       </motion.header>
 
-      {wasCancelled && (
-        <motion.div
-          variants={itemVariants}
-          role="status"
-          className="mx-auto flex max-w-2xl items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700"
-        >
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          El pago se canceló y no se hizo ningún cobro. Puedes intentarlo de nuevo cuando quieras.
-        </motion.div>
-      )}
+      <motion.div variants={itemVariants} className="space-y-3">
+        {checkoutState === "success" && !isPro && !isDemoMode && (
+          <Banner tone="info">
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+            Pago recibido. Estamos confirmando tu suscripción de forma segura.
+          </Banner>
+        )}
+        {checkoutState === "success" && isPro && (
+          <Banner tone="success">
+            <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+            Tu plan Pro está activo. Ya puedes usar las funciones avanzadas.
+          </Banner>
+        )}
+        {checkoutState === "cancelled" && (
+          <Banner tone="warning">
+            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+            El pago se canceló y no se hizo ningún cobro. Puedes intentarlo de nuevo cuando quieras.
+          </Banner>
+        )}
+        {error && !isDemoMode && (
+          <Banner tone="error">No pudimos consultar tu suscripción. Intenta recargar la página.</Banner>
+        )}
+      </motion.div>
 
       <motion.div variants={itemVariants} className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-        <PlanCard plan="free" billing={billing} isCurrent={!isPro} />
-        <PlanCard
-          plan="pro"
-          billing={billing}
-          isCurrent={isPro}
-          onSelect={() => router.push(`/checkout?plan=pro&billing=${billing}`)}
-        />
+        <PlanCard plan="free" isCurrent={!isPro} />
+        <PlanCard plan="pro" isCurrent={isPro} isLoading={isLoading && !isDemoMode} action={proAction} />
       </motion.div>
+
+      <motion.section variants={itemVariants} aria-labelledby="status-title" className="card-surface p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 id="status-title" className="flex items-center gap-2 font-semibold text-ink">
+              <CreditCard className="h-4 w-4 text-violet-500" aria-hidden="true" />
+              Estado de suscripción
+            </h2>
+            <p className="mt-1 text-sm text-ink-muted">
+              {isPro
+                ? `Pro activo${periodEnd ? `. Próximo cobro: ${periodEnd}.` : "."}`
+                : "Actualmente estás en el plan Gratis."}
+              {data?.subscription?.cancel_at_period_end
+                ? " Se cancelará al terminar el periodo actual."
+                : ""}
+            </p>
+          </div>
+          {isPro && (
+            <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-sm font-semibold text-violet-700">
+              Pro activo
+            </span>
+          )}
+        </div>
+        {history.length > 0 && (
+          <div className="mt-5 border-t border-line-soft pt-4">
+            <p className="mb-2 text-sm font-medium text-ink">Historial</p>
+            <ul className="divide-y divide-line-soft">
+              {history.map((subscription) => (
+                <li key={subscription.id} className="flex justify-between py-2 text-sm text-ink-muted">
+                  <span>Stripe, {subscription.status}</span>
+                  <span>{shortDate.format(new Date(subscription.created_at))}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </motion.section>
 
       <motion.section variants={itemVariants} aria-labelledby="compare-title">
         <h2 id="compare-title" className="mb-6 text-center text-2xl font-bold tracking-tight text-ink">
@@ -70,6 +209,10 @@ function PlansContent() {
       <motion.div variants={itemVariants}>
         <PlanGuide />
       </motion.div>
+
+      <p className="text-center text-xs text-ink-muted">
+        Los pagos se procesan de forma segura por Stripe. Nunca almacenamos los datos de tu tarjeta.
+      </p>
     </motion.div>
   );
 }
@@ -77,7 +220,7 @@ function PlansContent() {
 export default function PlansPage() {
   return (
     <DashboardLayout>
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="p-8 text-center text-ink-muted">Cargando planes</div>}>
         <PlansContent />
       </Suspense>
     </DashboardLayout>

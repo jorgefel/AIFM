@@ -18,7 +18,7 @@ export function buildDemoReservations(properties: Property[], now = new Date()):
   const reservations: Reservation[] = [];
 
   properties.forEach((property, p) => {
-    const rate = Number(property.price_per_night) || 150 + p * 40;
+    const rate = Number(property.nightly_rate) || 150 + p * 40;
 
     for (let month = -5; month <= 1; month += 1) {
       const monthStart = dayIndex(now.getFullYear(), now.getMonth() + month, 1);

@@ -2,13 +2,14 @@ import {
   CHANNEL_OPTIONS,
   formatNightlyPrice,
   getChannelLabel,
+  getPropertyTypeLabel,
 } from "@/lib/propertyOptions";
 import { ToggleChip } from "./ToggleChip";
-import type { PropertyDraft } from "@/hooks/usePropertyWizard";
+import type { DraftErrors, PropertyDraft } from "@/hooks/usePropertyWizard";
 
 interface ChannelsReviewStepProps {
   draft: PropertyDraft;
-  photoCount: number;
+  errors: DraftErrors;
   onChange: (patch: Partial<PropertyDraft>) => void;
 }
 
@@ -21,33 +22,39 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-export function ChannelsReviewStep({ draft, photoCount, onChange }: ChannelsReviewStepProps) {
+export function ChannelsReviewStep({ draft, errors, onChange }: ChannelsReviewStepProps) {
   const toggleChannel = (id: string, checked: boolean) => {
     onChange({
-      channels: checked ? [...draft.channels, id] : draft.channels.filter((c) => c !== id),
+      published_platforms: checked
+        ? [...draft.published_platforms, id]
+        : draft.published_platforms.filter((c) => c !== id),
     });
   };
 
-  const price = formatNightlyPrice(draft.price_per_night, draft.currency);
+  const price = formatNightlyPrice(draft.nightly_rate, draft.currency);
 
   return (
     <div className="space-y-6">
       <fieldset>
         <legend className="text-sm font-medium text-ink/80">Canales donde publicas</legend>
         <p className="mb-2 mt-1 text-xs text-ink-muted">
-          Indica en qué plataformas está publicada esta propiedad. Es solo informativo, no
-          conecta ninguna cuenta.
+          Indica en qué plataformas está publicada esta propiedad. Selecciona al menos una.
         </p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {CHANNEL_OPTIONS.map((channel) => (
             <ToggleChip
               key={channel.id}
               label={channel.label}
-              checked={draft.channels.includes(channel.id)}
+              checked={draft.published_platforms.includes(channel.id)}
               onChange={(checked) => toggleChannel(channel.id, checked)}
             />
           ))}
         </div>
+        {errors.published_platforms && (
+          <p role="alert" className="mt-2 text-xs text-red-500">
+            {errors.published_platforms}
+          </p>
+        )}
       </fieldset>
 
       <section aria-labelledby="review-title" className="rounded-xl bg-surface p-4">
@@ -56,17 +63,17 @@ export function ChannelsReviewStep({ draft, photoCount, onChange }: ChannelsRevi
         </h3>
         <dl className="divide-y divide-line-soft">
           <Row label="Propiedad">{draft.name}</Row>
+          <Row label="Tipo">{getPropertyTypeLabel(draft.property_type)}</Row>
           <Row label="Dirección">{draft.address}</Row>
           <Row label="Precio por noche">{price ?? "Sin definir"}</Row>
           <Row label="Capacidad">
-            {draft.max_guests} huéspedes, {draft.bedrooms} habitaciones, {draft.beds} camas,{" "}
-            {draft.bathrooms} baños
+            {draft.max_guests} huéspedes, {draft.bedrooms} habitaciones, {draft.bathrooms} baños
           </Row>
           <Row label="Amenidades">{draft.amenities.length} seleccionadas</Row>
-          <Row label="Fotos">{photoCount}</Row>
+          <Row label="Fotos">{draft.photo_urls.length}</Row>
           <Row label="Canales">
-            {draft.channels.length > 0
-              ? draft.channels.map(getChannelLabel).join(", ")
+            {draft.published_platforms.length > 0
+              ? draft.published_platforms.map(getChannelLabel).join(", ")
               : "Ninguno"}
           </Row>
         </dl>

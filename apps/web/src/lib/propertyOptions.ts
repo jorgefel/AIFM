@@ -1,9 +1,14 @@
-export const MAX_PHOTOS = 10;
-export const MAX_PHOTO_MB = 5;
-export const MAX_PHOTO_BYTES = MAX_PHOTO_MB * 1024 * 1024;
-export const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+export const MAX_PHOTOS = 20;
+export const DESCRIPTION_MAX_LENGTH = 5000;
 
-export const DESCRIPTION_MAX_LENGTH = 2000;
+export const PROPERTY_TYPE_OPTIONS = [
+  { value: "apartment", label: "Apartamento" },
+  { value: "house", label: "Casa" },
+  { value: "cabin", label: "Cabaña" },
+  { value: "room", label: "Habitación" },
+  { value: "hotel", label: "Hotel" },
+  { value: "other", label: "Otro" },
+];
 
 export const CURRENCY_OPTIONS = [
   { value: "USD", label: "Dólares (USD)" },
@@ -32,7 +37,12 @@ export const CHANNEL_OPTIONS = [
   { id: "booking", label: "Booking.com" },
   { id: "vrbo", label: "Vrbo" },
   { id: "direct", label: "Reserva directa" },
+  { id: "other", label: "Otro canal" },
 ];
+
+export function getPropertyTypeLabel(value: string | null | undefined): string {
+  return PROPERTY_TYPE_OPTIONS.find((o) => o.value === value)?.label ?? "Propiedad";
+}
 
 export function getAmenityLabel(id: string): string {
   return AMENITY_OPTIONS.find((a) => a.id === id)?.label ?? id;

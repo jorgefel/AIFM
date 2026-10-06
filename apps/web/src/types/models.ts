@@ -1,10 +1,3 @@
-export interface PropertyPhoto {
-  id: string;
-  url: string;
-  position?: number;
-  is_cover?: boolean;
-}
-
 export interface Property {
   id: string;
   name: string;

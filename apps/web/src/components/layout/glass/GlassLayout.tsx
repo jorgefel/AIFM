@@ -7,6 +7,8 @@ import { ProtectedRoute } from "../../auth/ProtectedRoute";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
+import { AIChatCopilot } from "../../chat/AIChatCopilot";
 
 interface GlassLayoutProps {
   children: React.ReactNode;
@@ -15,6 +17,9 @@ interface GlassLayoutProps {
 export function GlassLayout({ children }: GlassLayoutProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Cierre de sesión automático tras inactividad
+  useAutoLogout();
 
   return (
     <ProtectedRoute>
@@ -71,6 +76,9 @@ export function GlassLayout({ children }: GlassLayoutProps) {
               </motion.div>
             </AnimatePresence>
           </main>
+
+          {/* Widget flotante de Copiloto IA */}
+          <AIChatCopilot />
         </div>
 
         <MobileBottomNav onMore={() => setIsMobileMenuOpen(true)} />

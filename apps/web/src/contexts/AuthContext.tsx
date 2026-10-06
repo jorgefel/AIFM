@@ -4,7 +4,9 @@ import React, {
   createContext,
   useContext,
   useCallback,
+  useEffect,
   useMemo,
+  useState,
   ReactNode,
 } from "react";
 import { api } from "@/lib/api";
@@ -17,9 +19,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DEMO_USER } from "@/lib/demoData";
-import { useState } from "react";
 
 const DEMO_FLAG = "nomora_demo_mode";
+const DEMO_USER_KEY = "nomora_demo_user";
 
 export interface User {
   id: string;
@@ -59,6 +61,32 @@ export function shouldStartOnboarding(user: User | null): boolean {
   return Boolean(user && !user.onboarding_completed && user.age === null);
 }
 
+function buildDemoUser(overrides?: Partial<User>): User {
+  return {
+    phone: null,
+    age: 30,
+    rental_experience_years: 2,
+    average_monthly_reservations: 10,
+    previous_platforms: [],
+    preferences: {},
+    onboarding_completed: true,
+    onboarding_completed_at: null,
+    ...DEMO_USER,
+    tier: "free",
+    ...overrides,
+  } as User;
+}
+
+function readDemoUser(): User | null {
+  if (typeof window === "undefined" || localStorage.getItem(DEMO_FLAG) !== "true") return null;
+  try {
+    const stored = localStorage.getItem(DEMO_USER_KEY);
+    return stored ? (JSON.parse(stored) as User) : buildDemoUser();
+  } catch {
+    return buildDemoUser();
+  }
+}
+
 export type SocialProvider = "google" | "apple";
 
 interface AuthContextType {
@@ -82,20 +110,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [demo, setDemo] = useState<{ checked: boolean; user: User | null }>({ checked: false, user: null });
 
-  // Check demo mode initially
-  React.useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem(DEMO_FLAG) === "true") {
-      setIsDemoMode(true);
-    }
+  useEffect(() => {
+    setDemo({ checked: true, user: readDemoUser() });
   }, []);
 
   const isPublic = typeof window !== "undefined" ? isPublicAuthRoute() : true;
   const hasHint = typeof window !== "undefined" ? hasSessionHint() : false;
-  const shouldFetch = !isPublic && hasHint;
+  const shouldFetch = !isPublic && hasHint && !demo.user;
 
-  const { data: user = null, isLoading: isQueryLoading, refetch } = useQuery<User | null>({
+  const { data: apiUser = null, isLoading: isQueryLoading, refetch } = useQuery<User | null>({
     queryKey: ["me"],
     queryFn: async () => {
       try {
@@ -113,9 +138,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
 
+  const user = demo.user ?? apiUser;
+
   const checkAuth = useCallback(async () => {
+    if (demo.user) return;
     await refetch();
-  }, [refetch]);
+  }, [refetch, demo.user]);
 
   const login = useCallback(
     async (credentials: any) => {
@@ -140,21 +168,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [refetch, router]
   );
 
-  const loginDemo = useCallback((overrides?: Partial<User>) => {
-    const demoUser = { ...DEMO_USER, ...overrides } as User;
-    localStorage.setItem(DEMO_FLAG, "true");
-    localStorage.setItem("nomora_demo_user", JSON.stringify(demoUser));
-    queryClient.setQueryData(["me"], demoUser);
-    setIsDemoMode(true);
-    router.push("/");
-  }, [queryClient, router]);
+  const loginDemo = useCallback(
+    (overrides?: Partial<User>) => {
+      const demoUser = buildDemoUser(overrides);
+      localStorage.setItem(DEMO_FLAG, "true");
+      localStorage.setItem(DEMO_USER_KEY, JSON.stringify(demoUser));
+      setDemo({ checked: true, user: demoUser });
+      router.push("/");
+    },
+    [router]
+  );
 
   const logout = useCallback(async () => {
-    if (isDemoMode) {
+    if (demo.user) {
       localStorage.removeItem(DEMO_FLAG);
-      localStorage.removeItem("nomora_demo_user");
-      setIsDemoMode(false);
-      queryClient.setQueryData(["me"], null);
+      localStorage.removeItem(DEMO_USER_KEY);
+      setDemo({ checked: true, user: null });
+      queryClient.clear();
       router.push("/login");
       return;
     }
@@ -168,19 +198,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.clear(); // Clear all cached queries on logout
       router.push("/login");
     }
-  }, [router, queryClient]);
+  }, [router, queryClient, demo.user]);
 
   const updateProfile = useCallback(async (data: ProfileUpdate) => {
+    if (demo.user) {
+      const updated = { ...demo.user, ...data, preferences: { ...demo.user.preferences, ...data.preferences } } as User;
+      localStorage.setItem(DEMO_USER_KEY, JSON.stringify(updated));
+      setDemo({ checked: true, user: updated });
+      return updated;
+    }
     const response = await api.patch<User>("/users/me", data);
     queryClient.setQueryData(["me"], response.data);
     return response.data;
-  }, [queryClient]);
+  }, [queryClient, demo.user]);
 
   const updateOnboarding = useCallback(async (data: OnboardingUpdate) => {
+    if (demo.user) {
+      const updated = { ...demo.user, ...data } as User;
+      localStorage.setItem(DEMO_USER_KEY, JSON.stringify(updated));
+      setDemo({ checked: true, user: updated });
+      return updated;
+    }
     const response = await api.patch<User>("/users/me/onboarding", data);
     queryClient.setQueryData(["me"], response.data);
     return response.data;
-  }, [queryClient]);
+  }, [queryClient, demo.user]);
 
   const startSocialLogin = useCallback((provider: SocialProvider) => {
     // OAuth must use a top-level navigation so the provider can redirect the user.
@@ -204,8 +246,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refetch]);
 
   const value = useMemo(
-    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
-    [user, isQueryLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
+    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading || !demo.checked, isDemoMode: demo.user !== null, loginDemo, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
+    [user, isQueryLoading, demo, loginDemo, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

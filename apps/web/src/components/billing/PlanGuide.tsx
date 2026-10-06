@@ -4,17 +4,17 @@ const STEPS = [
   {
     icon: ListChecks,
     title: "Elige tu plan",
-    text: "Compara Free y Pro, y escoge si prefieres pagar cada mes o cada año.",
+    text: "Compara Gratis y Pro y decide si necesitas sincronización, IA y automatizaciones.",
   },
   {
     icon: CreditCard,
     title: "Paga de forma segura",
-    text: "Completas el pago en la página cifrada de nuestro proveedor. Nomora no guarda los datos de tu tarjeta.",
+    text: "Completas el pago en la página cifrada de Stripe. Nomora no guarda los datos de tu tarjeta.",
   },
   {
     icon: Rocket,
     title: "Activa Pro",
-    text: "Tu plan se activa cuando el proveedor confirma el pago. Verás el estado en Configuración.",
+    text: "Tu plan se activa cuando Stripe confirma el pago. Esta página se actualiza sola mientras esperamos.",
   },
 ];
 
@@ -22,27 +22,27 @@ const FAQS = [
   {
     question: "¿Puedo seguir usando Nomora gratis?",
     answer:
-      "Sí. El plan Free es completo para administrar tus propiedades, calendario, reservas, huéspedes, ingresos y gastos con registro manual.",
+      "Sí. El plan Gratis sirve para administrar propiedades, calendario, reservas, ingresos y gastos con registro manual.",
   },
   {
-    question: "¿Qué incluye Pro que Free no tiene?",
+    question: "¿Qué incluye Pro que el plan Gratis no tiene?",
     answer:
-      "Pro agrega la sincronización con Airbnb y Booking.com, el asistente de IA y las automatizaciones con aprobación previa. Estas funciones se irán habilitando y se activan solas en tu cuenta Pro.",
+      "Pro agrega la sincronización y migración de plataformas, el agente de IA y las automatizaciones operativas.",
   },
   {
     question: "¿Cuándo se activa mi plan Pro?",
     answer:
-      "Cuando el proveedor de pagos confirma tu pago. La pantalla de confirmación se actualiza sola mientras esperamos esa respuesta.",
+      "Cuando Stripe confirma el pago. La página de planes se actualiza sola mientras esperamos esa respuesta.",
   },
   {
     question: "¿Qué pasa si cancelo?",
     answer:
-      "Mantienes Pro hasta el final del periodo que ya pagaste y después vuelves a Free. Tus datos se conservan.",
+      "Puedes cancelar desde Gestionar facturación. Mantienes Pro hasta el final del periodo que ya pagaste y después vuelves al plan Gratis. Tus datos se conservan.",
   },
   {
     question: "¿Nomora guarda los datos de mi tarjeta?",
     answer:
-      "No. El pago se procesa en la página segura del proveedor y Nomora solo recibe la confirmación.",
+      "No. El pago lo procesa Stripe y Nomora solo recibe la confirmación.",
   },
 ];
 

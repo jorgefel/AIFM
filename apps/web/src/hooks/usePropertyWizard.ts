@@ -1,18 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
-import {
-  ACCEPTED_PHOTO_TYPES,
-  DESCRIPTION_MAX_LENGTH,
-  MAX_PHOTOS,
-  MAX_PHOTO_BYTES,
-  MAX_PHOTO_MB,
-} from "@/lib/propertyOptions";
+import { DESCRIPTION_MAX_LENGTH, MAX_PHOTOS } from "@/lib/propertyOptions";
 import { PROPERTIES_QUERY_KEY } from "./useProperties";
 import { PORTFOLIO_QUERY_KEY } from "./usePortfolio";
 import type { Property } from "@/types/models";
@@ -29,21 +23,15 @@ export interface PropertyDraft {
   name: string;
   address: string;
   currency: string;
-  price_per_night: string;
+  property_type: string;
+  nightly_rate: string;
   max_guests: string;
   bedrooms: string;
-  beds: string;
   bathrooms: string;
   description: string;
   amenities: string[];
-  channels: string[];
-}
-
-export interface PhotoItem {
-  key: string;
-  url: string;
-  id?: string;
-  file?: File;
+  published_platforms: string[];
+  photo_urls: string[];
 }
 
 export type DraftErrors = Partial<Record<keyof PropertyDraft, string>>;
@@ -54,23 +42,21 @@ function toDraft(property?: Property): PropertyDraft {
     name: property?.name ?? "",
     address: property?.address ?? "",
     currency: property?.currency ?? "USD",
-    price_per_night: text(property?.price_per_night),
+    property_type: property?.property_type ?? "apartment",
+    nightly_rate: text(property?.nightly_rate),
     max_guests: text(property?.max_guests),
     bedrooms: text(property?.bedrooms),
-    beds: text(property?.beds),
     bathrooms: text(property?.bathrooms),
     description: property?.description ?? "",
     amenities: property?.amenities ?? [],
-    channels: property?.channels ?? [],
+    published_platforms: property?.published_platforms ?? [],
+    photo_urls: property?.photo_urls ?? [],
   };
 }
 
-function toPhotoItems(property?: Property): PhotoItem[] {
-  const photos = [...(property?.photos ?? [])].sort((a, b) => {
-    if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
-    return (a.position ?? 0) - (b.position ?? 0);
-  });
-  return photos.map((p) => ({ key: p.id, id: p.id, url: p.url }));
+function isInteger(value: string, min: number, max: number): boolean {
+  const n = Number(value);
+  return value !== "" && Number.isInteger(n) && n >= min && n <= max;
 }
 
 function validateStep(step: number, d: PropertyDraft): DraftErrors {
@@ -80,34 +66,28 @@ function validateStep(step: number, d: PropertyDraft): DraftErrors {
     if (!d.name.trim()) errors.name = "Escribe el nombre de la propiedad";
     if (!d.address.trim()) errors.address = "Escribe la dirección";
     if (!d.currency) errors.currency = "Selecciona una moneda";
+    if (!d.property_type) errors.property_type = "Selecciona el tipo de propiedad";
   }
 
   if (step === 1) {
-    const price = Number(d.price_per_night);
-    if (!d.price_per_night || !Number.isFinite(price) || price <= 0) {
-      errors.price_per_night = "Ingresa un precio mayor a 0";
+    const price = Number(d.nightly_rate);
+    if (!d.nightly_rate || !Number.isFinite(price) || price <= 0) {
+      errors.nightly_rate = "Ingresa un precio mayor a 0";
     }
-    const guests = Number(d.max_guests);
-    if (!d.max_guests || !Number.isInteger(guests) || guests < 1) {
-      errors.max_guests = "Mínimo 1 huésped";
-    }
-    const bedrooms = Number(d.bedrooms);
-    if (d.bedrooms === "" || !Number.isInteger(bedrooms) || bedrooms < 0) {
-      errors.bedrooms = "Indica las habitaciones (0 si es estudio)";
-    }
-    const beds = Number(d.beds);
-    if (!d.beds || !Number.isInteger(beds) || beds < 1) {
-      errors.beds = "Mínimo 1 cama";
-    }
-    const bathrooms = Number(d.bathrooms);
-    if (!d.bathrooms || !Number.isFinite(bathrooms) || bathrooms <= 0 || (bathrooms * 2) % 1 !== 0) {
-      errors.bathrooms = "Usa números como 1, 1.5 o 2";
-    }
+    if (!isInteger(d.max_guests, 1, 100)) errors.max_guests = "Indica entre 1 y 100 huéspedes";
+    if (!isInteger(d.bedrooms, 0, 50)) errors.bedrooms = "Indica las habitaciones (0 si es estudio)";
+    if (!isInteger(d.bathrooms, 0, 50)) errors.bathrooms = "Usa un número entero de baños";
   }
 
   if (step === 2) {
     if (d.description.length > DESCRIPTION_MAX_LENGTH) {
       errors.description = `Máximo ${DESCRIPTION_MAX_LENGTH} caracteres`;
+    }
+  }
+
+  if (step === 4) {
+    if (d.published_platforms.length === 0) {
+      errors.published_platforms = "Selecciona al menos un canal";
     }
   }
 
@@ -124,27 +104,8 @@ export function usePropertyWizard(property?: Property) {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<PropertyDraft>(() => toDraft(property));
   const [errors, setErrors] = useState<DraftErrors>({});
-  const [photos, setPhotos] = useState<PhotoItem[]>(() => toPhotoItems(property));
-  const [removedIds, setRemovedIds] = useState<string[]>([]);
   const [photoMessages, setPhotoMessages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
-
-  const initialCoverId = useRef(toPhotoItems(property)[0]?.id);
-  const photoCounter = useRef(0);
-  const photosRef = useRef(photos);
-
-  useEffect(() => {
-    photosRef.current = photos;
-  }, [photos]);
-
-  useEffect(() => {
-    return () => {
-      photosRef.current.forEach((p) => {
-        if (p.file) URL.revokeObjectURL(p.url);
-      });
-    };
-  }, []);
 
   const updateDraft = useCallback((patch: Partial<PropertyDraft>) => {
     setDraft((prev) => ({ ...prev, ...patch }));
@@ -155,53 +116,43 @@ export function usePropertyWizard(property?: Property) {
     });
   }, []);
 
-  const addFiles = useCallback((files: File[]) => {
-    const problems: string[] = [];
-    const accepted: PhotoItem[] = [];
-    let room = MAX_PHOTOS - photosRef.current.length;
+  const addPhotoUrl = useCallback(
+    (raw: string): boolean => {
+      const url = raw.trim();
+      let message = "";
 
-    for (const file of files) {
-      if (!ACCEPTED_PHOTO_TYPES.includes(file.type)) {
-        problems.push(`${file.name}: usa un archivo JPG, PNG o WebP`);
-        continue;
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "https:") message = "La dirección debe empezar por https://";
+      } catch {
+        message = "Escribe una dirección de imagen válida";
       }
-      if (file.size > MAX_PHOTO_BYTES) {
-        problems.push(`${file.name}: supera los ${MAX_PHOTO_MB} MB`);
-        continue;
-      }
-      if (room <= 0) {
-        problems.push(`Solo puedes subir hasta ${MAX_PHOTOS} fotos`);
-        break;
-      }
-      photoCounter.current += 1;
-      accepted.push({
-        key: `new-${photoCounter.current}`,
-        url: URL.createObjectURL(file),
-        file,
-      });
-      room -= 1;
-    }
+      if (!message && draft.photo_urls.includes(url)) message = "Esa foto ya está en la lista";
+      if (!message && draft.photo_urls.length >= MAX_PHOTOS) message = `Solo puedes agregar hasta ${MAX_PHOTOS} fotos`;
 
-    setPhotoMessages(problems);
-    if (accepted.length > 0) setPhotos((prev) => [...prev, ...accepted]);
-  }, []);
+      setPhotoMessages(message ? [message] : []);
+      if (message) return false;
 
-  const removePhoto = useCallback((key: string) => {
-    const target = photosRef.current.find((p) => p.key === key);
-    if (!target) return;
-    if (target.file) URL.revokeObjectURL(target.url);
-    if (target.id) setRemovedIds((prev) => [...prev, target.id as string]);
-    setPhotos((prev) => prev.filter((p) => p.key !== key));
-    setPhotoMessages([]);
-  }, []);
+      updateDraft({ photo_urls: [...draft.photo_urls, url] });
+      return true;
+    },
+    [draft.photo_urls, updateDraft],
+  );
 
-  const makeCover = useCallback((key: string) => {
-    setPhotos((prev) => {
-      const target = prev.find((p) => p.key === key);
-      if (!target) return prev;
-      return [target, ...prev.filter((p) => p.key !== key)];
-    });
-  }, []);
+  const removePhoto = useCallback(
+    (url: string) => {
+      updateDraft({ photo_urls: draft.photo_urls.filter((u) => u !== url) });
+      setPhotoMessages([]);
+    },
+    [draft.photo_urls, updateDraft],
+  );
+
+  const makeCover = useCallback(
+    (url: string) => {
+      updateDraft({ photo_urls: [url, ...draft.photo_urls.filter((u) => u !== url)] });
+    },
+    [draft.photo_urls, updateDraft],
+  );
 
   const next = useCallback(() => {
     const found = validateStep(step, draft);
@@ -229,7 +180,7 @@ export function usePropertyWizard(property?: Property) {
   );
 
   const submit = useCallback(async () => {
-    for (let i = 0; i <= 2; i += 1) {
+    for (let i = 0; i < WIZARD_STEPS.length; i += 1) {
       const found = validateStep(i, draft);
       if (Object.keys(found).length > 0) {
         setErrors(found);
@@ -248,94 +199,41 @@ export function usePropertyWizard(property?: Property) {
       name: draft.name.trim(),
       address: draft.address.trim(),
       currency: draft.currency,
-      price_per_night: Number(draft.price_per_night),
+      property_type: draft.property_type,
+      nightly_rate: Number(draft.nightly_rate),
       max_guests: Number(draft.max_guests),
       bedrooms: Number(draft.bedrooms),
-      beds: Number(draft.beds),
       bathrooms: Number(draft.bathrooms),
-      description: draft.description.trim(),
+      description: draft.description.trim() || null,
       amenities: draft.amenities,
-      channels: draft.channels,
+      published_platforms: draft.published_platforms,
+      photo_urls: draft.photo_urls,
     };
 
     setIsSubmitting(true);
-    let propertyId = editingId;
-
     try {
       const response = editingId
         ? await api.put(`/properties/${editingId}`, payload)
         : await api.post("/properties/", payload);
-      propertyId = response.data.id as string;
+      const propertyId = response.data.id as string;
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: PROPERTIES_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: ["property", propertyId] }),
+        queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY }),
+      ]);
+
+      toast.success(
+        editingId ? "Propiedad actualizada" : "Propiedad creada",
+        "La ficha se guardó correctamente.",
+      );
+      router.push(`/properties/${propertyId}`);
     } catch {
       toast.error("Error", "No se pudo guardar la propiedad.");
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    let photoFailures = 0;
-    const newPhotos = photos.filter((p) => p.file);
-    setProgress({ done: 0, total: newPhotos.length + removedIds.length });
-    let done = 0;
-
-    for (const id of removedIds) {
-      try {
-        await api.delete(`/properties/${propertyId}/photos/${id}`);
-      } catch {
-        photoFailures += 1;
-      }
-      done += 1;
-      setProgress({ done, total: newPhotos.length + removedIds.length });
-    }
-
-    const uploadedIds: Record<string, string> = {};
-    for (const photo of newPhotos) {
-      try {
-        const form = new FormData();
-        form.append("file", photo.file as File);
-        const res = await api.post(`/properties/${propertyId}/photos`, form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        uploadedIds[photo.key] = res.data.id;
-      } catch {
-        photoFailures += 1;
-      }
-      done += 1;
-      setProgress({ done, total: newPhotos.length + removedIds.length });
-    }
-
-    const cover = photos[0];
-    const coverId = cover ? (cover.id ?? uploadedIds[cover.key]) : undefined;
-    if (coverId && coverId !== initialCoverId.current) {
-      try {
-        await api.patch(`/properties/${propertyId}/photos/${coverId}`, { is_cover: true });
-      } catch {
-        photoFailures += 1;
-      }
-    }
-
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: PROPERTIES_QUERY_KEY }),
-      queryClient.invalidateQueries({ queryKey: ["property", propertyId] }),
-      queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY }),
-    ]);
-    setProgress(null);
-    setIsSubmitting(false);
-
-    if (photoFailures > 0) {
-      toast.warning(
-        "Propiedad guardada",
-        "Algunas fotos no se pudieron procesar. Vuelve a intentarlo desde la edición.",
-      );
-      router.push(`/properties/${propertyId}/edit`);
-      return;
-    }
-
-    toast.success(
-      editingId ? "Propiedad actualizada" : "Propiedad creada",
-      "La ficha se guardó correctamente.",
-    );
-    router.push(`/properties/${propertyId}`);
-  }, [draft, editingId, isDemoMode, photos, queryClient, removedIds, router, toast]);
+  }, [draft, editingId, isDemoMode, queryClient, router, toast]);
 
   return {
     isEditing: !!editingId,
@@ -343,12 +241,10 @@ export function usePropertyWizard(property?: Property) {
     step,
     draft,
     errors,
-    photos,
     photoMessages,
     isSubmitting,
-    progress,
     updateDraft,
-    addFiles,
+    addPhotoUrl,
     removePhoto,
     makeCover,
     next,
