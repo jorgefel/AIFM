@@ -44,6 +44,7 @@ const navigation = [
   { label: "Propiedades", href: "/properties", icon: Building2 },
   { label: "Ingresos", href: "/income", icon: WalletCards },
   { label: "Gastos", href: "/expenses", icon: ReceiptText },
+  { label: "Calendario", href: "/calendar", icon: CalendarDays },
   { label: "Reportes", href: "/reports", icon: BarChart3 },
 ];
 
@@ -78,7 +79,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
   const palette = propertyPalettes[index % propertyPalettes.length];
 
   return (
-    <Link href="/properties" className={styles.propertyCard}>
+    <Link href={`/properties/${property.id}`} className={styles.propertyCard}>
       <div className={`${styles.propertyVisual} ${styles[palette]}`}>
         <div className={styles.propertyGlow} />
         <span>{propertyInitials(property)}</span>
@@ -105,7 +106,7 @@ export function ReferenceDashboard() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { properties, summary, chartData, isLoading } = useDashboardData(range);
+  const { properties, summary, chartData, isLoading, propertySummaries } = useDashboardData(range);
 
   const firstName = user?.full_name?.split(" ")[0] || "Usuario";
   const selectedCurrency = properties[0]?.currency || "USD";
@@ -134,14 +135,14 @@ export function ReferenceDashboard() {
     {
       label: "Ingresos totales",
       value: money(summary?.gross_income, selectedCurrency),
-      caption: "Periodo seleccionado",
+      caption: `Portafolio en ${selectedCurrency}`,
       icon: CircleDollarSign,
       tone: "mint",
     },
     {
       label: "Tasa de ocupación",
       value: occupancy == null ? "—" : `${occupancy.toFixed(0)}%`,
-      caption: "De tu portafolio",
+      caption: "Promedio de propiedades",
       icon: Home,
       tone: "purple",
     },
@@ -229,6 +230,12 @@ export function ReferenceDashboard() {
                 </article>
               ))}
             </div>
+
+            {propertySummaries.length > 0 && <div className={styles.portfolioNote}>
+              <span>{propertySummaries.length} propiedades analizadas</span>
+              <span>{summary?.reservation_count ?? 0} reservas del período</span>
+              <span>{summary?.expense_count ?? 0} gastos registrados</span>
+            </div>}
 
             <div className={styles.analyticsGrid}>
               <section className={styles.cardPanel}>

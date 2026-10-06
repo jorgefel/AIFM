@@ -13,6 +13,7 @@ import {
   Users,
   Zap,
   Plug,
+  Crown,
   type LucideIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -53,8 +54,9 @@ const NAV_ITEMS: NavItem[] = [
       { name: "Reportes", href: "/reports" },
     ],
   },
-  { name: "Automatizaciones", icon: Zap, soon: true },
-  { name: "Integraciones", href: "/integrations", icon: Plug },
+  { name: "Automatizaciones", href: "/automations", icon: Zap },
+  { name: "Integraciones", href: "/settings/integrations", icon: Plug },
+  { name: "Planes", href: "/plans", icon: Crown },
 ];
 
 interface GlassSidebarProps {
@@ -167,8 +169,13 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
           href="/settings"
           onClick={onClose}
           title="Configuración"
-          className={`flex items-center gap-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all duration-200 group mb-1 ${
+          aria-current={pathname.startsWith("/settings") && !pathname.startsWith("/settings/integrations") ? "page" : undefined}
+          className={`flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 group mb-1 ${
             expanded ? "px-3.5" : "px-3 lg:px-3.5 justify-center lg:justify-start"
+          } ${
+            pathname.startsWith("/settings") && !pathname.startsWith("/settings/integrations")
+              ? "bg-violet-600 text-white"
+              : "text-slate-400 hover:text-white hover:bg-white/[0.06]"
           }`}
         >
           <Settings className="w-[18px] h-[18px] shrink-0 transition-transform duration-300 group-hover:rotate-90" />

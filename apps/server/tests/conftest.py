@@ -3,6 +3,7 @@
 # Cada test corre en una transacción que se revierte al finalizar.
 # ─────────────────────────────────────────────────────────────
 import asyncio
+import os
 from collections.abc import AsyncGenerator
 
 import pytest
@@ -14,7 +15,6 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.pool import NullPool
 
-from app.core.config import settings
 from app.core.database import Base
 
 # Importar todos los modelos para que Base.metadata los registre
@@ -31,9 +31,20 @@ def event_loop():
 
 @pytest_asyncio.fixture(scope="session")
 async def test_engine():
-    """Motor de BD async para tests (usa la misma URL de dev)."""
+    """Motor async exclusivo para pruebas de integración.
+
+    Las pruebas crean y destruyen las tablas registradas por SQLAlchemy; por esa
+    razón nunca deben usar la base de datos de desarrollo por defecto.
+    """
+    test_database_url = os.getenv("TEST_DATABASE_URL")
+    if not test_database_url:
+        pytest.skip(
+            "TEST_DATABASE_URL is required for database integration tests. "
+            "Use a disposable PostgreSQL database such as nomora_test."
+        )
+
     engine = create_async_engine(
-        settings.DATABASE_URL,
+        test_database_url,
         echo=False,
         pool_pre_ping=True,
         poolclass=NullPool,

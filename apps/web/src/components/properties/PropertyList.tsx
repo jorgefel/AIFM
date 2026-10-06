@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { DataTable } from "@/components/ui/DataTable";
-import { Edit2, Trash2, Building2, Eye } from "lucide-react";
-import { formatNightlyPrice } from "@/lib/propertyOptions";
+import { Edit2, Trash2, Building2, Eye, Users } from "lucide-react";
+import { formatNightlyPrice, getPropertyTypeLabel } from "@/lib/propertyOptions";
 import { Property } from "@/types/models";
 
 interface PropertyListProps {
@@ -21,7 +21,7 @@ export function PropertyList({ properties, isLoading, onDelete }: PropertyListPr
       header: "Propiedad",
       accessorKey: "name",
       cell: (item: Property) => {
-        const cover = item.photos?.[0]?.url;
+        const cover = item.photo_urls?.[0];
         return (
           <Link href={`/properties/${item.id}`} className="flex items-center gap-3 group">
             <span className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface">
@@ -37,16 +37,26 @@ export function PropertyList({ properties, isLoading, onDelete }: PropertyListPr
         );
       },
     },
+    {
+      header: "Tipo",
+      accessorKey: "property_type",
+      cell: (item: Property) => getPropertyTypeLabel(item.property_type),
+    },
     { header: "Dirección", accessorKey: "address" },
     {
-      header: "Precio por noche",
-      accessorKey: "price_per_night",
-      cell: (item: Property) => formatNightlyPrice(item.price_per_night, item.currency) ?? "Sin definir",
+      header: "Capacidad",
+      accessorKey: "max_guests",
+      cell: (item: Property) => (
+        <span className="inline-flex items-center gap-1">
+          <Users className="h-3.5 w-3.5" aria-hidden="true" />
+          {item.max_guests}
+        </span>
+      ),
     },
     {
-      header: "Huéspedes",
-      accessorKey: "max_guests",
-      cell: (item: Property) => item.max_guests ?? "Sin definir",
+      header: "Por noche",
+      accessorKey: "nightly_rate",
+      cell: (item: Property) => formatNightlyPrice(item.nightly_rate, item.currency) ?? "Sin definir",
     },
     {
       header: "Acciones",
@@ -80,10 +90,10 @@ export function PropertyList({ properties, isLoading, onDelete }: PropertyListPr
   ];
 
   return (
-    <DataTable 
-      data={properties} 
-      columns={columns} 
-      isLoading={isLoading} 
+    <DataTable
+      data={properties}
+      columns={columns}
+      isLoading={isLoading}
       emptyMessage={
         <div className="flex flex-col items-center justify-center py-12 text-ink-muted">
           <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4">

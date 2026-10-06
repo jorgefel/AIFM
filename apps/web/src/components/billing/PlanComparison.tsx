@@ -23,11 +23,11 @@ export function PlanComparison() {
   return (
     <div className="overflow-x-auto rounded-2xl border border-line-soft bg-card">
       <table className="w-full min-w-[32rem] border-collapse text-left">
-        <caption className="sr-only">Comparación de funciones entre los planes Free y Pro</caption>
+        <caption className="sr-only">Comparación de funciones entre los planes Gratis y Pro</caption>
         <thead>
           <tr className="border-b border-line-soft bg-surface text-xs font-semibold uppercase tracking-wider text-ink-muted">
             <th scope="col" className="px-4 py-3.5">Función</th>
-            <th scope="col" className="w-28 px-4 py-3.5 text-center">Free</th>
+            <th scope="col" className="w-28 px-4 py-3.5 text-center">Gratis</th>
             <th scope="col" className="w-28 px-4 py-3.5 text-center text-violet-600">Pro</th>
           </tr>
         </thead>
@@ -36,11 +36,6 @@ export function PlanComparison() {
             <tr key={feature.label}>
               <th scope="row" className="px-4 py-3.5 text-sm font-normal text-ink">
                 {feature.label}
-                {feature.soon && (
-                  <span className="ml-2 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
-                    Próximamente
-                  </span>
-                )}
               </th>
               <Cell included={feature.free} />
               <Cell included={feature.pro} />

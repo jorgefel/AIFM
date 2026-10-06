@@ -50,6 +50,10 @@ export function useIncome() {
   });
 
   const submitReservation = async (editingId: string | null) => {
+    if (!selectedPropertyId || !formData.check_in || !formData.check_out || formData.check_out <= formData.check_in) {
+      toast.warning("Revisa las fechas", "La salida debe ser posterior a la entrada.");
+      return false;
+    }
     setIsSubmitting(true);
     try {
       const payload = {
@@ -70,8 +74,9 @@ export function useIncome() {
       queryClient.invalidateQueries({ queryKey: reservationsKey });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       return true;
-    } catch {
-      toast.error("Error", "No se pudo guardar la reserva.");
+    } catch (error: any) {
+      const detail = error?.response?.data?.detail;
+      toast.error("No se pudo guardar", typeof detail === "string" ? detail : "Revisa los datos de la reserva.");
       return false;
     } finally {
       setIsSubmitting(false);

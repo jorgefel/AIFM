@@ -4,6 +4,7 @@ import {
   Wallet, 
   ReceiptText, 
   Building2, 
+  CalendarDays,
   BarChart3, 
   Settings
 } from "lucide-react";
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
   { name: "Ingresos", href: "/income", icon: Wallet },
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
+  { name: "Calendario", href: "/calendar", icon: CalendarDays },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
 ];
 

@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/ui/DataTable";
-import { Wallet, Edit2, Trash2 } from "lucide-react";
+import { Wallet, Edit2, Trash2, RefreshCw } from "lucide-react";
 import { Reservation } from "@/types/models";
 import { motion, Variants } from "framer-motion";
 
@@ -18,7 +18,7 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
     { 
       header: "Plataforma", 
       accessorKey: "platform",
-      cell: (item: Reservation) => <span className="capitalize">{item.platform}</span>
+      cell: (item: Reservation) => <div className="flex items-center gap-2"><span className="capitalize">{item.platform}</span>{item.sync_source === "beds24" && <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/20 bg-sky-400/10 px-2 py-0.5 text-xs text-sky-300"><RefreshCw className="h-3 w-3" />Sincronizada</span>}</div>
     },
     { 
       header: "Fechas", 
@@ -29,7 +29,7 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
       header: "Neto", 
       accessorKey: "net_amount",
       cell: (item: Reservation) => (
-        <span className="font-bold text-teal-600">
+        <span className="font-bold text-emerald-400">
           {formatCurrency(Number(item.net_amount))}
         </span>
       )
@@ -39,12 +39,12 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
       accessorKey: "status",
       cell: (item: Reservation) => {
         const colors: any = {
-          confirmed: "text-teal-700 bg-teal-50 border-teal-200",
-          pending: "text-amber-700 bg-amber-50 border-amber-200",
+          confirmed: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+          pending: "text-amber-400 bg-amber-400/10 border-amber-400/20",
           cancelled: "text-coral-accent bg-coral-accent/10 border-coral-accent/20",
-          completed: "text-blue-700 bg-blue-50 border-blue-200"
+          completed: "text-blue-400 bg-blue-400/10 border-blue-400/20"
         };
-        const color = colors[item.status] || "text-ink-muted bg-surface border-line";
+        const color = colors[item.status] || "text-slate-400 bg-slate-400/10 border-slate-400/20";
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${color} capitalize`}>
             {item.status}
@@ -57,15 +57,15 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
       accessorKey: "actions",
       cell: (item: Reservation) => (
         <div className="flex items-center gap-2">
-          <button 
+          <button disabled={item.sync_source === "beds24"}
             onClick={() => onEdit(item)}
-            className="p-1.5 text-ink-muted hover:text-violet-600 hover:bg-violet-50 rounded-md transition-colors"
+            className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors"
           >
             <Edit2 className="w-4 h-4" />
           </button>
-          <button 
+          <button disabled={item.sync_source === "beds24"}
             onClick={() => onDelete(item.id)}
-            className="p-1.5 text-ink-muted hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors"
+            className="p-1.5 text-slate-400 hover:text-coral-accent hover:bg-coral-accent/10 rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-30"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -81,11 +81,11 @@ export function IncomeList({ reservations, isLoading, formatCurrency, onEdit, on
         columns={columns} 
         isLoading={isLoading} 
         emptyMessage={
-          <div className="flex flex-col items-center justify-center py-12 text-ink-muted">
-            <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4">
-              <Wallet className="w-8 h-8 text-ink-muted" />
+          <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+              <Wallet className="w-8 h-8 text-slate-500" />
             </div>
-            <p className="text-lg font-medium text-ink mb-1">Sin reservas registradas</p>
+            <p className="text-lg font-medium text-slate-300 mb-1">Sin reservas registradas</p>
             <p className="text-sm max-w-sm mx-auto">No hay reservaciones para esta propiedad. Haz clic en "Nueva Reserva" para añadir una.</p>
           </div>
         }

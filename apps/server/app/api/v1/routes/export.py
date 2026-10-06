@@ -1,7 +1,9 @@
 import uuid
 import csv
 import io
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import date
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -16,10 +18,19 @@ from app.models.expense import Expense
 router = APIRouter(prefix="/export", tags=["export"])
 
 @router.get("/csv")
-async def export_csv(property_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def export_csv(
+    property_id: uuid.UUID,
+    start: date | None = None,
+    end: date | None = None,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
     Exporta todas las transacciones (reservas y gastos) de una propiedad en formato CSV.
     """
+    if start and end and end < start:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="end must not be before start")
+
     # Verificar propiedad
     result = await db.execute(
         select(Property).where(
@@ -33,21 +44,27 @@ async def export_csv(property_id: uuid.UUID, db: AsyncSession = Depends(get_db),
         raise HTTPException(status_code=404, detail="Property not found")
 
     # Obtener Reservas
-    res_result = await db.execute(
-        select(Reservation).where(
-            Reservation.property_id == property_id,
-            Reservation.status != "cancelled"
-        ).order_by(Reservation.check_in.desc())
+    reservations_query = select(Reservation).where(
+        Reservation.property_id == property_id,
+        Reservation.status != "cancelled"
     )
+    if start:
+        reservations_query = reservations_query.where(Reservation.check_in >= start)
+    if end:
+        reservations_query = reservations_query.where(Reservation.check_in <= end)
+    res_result = await db.execute(reservations_query.order_by(Reservation.check_in.desc()))
     reservations = res_result.scalars().all()
 
     # Obtener Gastos
-    exp_result = await db.execute(
-        select(Expense).where(
-            Expense.property_id == property_id,
-            Expense.is_deleted == False
-        ).order_by(Expense.date.desc())
+    expenses_query = select(Expense).where(
+        Expense.property_id == property_id,
+        Expense.is_deleted.is_(False)
     )
+    if start:
+        expenses_query = expenses_query.where(Expense.date >= start)
+    if end:
+        expenses_query = expenses_query.where(Expense.date <= end)
+    exp_result = await db.execute(expenses_query.order_by(Expense.date.desc()))
     expenses = exp_result.scalars().all()
 
     # Generar CSV en memoria
@@ -55,7 +72,10 @@ async def export_csv(property_id: uuid.UUID, db: AsyncSession = Depends(get_db),
     writer = csv.writer(output)
     
     # Escribir cabeceras
-    writer.writerow(["Fecha", "Tipo", "Concepto/Huesped", "Monto", "Moneda", "Categoria/Plataforma"])
+    writer.writerow(["Propiedad", prop.name])
+    writer.writerow(["Período", f"{start.isoformat() if start else 'Todo'} a {end.isoformat() if end else 'Hoy'}"])
+    writer.writerow([])
+    writer.writerow(["Fecha", "Tipo", "Concepto/Huésped", "Monto", "Moneda", "Categoría/Plataforma"])
 
     # Agregar Reservas
     for r in reservations:

@@ -1,7 +1,9 @@
 import axios from "axios";
+import { hasSessionHint, isPublicAuthRoute } from "./session";
 
-// Determine base URL, fallback to localhost for dev
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+// Siempre ruta relativa → Route Handler en app/api/v1/[...path]/route.ts.
+// No usar NEXT_PUBLIC_* apuntando a Render: el navegador no enviaría las cookies HttpOnly.
+const API_URL = "/api/v1";
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -26,6 +28,16 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+const shouldAttemptRefresh = () => {
+  if (!hasSessionHint()) {
+    return false;
+  }
+  if (isPublicAuthRoute()) {
+    return false;
+  }
+  return true;
+};
+
 // Interceptor de Respuestas (Refresh Token Logic)
 api.interceptors.response.use(
   (response) => response,
@@ -37,7 +49,7 @@ api.interceptors.response.use(
       originalRequest &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/login") &&
-      !originalRequest.url?.includes("/auth/refresh")
+      shouldAttemptRefresh()
     ) {
       if (isRefreshing) {
         // Encolar peticiones mientras se hace el refresh
@@ -68,7 +80,7 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
         
         // Si falla (token revocado o expirado), redirigimos al login
-        if (typeof window !== "undefined" && window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+        if (typeof window !== "undefined" && !isPublicAuthRoute()) {
           window.location.href = "/login";
         }
         return Promise.reject(refreshError);

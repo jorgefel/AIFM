@@ -1,26 +1,19 @@
-export interface PropertyPhoto {
-  id: string;
-  url: string;
-  position?: number;
-  is_cover?: boolean;
-}
-
 export interface Property {
   id: string;
   name: string;
   address: string;
   currency: string;
+  property_type: string;
+  max_guests: number;
+  bedrooms: number;
+  bathrooms: number;
+  description?: string | null;
+  nightly_rate?: number | string | null;
+  amenities: string[];
+  published_platforms: string[];
+  photo_urls: string[];
   created_at: string;
   is_active?: boolean;
-  price_per_night?: number | string | null;
-  max_guests?: number | null;
-  bedrooms?: number | null;
-  beds?: number | null;
-  bathrooms?: number | string | null;
-  description?: string | null;
-  amenities?: string[];
-  channels?: string[];
-  photos?: PropertyPhoto[];
 }
 
 export interface Expense {
@@ -48,4 +41,21 @@ export interface Reservation {
   platform: string;
   status: string;
   notes?: string;
+  beds24_booking_id?: string | null;
+  sync_source?: string | null;
+  synced_at?: string | null;
 }
+
+export interface CalendarDay {
+  property_id: string;
+  date: string;
+  available_units: number | null;
+  price: number | null;
+  availability: "available" | "unavailable" | "unknown";
+  source: "manual" | "synced";
+  channel: string | null;
+  synced_at: string | null;
+  is_stale: boolean;
+}
+
+export interface CalendarSnapshot { days: CalendarDay[]; generated_at: string; }

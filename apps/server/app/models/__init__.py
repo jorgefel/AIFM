@@ -7,5 +7,15 @@ from app.models.property import Property  # noqa: F401
 from app.models.reservation import Reservation  # noqa: F401
 from app.models.expense import Expense  # noqa: F401
 from app.models.dashboard import DashboardLayout  # noqa: F401
+from app.models.subscription import Subscription, BillingEvent  # noqa: F401
+from app.models.integration import ChannelConnection, SyncLog, ChannelInventoryDay, Beds24PropertyLink, OtaConnection  # noqa: F401
 
-__all__ = ["User", "Property", "Reservation", "Expense", "DashboardLayout"]
+__all__ = [
+    "User", "Property", "Reservation", "Expense", "DashboardLayout", 
+    "Subscription", "BillingEvent", "ChannelConnection", "SyncLog", 
+    "ChannelInventoryDay", "Beds24PropertyLink", "OtaConnection"
+]
+
+from app.models.chat import AIChatSession, AIChatMessage
+
+from app.models.automation import AutomationAction, AuditLog

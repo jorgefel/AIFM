@@ -12,6 +12,7 @@ from app.schemas.property import PropertyRead, PropertyCreate, PropertyUpdate
 
 router = APIRouter(prefix="/properties", tags=["properties"])
 
+@router.get("", response_model=List[PropertyRead], include_in_schema=False)
 @router.get("/", response_model=List[PropertyRead])
 async def get_properties(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     result = await db.execute(
@@ -19,6 +20,7 @@ async def get_properties(db: AsyncSession = Depends(get_db), current_user: User 
     )
     return result.scalars().all()
 
+@router.post("", response_model=PropertyRead, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @router.post("/", response_model=PropertyRead, status_code=status.HTTP_201_CREATED)
 async def create_property(property_in: PropertyCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_property = Property(**property_in.model_dump(), owner_id=current_user.id)

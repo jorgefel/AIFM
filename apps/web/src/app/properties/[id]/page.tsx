@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Bath, Bed, DoorOpen, MapPin, Pencil, Users } from "lucide-react";
+import { ArrowLeft, Bath, DoorOpen, MapPin, Pencil, Users } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { PropertyGallery } from "@/components/properties/PropertyGallery";
 import { getAmenityIcon } from "@/components/properties/amenityIcons";
 import { useProperty } from "@/hooks/useProperty";
-import { formatNightlyPrice, getAmenityLabel, getChannelLabel } from "@/lib/propertyOptions";
+import {
+  formatNightlyPrice,
+  getAmenityLabel,
+  getChannelLabel,
+  getPropertyTypeLabel,
+} from "@/lib/propertyOptions";
 
 function Fact({
   icon: Icon,
@@ -66,13 +71,10 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const photos = [...(property.photos ?? [])].sort((a, b) => {
-    if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
-    return (a.position ?? 0) - (b.position ?? 0);
-  });
-  const price = formatNightlyPrice(property.price_per_night, property.currency);
+  const photos = property.photo_urls ?? [];
+  const price = formatNightlyPrice(property.nightly_rate, property.currency);
   const amenities = property.amenities ?? [];
-  const channels = property.channels ?? [];
+  const channels = property.published_platforms ?? [];
 
   return (
     <DashboardLayout>
@@ -91,6 +93,9 @@ export default function PropertyDetailPage() {
               <p className="mt-1 flex items-center gap-1.5 text-ink-muted">
                 <MapPin className="h-4 w-4" />
                 {property.address}
+                <span className="ml-2 rounded-full border border-line bg-surface px-2.5 py-0.5 text-xs font-medium text-ink-muted">
+                  {getPropertyTypeLabel(property.property_type)}
+                </span>
               </p>
             </div>
             <Button
@@ -149,10 +154,9 @@ export default function PropertyDetailPage() {
               <p className="mt-1 text-xs text-ink-muted">Moneda: {property.currency}</p>
 
               <dl className="mt-6 grid grid-cols-1 gap-4 border-t border-line-soft pt-6">
-                <Fact icon={Users} label="Huéspedes" value={property.max_guests ?? "Sin definir"} />
-                <Fact icon={DoorOpen} label="Habitaciones" value={property.bedrooms ?? "Sin definir"} />
-                <Fact icon={Bed} label="Camas" value={property.beds ?? "Sin definir"} />
-                <Fact icon={Bath} label="Baños" value={property.bathrooms ?? "Sin definir"} />
+                <Fact icon={Users} label="Huéspedes" value={property.max_guests} />
+                <Fact icon={DoorOpen} label="Habitaciones" value={property.bedrooms} />
+                <Fact icon={Bath} label="Baños" value={property.bathrooms} />
               </dl>
             </section>
 

@@ -12,6 +12,7 @@ export function useReports() {
   });
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
+  const [period, setPeriod] = useState(() => new Date().toISOString().slice(0, 7));
   const [isExporting, setIsExporting] = useState(false);
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -31,13 +32,15 @@ export function useReports() {
     if (!selectedPropertyId) return;
     setIsExporting(true);
     try {
-      const response = await api.get(`/export/csv?property_id=${selectedPropertyId}`, {
+      const [year, month] = period.split("-").map(Number);
+      const lastDay = new Date(year, month, 0).getDate();
+      const response = await api.get(`/export/csv?property_id=${selectedPropertyId}&start=${period}-01&end=${period}-${String(lastDay).padStart(2, "0")}`, {
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `export_${selectedPropertyId}.csv`);
+      link.setAttribute('download', `nomora_${period}_${selectedPropertyId}.csv`);
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
@@ -58,11 +61,11 @@ export function useReports() {
     setReportError(null);
 
     try {
-      const date = new Date();
+      const [year, month] = period.split("-").map(Number);
       const payload = {
         property_id: selectedPropertyId,
-        year: date.getFullYear(),
-        month: date.getMonth() + 1
+        year,
+        month,
       };
 
       if (type === "deterministic") {
@@ -105,6 +108,7 @@ export function useReports() {
   return {
     properties,
     selectedPropertyId, setSelectedPropertyId,
+    period, setPeriod,
     isLoading,
     isExporting,
     exportCSV,

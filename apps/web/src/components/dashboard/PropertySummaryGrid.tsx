@@ -35,7 +35,7 @@ export function PropertySummaryGrid({ properties, stats }: PropertySummaryGridPr
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {properties.map((property) => {
             const stat = stats.find((s) => s.propertyId === property.id);
-            const cover = property.photos?.[0]?.url;
+            const cover = property.photo_urls?.[0];
             return (
               <li key={property.id}>
                 <Link

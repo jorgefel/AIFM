@@ -30,11 +30,7 @@ export function PropertyWizard({ property }: PropertyWizardProps) {
     }
   };
 
-  const submitLabel = wizard.progress
-    ? `Guardando ${wizard.progress.done}/${wizard.progress.total}`
-    : wizard.isEditing
-      ? "Guardar cambios"
-      : "Crear propiedad";
+  const submitLabel = wizard.isEditing ? "Guardar cambios" : "Crear propiedad";
 
   return (
     <form onSubmit={handleSubmit} className="card-surface space-y-8 p-5 sm:p-8">
@@ -67,9 +63,9 @@ export function PropertyWizard({ property }: PropertyWizardProps) {
         )}
         {wizard.step === 3 && (
           <PhotosStep
-            photos={wizard.photos}
+            urls={wizard.draft.photo_urls}
             messages={wizard.photoMessages}
-            onAdd={wizard.addFiles}
+            onAdd={wizard.addPhotoUrl}
             onRemove={wizard.removePhoto}
             onMakeCover={wizard.makeCover}
           />
@@ -77,7 +73,7 @@ export function PropertyWizard({ property }: PropertyWizardProps) {
         {wizard.step === 4 && (
           <ChannelsReviewStep
             draft={wizard.draft}
-            photoCount={wizard.photos.length}
+            errors={wizard.errors}
             onChange={wizard.updateDraft}
           />
         )}

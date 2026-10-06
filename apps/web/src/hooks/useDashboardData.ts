@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetcher } from "@/lib/fetcher";
 import { PROPERTIES_QUERY_KEY } from "./useProperties";
@@ -20,15 +20,6 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
-
-  // Auto-select first property when data loads
-  useEffect(() => {
-    if (properties.length > 0 && !selectedPropertyId) {
-      setSelectedPropertyId(properties[0].id);
-    }
-  }, [properties, selectedPropertyId]);
-
   // ── Current date params ──
   const dateParams = useMemo(() => {
     const date = new Date();
@@ -40,14 +31,13 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
 
   // ── Consolidated Dashboard Data via React Query ──
   // One single endpoint to fetch summary, chart data, and recent activity
-  const dashboardPath = selectedPropertyId
-    ? `/analysis/dashboard?property_id=${selectedPropertyId}&year=${dateParams.currentYear}&month=${dateParams.currentMonth}&range=${performanceRangeParam[performanceRange]}`
-    : null;
+  const dashboardCurrency = properties[0]?.currency;
+  const dashboardPath = `/analysis/portfolio-dashboard?year=${dateParams.currentYear}&month=${dateParams.currentMonth}&range=${performanceRangeParam[performanceRange]}${dashboardCurrency ? `&currency=${dashboardCurrency}` : ""}`;
 
   const { data: dashboardData = null, isLoading: isDashboardLoading } = useQuery({
-    queryKey: ["dashboard", selectedPropertyId, dateParams.currentYear, dateParams.currentMonth, performanceRange],
+    queryKey: ["portfolio-dashboard", dateParams.currentYear, dateParams.currentMonth, performanceRange, dashboardCurrency],
     queryFn: () => fetcher(dashboardPath!),
-    enabled: !!dashboardPath,
+    enabled: true,
     staleTime: 1000 * 30, // 30 seconds
   });
 
@@ -77,15 +67,14 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     }));
   }, [dashboardData]);
 
-  const isLoading = isDashboardLoading && !!selectedPropertyId;
+  const isLoading = isDashboardLoading;
 
   return {
     properties,
-    selectedPropertyId,
-    setSelectedPropertyId,
     summary,
     chartData,
     recentActivity,
+    propertySummaries: dashboardData?.property_summaries ?? [],
     isLoading,
   };
 }

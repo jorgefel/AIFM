@@ -9,6 +9,7 @@ dist/
 build/
 out/
 
+
 # Environment (NUNCA commitear estos archivos)
 .env
 .env.local

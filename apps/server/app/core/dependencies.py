@@ -23,8 +23,15 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    # We use cookies for access token
-    token = request.cookies.get("access_token")
+    # Check Authorization header first, fallback to access_token cookie
+    token = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+
+    if not token:
+        token = request.cookies.get("access_token")
+
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -40,3 +40,4 @@ httpx==0.28.1
 cryptography==45.0.4
 google-auth==2.40.3
 requests==2.32.3
+stripe>=12.0.0,<13.0.0

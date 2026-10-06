@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
@@ -10,6 +11,67 @@ import { Property } from "@/types/models";
  * without importing the full hook.
  */
 export const PROPERTIES_QUERY_KEY = ["properties"];
+
+export type PropertyFormData = {
+  name: string;
+  address: string;
+  currency: string;
+  property_type: string;
+  max_guests: number;
+  bedrooms: number;
+  bathrooms: number;
+  description: string;
+  nightly_rate: string;
+  amenities: string[];
+  published_platforms: string[];
+  photo_urls: string[];
+};
+
+const emptyProperty: PropertyFormData = {
+  name: "", address: "", currency: "USD", property_type: "apartment",
+  max_guests: 1, bedrooms: 1, bathrooms: 1, description: "", nightly_rate: "",
+  amenities: [], published_platforms: [], photo_urls: [],
+};
+
+const propertyFieldLabels: Record<string, string> = {
+  name: "nombre de la propiedad",
+  address: "ubicación o dirección",
+  currency: "moneda principal",
+  property_type: "tipo de propiedad",
+  max_guests: "número de huéspedes",
+  bedrooms: "número de habitaciones",
+  bathrooms: "número de baños",
+  nightly_rate: "valor por noche",
+  published_platforms: "plataformas publicadas",
+  photo_urls: "fotos",
+};
+
+function propertySaveError(error: unknown) {
+  if (!isAxiosError(error)) {
+    return "No se pudo conectar con el servidor. Inténtalo de nuevo.";
+  }
+
+  const detail = error.response?.data?.detail;
+  if (typeof detail === "string") {
+    return detail;
+  }
+
+  if (Array.isArray(detail)) {
+    const fields = [...new Set(detail
+      .map((item) => item?.loc?.at(-1))
+      .filter((field): field is string => typeof field === "string")
+      .map((field) => propertyFieldLabels[field] ?? field))];
+    if (fields.length) {
+      return `Revisa: ${fields.join(", ")}.`;
+    }
+  }
+
+  if (error.response?.status && error.response.status >= 500) {
+    return "El servidor no pudo guardar la propiedad. Verifica que las migraciones estén actualizadas.";
+  }
+
+  return "No se pudo guardar la propiedad. Revisa los datos e inténtalo de nuevo.";
+}
 
 export function useProperties() {
   const queryClient = useQueryClient();
@@ -23,26 +85,34 @@ export function useProperties() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({ name: "", address: "", currency: "USD" });
+  const [formData, setFormData] = useState<PropertyFormData>(emptyProperty);
   const [editingId, setEditingId] = useState<string | null>(null);
   
   const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.published_platforms.length) {
+      toast.warning("Elige una plataforma", "Indica dónde está publicada la propiedad.");
+      return;
+    }
     setIsSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        nightly_rate: formData.nightly_rate === "" ? null : Number(formData.nightly_rate),
+      };
       if (editingId) {
-        await api.put(`/properties/${editingId}`, formData);
+        await api.put(`/properties/${editingId}`, payload);
         toast.success("Propiedad actualizada", "Los cambios se guardaron correctamente.");
       } else {
-        await api.post("/properties/", formData);
+        await api.post("/properties/", payload);
         toast.success("Propiedad creada", "La propiedad se registró correctamente.");
       }
       setIsModalOpen(false);
       queryClient.invalidateQueries({ queryKey: PROPERTIES_QUERY_KEY }); // Revalidate cache
-    } catch {
-      toast.error("Error", "No se pudo guardar la propiedad.");
+    } catch (error) {
+      toast.error("No se pudo guardar", propertySaveError(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -63,13 +133,19 @@ export function useProperties() {
 
   const openNewModal = () => {
     setEditingId(null);
-    setFormData({ name: "", address: "", currency: "USD" });
+    setFormData(emptyProperty);
     setIsModalOpen(true);
   };
 
   const openEditModal = (prop: Property) => {
     setEditingId(prop.id);
-    setFormData({ name: prop.name, address: prop.address, currency: prop.currency });
+    setFormData({
+      name: prop.name, address: prop.address, currency: prop.currency,
+      property_type: prop.property_type ?? "apartment",
+      max_guests: prop.max_guests ?? 1, bedrooms: prop.bedrooms ?? 1, bathrooms: prop.bathrooms ?? 1,
+      description: prop.description ?? "", nightly_rate: prop.nightly_rate?.toString() ?? "",
+      amenities: prop.amenities ?? [], published_platforms: prop.published_platforms ?? [], photo_urls: prop.photo_urls ?? [],
+    });
     setIsModalOpen(true);
   };
 

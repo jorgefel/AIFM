@@ -16,10 +16,50 @@ class MonthlySummary(BaseModel):
     expense_count: int
 
 
+class ExpenseBreakdownItem(BaseModel):
+    category: str
+    amount: float
+
+
+class FinanceOverview(BaseModel):
+    summary: MonthlySummary
+    expense_breakdown: list[ExpenseBreakdownItem]
+
+
+class PortfolioPropertyPerformance(BaseModel):
+    property_id: uuid.UUID
+    property_name: str
+    currency: str
+    summary: MonthlySummary
+
+
+class DailyChartPoint(BaseModel):
+    year: int
+    month: int
+    day: int
+    gross_income: float
+    total_expenses: float
+
+
 class DashboardData(BaseModel):
     summary: MonthlySummary
-    chart_data: list[MonthlySummary]
+    chart_data: list[MonthlySummary | DailyChartPoint]
     recent_activity: list[dict]
+
+
+class PortfolioDashboard(DashboardData):
+    property_summaries: list[PortfolioPropertyPerformance]
+
+
+class OperationalAlert(BaseModel):
+    id: str
+    type: str
+    severity: str
+    title: str
+    message: str
+    property_id: uuid.UUID
+    property_name: str
+    action_url: str
 
 
 

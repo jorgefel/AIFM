@@ -1,69 +1,77 @@
 import { useState } from "react";
-import { ImagePlus, Star, X } from "lucide-react";
-import {
-  ACCEPTED_PHOTO_TYPES,
-  MAX_PHOTOS,
-  MAX_PHOTO_MB,
-} from "@/lib/propertyOptions";
-import type { PhotoItem } from "@/hooks/usePropertyWizard";
+import { ImageOff, ImagePlus, Star, X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { MAX_PHOTOS } from "@/lib/propertyOptions";
 
 interface PhotosStepProps {
-  photos: PhotoItem[];
+  urls: string[];
   messages: string[];
-  onAdd: (files: File[]) => void;
-  onRemove: (key: string) => void;
-  onMakeCover: (key: string) => void;
+  onAdd: (url: string) => boolean;
+  onRemove: (url: string) => void;
+  onMakeCover: (url: string) => void;
 }
 
-export function PhotosStep({ photos, messages, onAdd, onRemove, onMakeCover }: PhotosStepProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const isFull = photos.length >= MAX_PHOTOS;
+function PhotoThumb({ url, alt }: { url: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 bg-surface px-2 text-center text-xs text-ink-muted">
+        <ImageOff className="h-5 w-5" aria-hidden="true" />
+        No se pudo cargar la imagen
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={url} alt={alt} onError={() => setFailed(true)} className="aspect-[4/3] w-full object-cover" />
+  );
+}
+
+export function PhotosStep({ urls, messages, onAdd, onRemove, onMakeCover }: PhotosStepProps) {
+  const [value, setValue] = useState("");
+  const isFull = urls.length >= MAX_PHOTOS;
+
+  const add = () => {
+    if (onAdd(value)) setValue("");
+  };
 
   return (
     <div className="space-y-5">
       <p className="text-sm text-ink-muted">
-        Sube hasta {MAX_PHOTOS} fotos en JPG, PNG o WebP de máximo {MAX_PHOTO_MB} MB cada una. La
-        primera foto es la portada de la propiedad.
+        Agrega hasta {MAX_PHOTOS} fotos pegando la dirección (https) de una imagen ya publicada en
+        internet. La primera es la portada de la propiedad.
       </p>
 
-      <label
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
-        }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setIsDragging(false);
-          if (!isFull) onAdd(Array.from(e.dataTransfer.files));
-        }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors focus-within:border-violet-500 ${
-          isFull
-            ? "cursor-not-allowed border-line bg-surface opacity-60"
-            : isDragging
-              ? "border-violet-400 bg-violet-50"
-              : "border-line-strong bg-surface hover:border-violet-300 hover:bg-violet-50/50"
-        }`}
-      >
-        <ImagePlus className="h-8 w-8 text-violet-500" />
-        <span className="text-sm font-medium text-ink">
-          {isFull ? "Llegaste al máximo de fotos" : "Arrastra tus fotos aquí o haz clic para elegirlas"}
-        </span>
-        <span className="text-xs text-ink-muted">
-          {photos.length} de {MAX_PHOTOS} fotos
-        </span>
-        <input
-          type="file"
-          multiple
-          disabled={isFull}
-          accept={ACCEPTED_PHOTO_TYPES.join(",")}
-          className="sr-only"
-          onChange={(e) => {
-            onAdd(Array.from(e.target.files ?? []));
-            e.target.value = "";
-          }}
-        />
-      </label>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <label className="flex-1">
+          <span className="mb-1.5 block text-sm font-medium text-ink/80">Dirección de la imagen</span>
+          <input
+            type="url"
+            inputMode="url"
+            value={value}
+            disabled={isFull}
+            placeholder="https://..."
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                add();
+              }
+            }}
+            className="w-full rounded-lg border border-line bg-surface px-4 py-2.5 text-sm text-ink placeholder-ink-muted/60 transition-all focus:border-violet-400 focus:bg-card focus:outline-none focus:ring-2 focus:ring-violet-500/15 disabled:opacity-60"
+          />
+        </label>
+        <Button type="button" variant="secondary" disabled={isFull || !value.trim()} onClick={add}>
+          <ImagePlus className="mr-2 h-4 w-4" />
+          Agregar foto
+        </Button>
+      </div>
+
+      <p className="text-xs text-ink-muted">
+        {urls.length} de {MAX_PHOTOS} fotos
+      </p>
 
       {messages.length > 0 && (
         <ul role="alert" className="space-y-1 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -73,19 +81,11 @@ export function PhotosStep({ photos, messages, onAdd, onRemove, onMakeCover }: P
         </ul>
       )}
 
-      {photos.length > 0 && (
+      {urls.length > 0 && (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {photos.map((photo, index) => (
-            <li
-              key={photo.key}
-              className="group relative overflow-hidden rounded-xl border border-line bg-surface"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.url}
-                alt={`Foto ${index + 1} de la propiedad`}
-                className="aspect-[4/3] w-full object-cover"
-              />
+          {urls.map((url, index) => (
+            <li key={url} className="group relative overflow-hidden rounded-xl border border-line bg-surface">
+              <PhotoThumb url={url} alt={`Foto ${index + 1} de la propiedad`} />
               {index === 0 && (
                 <span className="absolute left-2 top-2 rounded-full bg-violet-500 px-2 py-0.5 text-xs font-medium text-white">
                   Portada
@@ -95,7 +95,7 @@ export function PhotosStep({ photos, messages, onAdd, onRemove, onMakeCover }: P
                 {index !== 0 ? (
                   <button
                     type="button"
-                    onClick={() => onMakeCover(photo.key)}
+                    onClick={() => onMakeCover(url)}
                     className="flex items-center gap-1 rounded-md bg-white/90 px-2 py-1 text-xs font-medium text-ink hover:bg-card"
                   >
                     <Star className="h-3 w-3" />
@@ -106,7 +106,7 @@ export function PhotosStep({ photos, messages, onAdd, onRemove, onMakeCover }: P
                 )}
                 <button
                   type="button"
-                  onClick={() => onRemove(photo.key)}
+                  onClick={() => onRemove(url)}
                   aria-label={`Quitar foto ${index + 1}`}
                   className="rounded-md bg-white/90 p-1 text-ink hover:bg-card"
                 >

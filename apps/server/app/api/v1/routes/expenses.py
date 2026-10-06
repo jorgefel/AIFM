@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,12 +18,22 @@ router = APIRouter(prefix="/expenses", tags=["expenses"])
 
 
 @router.get("/", response_model=List[ExpenseRead])
-async def get_expenses(property_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def get_expenses(
+    property_id: uuid.UUID,
+    start: date | None = None,
+    end: date | None = None,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     await verify_property_access(property_id, current_user, db)
-    
-    result = await db.execute(
-        select(Expense).where(Expense.property_id == property_id, Expense.is_deleted == False)
-    )
+    if start and end and end < start:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="end must not be before start")
+    query = select(Expense).where(Expense.property_id == property_id, Expense.is_deleted.is_(False))
+    if start:
+        query = query.where(Expense.date >= start)
+    if end:
+        query = query.where(Expense.date <= end)
+    result = await db.execute(query.order_by(Expense.date.desc(), Expense.created_at.desc()))
     return result.scalars().all()
 
 @router.post("/", response_model=ExpenseRead, status_code=status.HTTP_201_CREATED)
