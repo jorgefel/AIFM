@@ -28,26 +28,26 @@ export function GlassKeyMetrics({ netProfit, occupancyRate, totalExpenses }: Gla
           <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             {netProfit !== null ? formatCurrencyCompact(netProfit) : "$0"}
           </p>
-          <p className="text-xs font-medium text-emerald-400 mt-1 mb-2">+0.0%</p>
+          <p className="text-xs font-medium text-teal-400 mt-1 mb-2">+0.0%</p>
           <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Ganancia<br/>Neta (Mes)</p>
         </div>
 
         {/* Metric 2: Tasa Ocupación */}
         <div className="flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            {occupancyRate !== null ? (occupancyRate * 100).toFixed(1) : "0.0"}%
+            {occupancyRate !== null ? occupancyRate : "0"}%
           </p>
-          <p className="text-xs font-medium text-emerald-400 mt-1 mb-2">+0.0%</p>
+          <p className="text-xs font-medium text-teal-400 mt-1 mb-2">+0.0%</p>
           <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Tasa<br/>Ocupación</p>
         </div>
 
         {/* Metric 3: Gastos Totales */}
-        <div className="col-span-2 flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
+        <div className="flex flex-col justify-center items-center bg-[#181822] border border-white/5 rounded-[2rem] p-4 text-center">
           <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             {totalExpenses !== null ? formatCurrencyCompact(totalExpenses) : "$0"}
           </p>
           <p className="text-xs font-medium text-slate-500 mt-1 mb-2">-</p>
-          <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Gastos Totales</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Gastos<br/>Totales</p>
         </div>
       </div>
     </div>

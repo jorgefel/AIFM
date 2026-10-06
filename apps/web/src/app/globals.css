@@ -1,22 +1,101 @@
 @import "tailwindcss";
 
-@theme {
-  /* Paleta de Colores Luxe Ledger (Obsidian & Emerald) */
-  --color-obsidian: #0A0E17;
-  --color-obsidian-light: #121A2F;
-  --color-obsidian-lighter: #1E293B;
+@theme static {
+  /* Paleta de Colores Nomora — Aurora (modo claro + acentos violeta/cian) */
+  --color-obsidian-light: #12131F;
+  --color-obsidian-lighter: #1E2033;
+  --color-violet-accent: #7C5CFC;
+  --color-violet-glow: #A78BFA;
+  --color-violet-deep: #5B3FE0;
+  --color-cyan-accent: #22D3EE;
+  --color-cyan-glow: #67E8F9;
+  --color-teal-accent: #2DD4BF;
+  --color-teal-glow: #5EEAD4;
+  /* Mantenido por compatibilidad; ya no es el acento principal de marca */
   --color-emerald-accent: #10B981;
   --color-emerald-glow: #34D399;
   --color-coral-accent: #F43F5E;
-  
-  --color-background: var(--color-obsidian);
-  --color-foreground: #E2E8F0; /* Slate 200 */
+
+  /* Superficie de la app en modo claro */
+  --color-surface: #F5F5FB;
+  --color-surface-alt: #EEEEF7;
+  --color-card: #FFFFFF;
+  --color-line: rgba(21, 19, 31, 0.10);
+  --color-line-soft: rgba(21, 19, 31, 0.06);
+  --color-line-strong: rgba(21, 19, 31, 0.18);
+  --color-ink: #15131F;
+  --color-ink-muted: #6B6B7B;
+  --color-sidebar: #14121F;
+  --color-sidebar-light: #1E1B2E;
+
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-ink);
 }
 
 @layer base {
   :root {
-    --background: #0A0E17;
-    --foreground: #E2E8F0;
+    color-scheme: light;
+    --background: var(--color-surface);
+    --foreground: var(--color-ink);
+    --scrollbar-thumb: #D9D9E8;
+    --scrollbar-thumb-hover: #C2C2D6;
+    --shadow-card: 0 1px 2px rgba(21, 19, 31, 0.04), 0 12px 24px -12px rgba(21, 19, 31, 0.08);
+    --shimmer-low: rgba(21, 19, 31, 0.03);
+    --shimmer-high: rgba(21, 19, 31, 0.07);
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-surface: #0C0B14;
+    --color-surface-alt: #13121D;
+    --color-card: #171626;
+    --color-ink: #EDEBF7;
+    --color-ink-muted: #A09EB8;
+    --color-line: rgba(255, 255, 255, 0.10);
+    --color-line-soft: rgba(255, 255, 255, 0.06);
+    --color-line-strong: rgba(255, 255, 255, 0.18);
+
+    --scrollbar-thumb: #2B2A3E;
+    --scrollbar-thumb-hover: #3A3952;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 24px -12px rgba(0, 0, 0, 0.55);
+    --shimmer-low: rgba(255, 255, 255, 0.03);
+    --shimmer-high: rgba(255, 255, 255, 0.08);
+
+    /* Tonos de estado: fondos translúcidos y textos claros para que se lean sobre fondo oscuro */
+    --color-violet-50: rgba(124, 92, 252, 0.14);
+    --color-violet-100: rgba(124, 92, 252, 0.22);
+    --color-violet-200: rgba(124, 92, 252, 0.34);
+    --color-violet-600: #8B73F8;
+    --color-violet-700: #C4B5FD;
+    --color-violet-800: #DDD6FE;
+
+    --color-teal-50: rgba(45, 212, 191, 0.12);
+    --color-teal-100: rgba(45, 212, 191, 0.20);
+    --color-teal-200: rgba(45, 212, 191, 0.32);
+    --color-teal-600: #2DD4BF;
+    --color-teal-700: #5EEAD4;
+
+    --color-amber-50: rgba(245, 158, 11, 0.12);
+    --color-amber-100: rgba(245, 158, 11, 0.20);
+    --color-amber-200: rgba(245, 158, 11, 0.32);
+    --color-amber-600: #FBBF24;
+    --color-amber-700: #FCD34D;
+
+    --color-red-50: rgba(244, 63, 94, 0.12);
+    --color-red-100: rgba(244, 63, 94, 0.20);
+    --color-red-200: rgba(244, 63, 94, 0.32);
+    --color-red-600: #FB7185;
+    --color-red-700: #FDA4AF;
+
+    --color-blue-50: rgba(59, 130, 246, 0.12);
+    --color-blue-100: rgba(59, 130, 246, 0.20);
+    --color-blue-200: rgba(59, 130, 246, 0.32);
+    --color-blue-600: #60A5FA;
+    --color-blue-700: #93C5FD;
+
+    --color-cyan-50: rgba(34, 211, 238, 0.12);
+    --color-cyan-100: rgba(34, 211, 238, 0.20);
   }
   
   body {
@@ -27,7 +106,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Scrollbar estético */
+  /* Scrollbar estético (modo claro) */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -36,86 +115,66 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1E293B;
+    background: var(--scrollbar-thumb);
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: var(--scrollbar-thumb-hover);
   }
 }
 
 @layer utilities {
-  /* Fondo radial global extraído de Resumen */
-  .bg-radial-glows {
-    background-color: #0A0A0F;
-    position: relative;
-    overflow: hidden;
-  }
-  .bg-radial-glows::before {
-    content: '';
-    position: absolute;
-    top: -10%; left: -10%; width: 40%; height: 40%;
-    border-radius: 50%;
-    background-color: rgba(147, 51, 234, 0.1);
-    filter: blur(150px);
-    pointer-events: none;
-  }
-  .bg-radial-glows::after {
-    content: '';
-    position: absolute;
-    bottom: -10%; right: -10%; width: 30%; height: 30%;
-    border-radius: 50%;
-    background-color: rgba(219, 39, 119, 0.1);
-    filter: blur(150px);
-    pointer-events: none;
-  }
-
-  /* Glassmorphism base con fallback */
+  /* Glassmorphism base (aún usado por páginas pendientes de migrar a modo claro) */
   .glass-panel {
-    background-color: rgba(18, 26, 47, 0.95);
+    background-color: rgba(18, 26, 47, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
   }
-  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
-    .glass-panel {
-      background-color: rgba(18, 26, 47, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-  }
 
-  /* Glassmorphism interactivo con fallback */
+  /* Glassmorphism interactivo (tarjetas que se pueden hacer click/hover) */
   .glass-panel-interactive {
-    background-color: rgba(18, 26, 47, 0.95);
+    background-color: rgba(18, 26, 47, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1rem;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     @apply transition-all duration-300;
   }
-  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
-    .glass-panel-interactive {
-      background-color: rgba(18, 26, 47, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-  }
   .glass-panel-interactive:hover {
-    background-color: rgba(18, 26, 47, 0.98);
+    background-color: rgba(18, 26, 47, 0.85);
     border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.05);
-  }
-  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
-    .glass-panel-interactive:hover {
-      background-color: rgba(18, 26, 47, 0.85);
-    }
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(139, 92, 246, 0.08);
   }
 
+  /* Tarjeta blanca estilo mockup (modo claro) */
+  .card-surface {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-card);
+    @apply transition-all duration-300;
+  }
+  .card-surface-interactive {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-card);
+    @apply transition-all duration-300;
+  }
+  .card-surface-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1px 2px rgba(21, 19, 31, 0.04), 0 20px 32px -12px rgba(124, 92, 252, 0.18);
+    border-color: rgba(124, 92, 252, 0.25);
+  }
 
-  /* Gradiente para textos importantes (ej. Dinero, Títulos) */
+  /* Gradiente violeta -> cian para textos importantes (ej. cifras, títulos) */
   .text-gradient-emerald {
-    background: linear-gradient(to right, #34D399, #10B981);
+    background: linear-gradient(to right, #7C5CFC, #22D3EE);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -125,9 +184,9 @@
   .animate-shimmer {
     background: linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0.03) 100%
+      var(--shimmer-low) 0%,
+      var(--shimmer-high) 50%,
+      var(--shimmer-low) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite linear;
@@ -141,6 +200,34 @@
       background-position: 200% 0;
     }
   }
+
+  /* Gradiente violeta -> cian de refuerzo (uso libre en la app) */
+  .text-gradient-aurora {
+    background: linear-gradient(to right, #7C5CFC, #22D3EE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Utilidad para altura segura en móviles (barras de navegación del navegador) */
+@supports (height: 100dvh) {
+  .h-screen-safe {
+    height: 100dvh;
+  }
+}
+@supports not (height: 100dvh) {
+  .h-screen-safe {
+    height: 100vh;
+  }
 }
 
 /* React Grid Layout Overrides */
@@ -148,7 +235,7 @@
   display: none !important;
 }
 .react-grid-item.react-grid-placeholder {
-  background: var(--color-emerald-accent) !important;
-  opacity: 0.1 !important;
+  background: var(--color-violet-accent) !important;
+  opacity: 0.15 !important;
   border-radius: 1rem !important;
 }

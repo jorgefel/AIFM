@@ -1,45 +1,181 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, BedDouble, CalendarDays, MapPin, Users } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, Bath, Bed, DoorOpen, MapPin, Pencil, Users } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { fetcher } from "@/lib/fetcher";
-import type { Property } from "@/types/models";
+import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { PropertyGallery } from "@/components/properties/PropertyGallery";
+import { getAmenityIcon } from "@/components/properties/amenityIcons";
+import { useProperty } from "@/hooks/useProperty";
+import { formatNightlyPrice, getAmenityLabel, getChannelLabel } from "@/lib/propertyOptions";
+
+function Fact({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div>
+        <dt className="text-xs text-ink-muted">{label}</dt>
+        <dd className="text-sm font-medium text-ink">{value}</dd>
+      </div>
+    </div>
+  );
+}
 
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
-  const { data: property, isLoading, isError } = useQuery<Property>({
-    queryKey: ["property", params.id],
-    queryFn: () => fetcher(`/properties/${params.id}`),
-  });
+  const router = useRouter();
+  const { property, isLoading } = useProperty(params.id);
 
-  return <DashboardLayout>
-    <div className="mx-auto max-w-5xl space-y-6">
-      <Link href="/properties" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" />Volver a propiedades</Link>
-      {isLoading && <div className="glass-panel p-8 text-slate-400">Cargando propiedad…</div>}
-      {isError && <div className="glass-panel p-8 text-slate-400">No encontramos esta propiedad o ya no tienes acceso a ella.</div>}
-      {property && <>
-        <header className="glass-panel overflow-hidden">
-          {property.photo_urls?.[0] && <div className="h-48 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(to bottom, transparent, rgba(5, 8, 16, .75)), url("${property.photo_urls[0]}")` }} />}
-          <div className="p-6">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="text-sm capitalize text-emerald-400">{property.property_type}</p><h1 className="mt-1 text-3xl font-bold text-white">{property.name}</h1><p className="mt-2 flex items-center gap-2 text-slate-400"><MapPin className="h-4 w-4" />{property.address}</p></div><div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-right"><p className="text-xs text-slate-400">Desde</p><p className="text-lg font-semibold text-emerald-300">{property.nightly_rate == null ? "Sin precio" : `${property.currency} ${Number(property.nightly_rate).toLocaleString()} / noche`}</p></div></div>
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-72" />
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Skeleton className="aspect-[16/9] lg:col-span-2" />
+            <Skeleton className="h-72" />
           </div>
-        </header>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Stat icon={<Users className="h-5 w-5" />} label="Capacidad" value={`${property.max_guests} huéspedes`} />
-          <Stat icon={<BedDouble className="h-5 w-5" />} label="Habitaciones" value={`${property.bedrooms} habitaciones · ${property.bathrooms} baños`} />
-          <Link href={`/calendar?property_id=${property.id}`}><Stat icon={<CalendarDays className="h-5 w-5" />} label="Calendario" value="Ver reservas" /></Link>
         </div>
-        <section className="glass-panel p-6"><h2 className="font-semibold text-white">Descripción</h2><p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-400">{property.description || "No has agregado una descripción todavía."}</p></section>
-        <section className="glass-panel p-6"><h2 className="font-semibold text-white">Amenidades</h2><div className="mt-4 flex flex-wrap gap-2">{property.amenities.length ? property.amenities.map((item) => <span key={item} className="rounded-full bg-white/5 px-3 py-1.5 text-sm capitalize text-slate-300">{item.replace(/_/g, " ")}</span>) : <p className="text-sm text-slate-500">No hay amenidades registradas.</p>}</div></section>
-        <section className="glass-panel p-6"><h2 className="font-semibold text-white">Canales publicados</h2><div className="mt-4 flex flex-wrap gap-2">{property.published_platforms.map((item) => <span key={item} className="rounded-full border border-teal-400/20 bg-teal-500/10 px-3 py-1.5 text-sm capitalize text-teal-200">{item === "booking" ? "Booking.com" : item}</span>)}</div></section>
-      </>}
-    </div>
-  </DashboardLayout>;
-}
+      </DashboardLayout>
+    );
+  }
 
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return <div className="glass-panel flex items-center gap-3 p-4"><span className="rounded-lg bg-white/5 p-2 text-emerald-400">{icon}</span><div><p className="text-xs text-slate-500">{label}</p><p className="mt-0.5 text-sm font-medium text-white">{value}</p></div></div>;
+  if (!property) {
+    return (
+      <DashboardLayout>
+        <div className="card-surface mx-auto max-w-md p-8 text-center">
+          <p className="text-lg font-medium text-ink">No encontramos esta propiedad</p>
+          <p className="mt-1 text-sm text-ink-muted">Puede que se haya eliminado o que no tengas acceso.</p>
+          <Link href="/properties" className="mt-4 inline-block text-sm font-medium text-violet-600 hover:text-violet-500">
+            Volver a mis propiedades
+          </Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const photos = [...(property.photos ?? [])].sort((a, b) => {
+    if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
+    return (a.position ?? 0) - (b.position ?? 0);
+  });
+  const price = formatNightlyPrice(property.price_per_night, property.currency);
+  const amenities = property.amenities ?? [];
+  const channels = property.channels ?? [];
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <Link
+            href="/properties"
+            className="mb-3 inline-flex items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ink"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Propiedades
+          </Link>
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-ink">{property.name}</h1>
+              <p className="mt-1 flex items-center gap-1.5 text-ink-muted">
+                <MapPin className="h-4 w-4" />
+                {property.address}
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => router.push(`/properties/${property.id}/edit`)}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Editar propiedad
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <PropertyGallery photos={photos} name={property.name} />
+
+            <section className="card-surface p-6">
+              <h2 className="mb-3 text-lg font-semibold text-ink">Descripción</h2>
+              {property.description ? (
+                <p className="whitespace-pre-line text-sm leading-relaxed text-ink/80">
+                  {property.description}
+                </p>
+              ) : (
+                <p className="text-sm text-ink-muted">Aún no hay una descripción.</p>
+              )}
+            </section>
+
+            <section className="card-surface p-6">
+              <h2 className="mb-4 text-lg font-semibold text-ink">Amenidades</h2>
+              {amenities.length > 0 ? (
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {amenities.map((id) => {
+                    const Icon = getAmenityIcon(id);
+                    return (
+                      <li key={id} className="flex items-center gap-3 text-sm text-ink">
+                        <Icon className="h-4 w-4 text-violet-500" />
+                        {getAmenityLabel(id)}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="text-sm text-ink-muted">No se han indicado amenidades.</p>
+              )}
+            </section>
+          </div>
+
+          <aside className="space-y-6">
+            <section className="card-surface p-6">
+              <p className="text-sm text-ink-muted">Precio base</p>
+              <p className="mt-1 text-3xl font-bold text-ink">
+                {price ?? "Sin definir"}
+                {price && <span className="text-base font-normal text-ink-muted"> / noche</span>}
+              </p>
+              <p className="mt-1 text-xs text-ink-muted">Moneda: {property.currency}</p>
+
+              <dl className="mt-6 grid grid-cols-1 gap-4 border-t border-line-soft pt-6">
+                <Fact icon={Users} label="Huéspedes" value={property.max_guests ?? "Sin definir"} />
+                <Fact icon={DoorOpen} label="Habitaciones" value={property.bedrooms ?? "Sin definir"} />
+                <Fact icon={Bed} label="Camas" value={property.beds ?? "Sin definir"} />
+                <Fact icon={Bath} label="Baños" value={property.bathrooms ?? "Sin definir"} />
+              </dl>
+            </section>
+
+            <section className="card-surface p-6">
+              <h2 className="mb-3 text-lg font-semibold text-ink">Canales</h2>
+              {channels.length > 0 ? (
+                <ul className="flex flex-wrap gap-2">
+                  {channels.map((id) => (
+                    <li
+                      key={id}
+                      className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700"
+                    >
+                      {getChannelLabel(id)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-ink-muted">No se han declarado canales de publicación.</p>
+              )}
+            </section>
+          </aside>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
 }

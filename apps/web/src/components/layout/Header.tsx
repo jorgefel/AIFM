@@ -28,7 +28,9 @@ export function Header({ onMenuClick }: HeaderProps = {}) {
         </button>
 
         {/* Buscador */}
-        <HeaderSearch />
+        <div className="hidden md:block">
+          <HeaderSearch />
+        </div>
       </div>
 
       {/* Derecha: Acciones y Perfil */}

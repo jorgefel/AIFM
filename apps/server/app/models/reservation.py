@@ -76,7 +76,7 @@ class Reservation(Base, UUIDMixin, TimestampMixin):
 
     # ── Relaciones ───────────────────────────────────────────
     property: Mapped[Property] = relationship(
-        "Property", back_populates="reservations", lazy="raise"
+        "Property", back_populates="reservations", lazy="selectin"
     )
 
     def __repr__(self) -> str:

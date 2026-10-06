@@ -24,6 +24,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { QueryProvider } from "@/contexts/QueryProvider";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+
+const themeScript = `(function(){try{var t=localStorage.getItem("nomora_theme")||"system";var d=t==="dark"||(t==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light";}catch(e){document.documentElement.dataset.theme="light";}})();`;
 
 export default function RootLayout({
   children,
@@ -31,17 +34,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${outfit.variable}`}>
+    <html lang="es" className={`${outfit.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="antialiased min-h-screen">
-        <QueryProvider>
-          <AuthProvider>
-            <CurrencyProvider>
-              <ToastProvider>
-                {children}
-              </ToastProvider>
-            </CurrencyProvider>
-          </AuthProvider>
-        </QueryProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <CurrencyProvider>
+                <ToastProvider>
+                  {children}
+                </ToastProvider>
+              </CurrencyProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

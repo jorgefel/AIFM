@@ -1,6 +1,7 @@
 "use client";
 
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { ArrowUpRight, DollarSign } from "lucide-react";
 
 interface GlassIncomeProps {
   grossIncome: number | null;
@@ -9,27 +10,31 @@ interface GlassIncomeProps {
 
 export function GlassIncome({ grossIncome, currency }: GlassIncomeProps) {
   const { formatCurrencyCompact } = useCurrency();
-  
+
   return (
-    <div className="flex flex-col justify-between h-full p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:bg-white/[0.04] transition-colors relative overflow-hidden">
-      {/* Soft Glow internally */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
-      
+    <div className="card-surface-interactive flex flex-col justify-between h-full p-6 relative overflow-hidden">
       <div className="flex items-center justify-between relative z-10">
-        <h3 className="text-lg font-medium text-slate-300">Ingresos Brutos</h3>
-        <div className="px-3 py-1 text-xs font-medium bg-white/10 text-white rounded-full">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center">
+            <DollarSign className="w-[18px] h-[18px]" />
+          </div>
+          <h3 className="text-sm font-medium text-ink-muted">Ingresos Brutos</h3>
+        </div>
+        <div className="px-3 py-1 text-xs font-medium bg-surface text-ink-muted rounded-full">
           6M
         </div>
       </div>
-      
-      <div className="mt-8 relative z-10">
-        <p className="text-4xl sm:text-5xl font-bold text-white tracking-tight flex items-baseline gap-2">
-          <span className="text-2xl text-slate-400">$</span>
-          {grossIncome !== null ? formatCurrencyCompact(grossIncome).replace('$', '').trim() : "0"}
+
+      <div className="mt-6 relative z-10">
+        <p className="text-4xl sm:text-[2.75rem] font-bold text-ink tracking-tight">
+          {grossIncome !== null ? formatCurrencyCompact(grossIncome) : "$0"}
         </p>
-        <p className="text-slate-400 mt-2 font-medium tracking-wide">
-          {currency}
-        </p>
+        <div className="flex items-center gap-1.5 mt-2">
+          <span className="flex items-center gap-0.5 text-xs font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-md">
+            <ArrowUpRight className="w-3 h-3" /> {currency}
+          </span>
+          <span className="text-xs text-ink-muted">este período</span>
+        </div>
       </div>
     </div>
   );

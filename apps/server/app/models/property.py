@@ -68,13 +68,13 @@ class Property(Base, UUIDMixin, TimestampMixin):
 
     # ── Relaciones ───────────────────────────────────────────
     owner: Mapped[User] = relationship(
-        "User", back_populates="properties", lazy="raise"
+        "User", back_populates="properties", lazy="selectin"
     )
     reservations: Mapped[list[Reservation]] = relationship(
-        "Reservation", back_populates="property", lazy="raise"
+        "Reservation", back_populates="property", lazy="selectin"
     )
     expenses: Mapped[list[Expense]] = relationship(
-        "Expense", back_populates="property", lazy="raise"
+        "Expense", back_populates="property", lazy="selectin"
     )
 
     def __repr__(self) -> str:

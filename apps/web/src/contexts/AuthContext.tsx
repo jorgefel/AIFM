@@ -16,6 +16,10 @@ import {
 } from "@/lib/session";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { DEMO_USER } from "@/lib/demoData";
+import { useState } from "react";
+
+const DEMO_FLAG = "nomora_demo_mode";
 
 export interface User {
   id: string;
@@ -61,6 +65,8 @@ interface AuthContextType {
   user: User | null;
   isPro: boolean;
   isLoading: boolean;
+  isDemoMode: boolean;
+  loginDemo: (overrides?: Partial<User>) => void;
   login: (data: any) => Promise<void>;
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
@@ -76,6 +82,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [isDemoMode, setIsDemoMode] = useState(false);
+
+  // Check demo mode initially
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem(DEMO_FLAG) === "true") {
+      setIsDemoMode(true);
+    }
+  }, []);
 
   const isPublic = typeof window !== "undefined" ? isPublicAuthRoute() : true;
   const hasHint = typeof window !== "undefined" ? hasSessionHint() : false;
@@ -126,7 +140,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [refetch, router]
   );
 
+  const loginDemo = useCallback((overrides?: Partial<User>) => {
+    const demoUser = { ...DEMO_USER, ...overrides } as User;
+    localStorage.setItem(DEMO_FLAG, "true");
+    localStorage.setItem("nomora_demo_user", JSON.stringify(demoUser));
+    queryClient.setQueryData(["me"], demoUser);
+    setIsDemoMode(true);
+    router.push("/");
+  }, [queryClient, router]);
+
   const logout = useCallback(async () => {
+    if (isDemoMode) {
+      localStorage.removeItem(DEMO_FLAG);
+      localStorage.removeItem("nomora_demo_user");
+      setIsDemoMode(false);
+      queryClient.setQueryData(["me"], null);
+      router.push("/login");
+      return;
+    }
     try {
       await api.post("/auth/logout");
     } catch (error) {
@@ -173,8 +204,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refetch]);
 
   const value = useMemo(
-    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
-    [user, isQueryLoading, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
+    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
+    [user, isQueryLoading, isDemoMode, login, loginDemo, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

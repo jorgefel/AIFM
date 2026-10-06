@@ -21,7 +21,7 @@ export function CurrencyInput({ label, value, onChange, currency, required }: Cu
 
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-slate-300">
+      <label className="block text-sm font-medium text-ink/80">
         {label}
       </label>
       <NumericFormat
@@ -35,7 +35,7 @@ export function CurrencyInput({ label, value, onChange, currency, required }: Cu
         prefix={prefix}
         decimalScale={2}
         allowNegative={false}
-        className="w-full bg-obsidian-light/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-slate-600"
+        className="w-full bg-surface border border-line rounded-lg px-4 py-2.5 text-ink focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15 focus:bg-card transition-all placeholder:text-ink-muted/60"
         placeholder={`${prefix}0${decimalSeparator}00`}
         required={required}
       />

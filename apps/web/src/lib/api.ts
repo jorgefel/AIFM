@@ -3,7 +3,7 @@ import { hasSessionHint, isPublicAuthRoute } from "./session";
 
 // Siempre ruta relativa → Route Handler en app/api/v1/[...path]/route.ts.
 // No usar NEXT_PUBLIC_* apuntando a Render: el navegador no enviaría las cookies HttpOnly.
-const API_URL = "/api/v1";
+export const API_URL = "/api/v1";
 
 export const api = axios.create({
   baseURL: API_URL,

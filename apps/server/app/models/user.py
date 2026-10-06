@@ -68,7 +68,7 @@ class User(Base, UUIDMixin, TimestampMixin):
 
     # ── Relaciones ───────────────────────────────────────────
     properties: Mapped[list[Property]] = relationship(
-        "Property", back_populates="owner", lazy="raise"
+        "Property", back_populates="owner", lazy="selectin"
     )
     subscriptions: Mapped[list[Subscription]] = relationship(
         "Subscription", back_populates="user", lazy="raise"

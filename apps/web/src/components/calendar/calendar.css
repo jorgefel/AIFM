@@ -1,0 +1,155 @@
+.nomora-calendar .rbc-calendar {
+  font-family: var(--font-outfit), sans-serif;
+  color: var(--color-ink);
+}
+
+.nomora-calendar .rbc-toolbar {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.nomora-calendar .rbc-toolbar-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.nomora-calendar .rbc-toolbar button {
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  padding: 0.4rem 0.85rem;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.nomora-calendar .rbc-toolbar button:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.nomora-calendar .rbc-toolbar button:focus-visible {
+  outline: 2px solid var(--color-violet-accent);
+  outline-offset: 2px;
+}
+
+.nomora-calendar .rbc-toolbar button.rbc-active,
+.nomora-calendar .rbc-toolbar button.rbc-active:hover {
+  background: var(--color-violet-accent);
+  border-color: var(--color-violet-accent);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.nomora-calendar .rbc-month-view,
+.nomora-calendar .rbc-time-view,
+.nomora-calendar .rbc-agenda-view {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 0.875rem;
+  overflow: hidden;
+}
+
+.nomora-calendar .rbc-header {
+  padding: 0.6rem 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+  border-bottom: 1px solid var(--color-line);
+  text-transform: capitalize;
+}
+
+.nomora-calendar .rbc-header + .rbc-header,
+.nomora-calendar .rbc-day-bg + .rbc-day-bg,
+.nomora-calendar .rbc-month-row + .rbc-month-row,
+.nomora-calendar .rbc-time-header-content,
+.nomora-calendar .rbc-time-content,
+.nomora-calendar .rbc-time-content > * + * > *,
+.nomora-calendar .rbc-time-header.rbc-overflowing,
+.nomora-calendar .rbc-timeslot-group,
+.nomora-calendar .rbc-day-slot .rbc-time-slot,
+.nomora-calendar .rbc-allday-cell,
+.nomora-calendar .rbc-agenda-view table.rbc-agenda-table,
+.nomora-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr > td + td,
+.nomora-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr + tr,
+.nomora-calendar .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  border-color: var(--color-line-soft);
+}
+
+.nomora-calendar .rbc-off-range-bg {
+  background: var(--color-surface);
+}
+
+.nomora-calendar .rbc-off-range {
+  color: var(--color-ink-muted);
+  opacity: 0.6;
+}
+
+.nomora-calendar .rbc-today {
+  background: color-mix(in srgb, var(--color-violet-accent) 8%, transparent);
+}
+
+.nomora-calendar .rbc-date-cell {
+  padding: 0.3rem 0.5rem 0;
+  font-size: 0.8rem;
+}
+
+.nomora-calendar .rbc-date-cell.rbc-now {
+  font-weight: 700;
+  color: var(--color-violet-600);
+}
+
+.nomora-calendar .rbc-event {
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--color-violet-accent);
+}
+
+.nomora-calendar .rbc-event:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 1px;
+}
+
+.nomora-calendar .rbc-event.rbc-status-pending {
+  background: #f59e0b;
+  color: #3b2a05;
+}
+
+.nomora-calendar .rbc-event.rbc-status-completed {
+  background: #14b8a6;
+}
+
+.nomora-calendar .rbc-event.rbc-status-cancelled {
+  background: var(--color-line-strong);
+  color: var(--color-ink-muted);
+  text-decoration: line-through;
+}
+
+.nomora-calendar .rbc-show-more {
+  background: transparent;
+  color: var(--color-violet-600);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.nomora-calendar .rbc-current-time-indicator {
+  background: var(--color-coral-accent);
+}
+
+.nomora-calendar .rbc-overlay {
+  background: var(--color-card);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.35);
+}
+
+.nomora-calendar .rbc-overlay-header {
+  border-bottom: 1px solid var(--color-line-soft);
+}

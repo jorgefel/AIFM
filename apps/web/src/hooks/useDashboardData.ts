@@ -49,20 +49,9 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     
     // The backend returns it in chronological order from oldest to newest
     return dashboardData.chart_data.map((m: any) => {
-      if (m.day != null) {
-        const date = new Date(m.year, m.month - 1, m.day);
-        return {
-          name: String(m.day),
-          tooltipLabel: date.toLocaleDateString("es", { day: "numeric", month: "short" }),
-          Ingresos: m.gross_income ?? 0,
-          Gastos: m.total_expenses ?? 0,
-        };
-      }
-
       const d = new Date(m.year, m.month - 1, 1);
       return {
         name: d.toLocaleString("es", { month: "short" }),
-        tooltipLabel: d.toLocaleString("es", { month: "short" }),
         Ingresos: m.gross_income ?? 0,
         Gastos: m.total_expenses ?? 0,
       };
@@ -89,3 +78,5 @@ export function useDashboardData(performanceRange: PerformanceRange = "6M") {
     isLoading,
   };
 }
+
+
