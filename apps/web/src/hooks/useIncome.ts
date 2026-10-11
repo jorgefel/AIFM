@@ -46,7 +46,7 @@ export function useIncome() {
 
   const { data: reservations = [], isLoading } = useQuery<Reservation[]>({
     queryKey: reservationsKey,
-    queryFn: () => fetcher(`/reservations/?property_id=${selectedPropertyId}`),
+    queryFn: () => fetcher(`/reservations?property_id=${selectedPropertyId}`),
     enabled: !!selectedPropertyId,
     staleTime: 0, // No cache for reservation status endpoints as requested
   });
@@ -70,7 +70,7 @@ export function useIncome() {
       if (editingId) {
         await api.put(`/reservations/${editingId}`, payload);
       } else {
-        await api.post("/reservations/", payload);
+        await api.post("/reservations", payload);
       }
       
       toast.success(editingId ? "Reserva actualizada" : "Reserva registrada", "La reserva se guardó correctamente.");

@@ -17,6 +17,7 @@ from app.services.cache import invalidate_summary_cache
 router = APIRouter(prefix="/expenses", tags=["expenses"])
 
 
+@router.get("", response_model=List[ExpenseRead], include_in_schema=False)
 @router.get("/", response_model=List[ExpenseRead])
 async def get_expenses(
     property_id: uuid.UUID,
@@ -36,6 +37,7 @@ async def get_expenses(
     result = await db.execute(query.order_by(Expense.date.desc(), Expense.created_at.desc()))
     return result.scalars().all()
 
+@router.post("", response_model=ExpenseRead, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @router.post("/", response_model=ExpenseRead, status_code=status.HTTP_201_CREATED)
 async def create_expense(expense_in: ExpenseCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     await verify_property_access(expense_in.property_id, current_user, db)

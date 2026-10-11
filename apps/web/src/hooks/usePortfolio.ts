@@ -23,7 +23,7 @@ export function usePortfolio() {
     queryKey: [...PORTFOLIO_QUERY_KEY, propertyIds],
     queryFn: async () => {
       const results = await Promise.all(
-        propertyIds.map((id) => fetcher(`/reservations/?property_id=${id}`) as Promise<Reservation[]>),
+        propertyIds.map((id) => fetcher(`/reservations?property_id=${id}`) as Promise<Reservation[]>),
       );
       return results.flat();
     },

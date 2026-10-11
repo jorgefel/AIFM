@@ -40,12 +40,12 @@ function mockResponse(url: string): any {
     return demoDashboardData(propertyId);
   }
 
-  if (url.startsWith("/reservations/")) {
+  if (url.startsWith("/reservations")) {
     const propertyId = new URLSearchParams(url.split("?")[1]).get("property_id") || "";
     return demoReservations(propertyId);
   }
 
-  if (url.startsWith("/expenses/")) {
+  if (url.startsWith("/expenses")) {
     const propertyId = new URLSearchParams(url.split("?")[1]).get("property_id") || "";
     return demoExpenses(propertyId);
   }

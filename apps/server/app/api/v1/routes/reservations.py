@@ -59,6 +59,7 @@ async def get_calendar_reservations(
     return result.scalars().all()
 
 
+@router.get("", response_model=List[ReservationRead], include_in_schema=False)
 @router.get("/", response_model=List[ReservationRead])
 async def get_reservations(property_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     await verify_property_access(property_id, current_user, db)
@@ -68,6 +69,7 @@ async def get_reservations(property_id: uuid.UUID, db: AsyncSession = Depends(ge
     )
     return result.scalars().all()
 
+@router.post("", response_model=ReservationRead, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @router.post("/", response_model=ReservationRead, status_code=status.HTTP_201_CREATED)
 async def create_reservation(reservation_in: ReservationCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     await verify_property_access(reservation_in.property_id, current_user, db)
