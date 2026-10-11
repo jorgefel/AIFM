@@ -22,9 +22,11 @@ export function useIncome() {
   const { currency } = useCurrency();
 
   const [formData, setFormData] = useState({
+    property_id: "",
     guest_name: "",
     check_in: "",
     check_out: "",
+    nightly_rate: "" as any,
     total_amount: "" as any,
     platform_fee: "" as any,
     currency,
@@ -50,15 +52,17 @@ export function useIncome() {
   });
 
   const submitReservation = async (editingId: string | null) => {
-    if (!selectedPropertyId || !formData.check_in || !formData.check_out || formData.check_out <= formData.check_in) {
-      toast.warning("Revisa las fechas", "La salida debe ser posterior a la entrada.");
+    const targetPropertyId = formData.property_id || selectedPropertyId;
+    if (!targetPropertyId || !formData.check_in || !formData.check_out || formData.check_out <= formData.check_in) {
+      toast.warning("Revisa los datos", "Verifica la propiedad y que la salida sea posterior a la entrada.");
       return false;
     }
     setIsSubmitting(true);
     try {
+      const { nightly_rate, ...cleanData } = formData;
       const payload = {
-        ...formData,
-        property_id: selectedPropertyId,
+        ...cleanData,
+        property_id: targetPropertyId,
         total_amount: Number(formData.total_amount),
         platform_fee: Number(formData.platform_fee)
       };
@@ -72,6 +76,9 @@ export function useIncome() {
       toast.success(editingId ? "Reserva actualizada" : "Reserva registrada", "La reserva se guardó correctamente.");
       // Revalidate cache
       queryClient.invalidateQueries({ queryKey: reservationsKey });
+      if (targetPropertyId !== selectedPropertyId) {
+        queryClient.invalidateQueries({ queryKey: ["reservations", targetPropertyId] });
+      }
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       return true;
     } catch (error: any) {
@@ -97,23 +104,37 @@ export function useIncome() {
   };
 
   const resetForm = () => {
+    const propId = selectedPropertyId || (properties[0]?.id ?? "");
+    const prop = properties.find((p) => p.id === propId);
+    const rate = prop ? Number(prop.nightly_rate ?? prop.price_per_night ?? 0) : 0;
     setFormData({
+      property_id: propId,
       guest_name: "",
       check_in: "",
       check_out: "",
+      nightly_rate: rate > 0 ? rate : "",
       total_amount: "" as any,
       platform_fee: "" as any,
-      currency,
+      currency: (prop?.currency as any) || currency,
       platform: "airbnb",
       status: "confirmed"
     });
   };
 
   const loadForm = (res: Reservation) => {
+    const [y1, m1, d1] = (res.check_in || "").split("-").map(Number);
+    const [y2, m2, d2] = (res.check_out || "").split("-").map(Number);
+    const nights = (y1 && y2)
+      ? Math.max(1, Math.round((new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime()) / (1000 * 60 * 60 * 24)))
+      : 1;
+    const nightly = Math.round((Number(res.total_amount) / nights) * 100) / 100;
+
     setFormData({
+      property_id: res.property_id,
       guest_name: res.guest_name,
       check_in: res.check_in,
       check_out: res.check_out,
+      nightly_rate: nightly,
       total_amount: res.total_amount,
       platform_fee: res.platform_fee,
       currency: res.currency as any,

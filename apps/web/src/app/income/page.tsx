@@ -131,6 +131,7 @@ export default function IncomePage() {
         setFormData={setFormData}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        properties={properties}
       />
 
       <ConfirmDialog

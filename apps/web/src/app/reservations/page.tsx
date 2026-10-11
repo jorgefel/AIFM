@@ -49,15 +49,12 @@ function ReservationsContent() {
   const autoOpened = useRef(false);
 
   const startNew = () => {
-    if (propertyFilter !== "all") {
-      openNewFor(propertyFilter);
-    } else if (properties.length > 1) {
-      setIsPickerOpen(true);
-    } else if (properties.length === 1) {
-      openNewFor(properties[0].id);
-    } else {
+    if (properties.length === 0) {
       toast.info("Sin propiedades", "Crea una propiedad antes de registrar reservas.");
+      return;
     }
+    const propId = propertyFilter !== "all" ? propertyFilter : properties[0].id;
+    openNewFor(propId);
   };
 
   const openNewFor = (propertyId: string) => {
@@ -231,6 +228,7 @@ function ReservationsContent() {
         setFormData={income.setFormData}
         onSubmit={handleSubmit}
         isSubmitting={income.isSubmitting}
+        properties={properties}
       />
 
       <ConfirmDialog
