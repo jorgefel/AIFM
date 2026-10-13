@@ -1,5 +1,5 @@
 import logging
-from fastapi import HTTPException, Request, Response, status
+from fastapi import HTTPException, Request, status
 from app.core.redis import redis_client
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class RateLimiter:
         self.times = times
         self.window_seconds = minutes * 60 + seconds
 
-    async def __call__(self, request: Request, response: Response | None = None) -> None:
+    async def __call__(self, request: Request) -> None:
         try:
             client_ip = (
                 request.headers.get("x-forwarded-for", "").split(",")[0].strip()
