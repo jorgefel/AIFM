@@ -61,9 +61,49 @@ class Beds24Client:
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{cls.BASE_URL}/properties", headers=headers)
             resp.raise_for_status()
-            # Actualizar métricas de cuota desde los headers de la respuesta
             cls._update_quota_metrics(resp.headers)
             return resp.json().get("data", [])
+
+    @classmethod
+    async def create_property(cls, name: str, currency: str = "MXN") -> dict[str, Any]:
+        """Crea una propiedad en Beds24 bajo la cuenta maestra."""
+        token = await cls.get_access_token()
+        headers = {"token": token, "accept": "application/json", "Content-Type": "application/json"}
+        payload = [{
+            "name": name,
+            "currency": currency,
+            "roomTypes": [{"name": "Unidad Principal"}]
+        }]
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(f"{cls.BASE_URL}/properties", headers=headers, json=payload)
+            if resp.status_code >= 400:
+                logger.error(f"Error creando propiedad en Beds24: {resp.text}")
+                resp.raise_for_status()
+            cls._update_quota_metrics(resp.headers)
+            data = resp.json()
+            if isinstance(data, dict) and "data" in data:
+                items = data["data"]
+                return items[0] if isinstance(items, list) and items else items
+            if isinstance(data, list) and data:
+                return data[0]
+            return data if isinstance(data, dict) else {"id": str(data)}
+
+    @classmethod
+    async def get_airbnb_users(cls) -> list[dict[str, Any]]:
+        """Verifica usuarios de Airbnb conectados a la cuenta Beds24."""
+        token = await cls.get_access_token()
+        headers = {"token": token, "accept": "application/json"}
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                resp = await client.get(f"{cls.BASE_URL}/channels/airbnb/users", headers=headers)
+                if resp.status_code == 200:
+                    cls._update_quota_metrics(resp.headers)
+                    data = resp.json()
+                    return data.get("data", data) if isinstance(data, dict) else (data if isinstance(data, list) else [])
+                return []
+        except Exception as exc:
+            logger.warning(f"No se pudo consultar usuarios de Airbnb en Beds24: {exc}")
+            return []
 
     @classmethod
     async def get_bookings(cls, modified_since: datetime | None = None) -> list[dict[str, Any]]:

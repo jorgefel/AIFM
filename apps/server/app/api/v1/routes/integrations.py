@@ -16,8 +16,10 @@ from app.models.integration import Beds24PropertyLink, ChannelConnection, Channe
 from app.models.user import User
 from app.models.property import Property
 from app.schemas.integration import (
-    Beds24ConnectionCreate, Beds24ConnectionRead, Beds24PropertyLinkCreate, 
-    BookingSyncResult, CalendarSnapshotRead, InventorySyncResult, SyncLogRead, OtaConnectionCreate, OtaConnectionRead
+    Beds24ChannelStatusResponse, Beds24ConnectionCreate, Beds24ConnectionRead,
+    Beds24PropertyLinkCreate, Beds24SetupRequest, Beds24SetupResponse,
+    BookingSyncResult, CalendarSnapshotRead, InventorySyncResult,
+    OtaConnectionCreate, OtaConnectionRead, SyncLogRead,
 )
 from app.services.beds24 import Beds24Client
 from app.services.beds24_sync import sync_beds24_bookings, sync_beds24_inventory
@@ -267,3 +269,160 @@ async def create_ota_connection(payload: OtaConnectionCreate, db: AsyncSession =
     await db.commit()
     await db.refresh(connection)
     return connection
+
+
+@router.post("/beds24/setup-channel", response_model=Beds24SetupResponse)
+async def setup_beds24_channel(
+    payload: Beds24SetupRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_tier("pro")),
+):
+    await verify_property_access(payload.property_id, current_user, db)
+    prop = await db.get(Property, payload.property_id)
+    if not prop:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found.")
+
+    # Find or create master channel connection for the user
+    conn_result = await db.execute(
+        select(ChannelConnection).where(
+            ChannelConnection.user_id == current_user.id,
+            ChannelConnection.channel_name == "beds24",
+            ChannelConnection.is_active.is_(True),
+        )
+    )
+    connection = conn_result.scalars().first()
+    if not connection:
+        connection = ChannelConnection(
+            user_id=current_user.id,
+            channel_name="beds24",
+            channel_account_id="master_nomora",
+        )
+        db.add(connection)
+        await db.flush()
+
+    # Check if property link already exists
+    link_result = await db.execute(
+        select(Beds24PropertyLink).where(
+            Beds24PropertyLink.channel_connection_id == connection.id,
+            Beds24PropertyLink.property_id == payload.property_id,
+        )
+    )
+    link = link_result.scalars().first()
+
+    if not link:
+        try:
+            remote_data = await Beds24Client.create_property(
+                name=prop.name,
+                currency=prop.currency,
+            )
+        except Exception as exc:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail=f"Error creando propiedad en Beds24: {str(exc)}",
+            ) from exc
+
+        beds24_property_id = str(remote_data.get("id", ""))
+        if not beds24_property_id:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Beds24 no devolvió un identificador de propiedad.",
+            )
+
+        link = Beds24PropertyLink(
+            channel_connection_id=connection.id,
+            property_id=prop.id,
+            beds24_property_id=beds24_property_id,
+        )
+        db.add(link)
+        await db.flush()
+
+    # Ensure OtaConnection exists for Airbnb
+    ota_result = await db.execute(
+        select(OtaConnection).where(
+            OtaConnection.property_id == prop.id,
+            OtaConnection.ota_name == "airbnb",
+        )
+    )
+    ota = ota_result.scalars().first()
+    if not ota:
+        ota = OtaConnection(
+            property_id=prop.id,
+            beds24_property_link_id=link.id,
+            ota_name="airbnb",
+            status="pending",
+        )
+        db.add(ota)
+
+    await db.commit()
+    await db.refresh(link)
+
+    dashboard_url = f"https://beds24.com/control3.php?pagetype=channelmgr&propId={link.beds24_property_id}"
+    return Beds24SetupResponse(
+        beds24_property_id=link.beds24_property_id,
+        property_id=prop.id,
+        channel_connection_id=connection.id,
+        beds24_property_link_id=link.id,
+        dashboard_url=dashboard_url,
+        status="ready_for_oauth",
+    )
+
+
+@router.get("/beds24/channel-status/{property_id}", response_model=Beds24ChannelStatusResponse)
+async def check_beds24_channel_status(
+    property_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_tier("pro")),
+):
+    await verify_property_access(property_id, current_user, db)
+    link_result = await db.execute(
+        select(Beds24PropertyLink).where(Beds24PropertyLink.property_id == property_id)
+    )
+    link = link_result.scalars().first()
+    if not link:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="La propiedad aún no está vinculada con Beds24.",
+        )
+
+    airbnb_users = await Beds24Client.get_airbnb_users()
+    is_connected = len(airbnb_users) > 0
+
+    ota_result = await db.execute(
+        select(OtaConnection).where(
+            OtaConnection.property_id == property_id,
+            OtaConnection.ota_name == "airbnb",
+        )
+    )
+    ota = ota_result.scalars().first()
+    if ota and is_connected and ota.status != "connected":
+        ota.status = "connected"
+        await db.commit()
+
+    has_connection = is_connected or (ota is not None and ota.status == "connected")
+    return Beds24ChannelStatusResponse(
+        property_id=property_id,
+        beds24_property_id=link.beds24_property_id,
+        airbnb_connected=has_connection,
+        status="connected" if has_connection else "pending",
+    )
+
+
+@router.post("/beds24/confirm-channel/{property_id}")
+async def confirm_beds24_channel(
+    property_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_tier("pro")),
+):
+    await verify_property_access(property_id, current_user, db)
+    ota_result = await db.execute(
+        select(OtaConnection).where(
+            OtaConnection.property_id == property_id,
+            OtaConnection.ota_name == "airbnb",
+        )
+    )
+    ota = ota_result.scalars().first()
+    if ota:
+        ota.status = "connected"
+        await db.commit()
+    return {"status": "connected"}
+

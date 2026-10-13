@@ -95,3 +95,23 @@ class CalendarSnapshotRead(BaseModel):
     generated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class Beds24SetupRequest(BaseModel):
+    property_id: uuid.UUID
+
+
+class Beds24SetupResponse(BaseModel):
+    beds24_property_id: str
+    property_id: uuid.UUID
+    channel_connection_id: uuid.UUID
+    beds24_property_link_id: uuid.UUID
+    dashboard_url: str
+    status: str
+
+
+class Beds24ChannelStatusResponse(BaseModel):
+    property_id: uuid.UUID
+    beds24_property_id: str
+    airbnb_connected: bool
+    status: str
