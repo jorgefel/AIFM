@@ -1,10 +1,7 @@
+import math
 import os
 from datetime import date
 from typing import List, Tuple
-import joblib
-import numpy as np
-import pandas as pd
-from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 from app.engine.golden_rule import calculate_monthly_summary
 from app.schemas.forecast import MonthForecast
@@ -31,82 +28,95 @@ def _fit_and_forecast(
     steps: int,
     property_id: str,
     metric_name: str,
-    clip_zero: bool = True
+    clip_zero: bool = True,
 ) -> Tuple[List[float], List[float], List[float], str]:
-    """
-    Fits Exponential Smoothing (Holt-Winters / Holt Linear) or moving average
-    and returns (predictions, lower_bounds, upper_bounds, model_name).
+    """Fits Exponential Smoothing (Holt-Winters / Holt Linear) or moving average in pure Python.
+
+    Memory-efficient: avoids loading heavy statistical libraries (statsmodels/scipy/pandas)
+    to keep RAM usage well under Render's 512MB limit.
     """
     n = len(values)
     z_score = 1.28  # ~80% confidence interval
 
-    # shortcut: fallback to weighted average when history is too short for time series regression
+    # 1. Fallback to moving average when history is too short for time series regression
     if n < 4:
-        mean_val = float(np.mean(values)) if n > 0 else 0.0
-        std_val = float(np.std(values)) if n > 1 else (mean_val * 0.25)
+        mean_val = float(sum(values) / n) if n > 0 else 0.0
+        variance = sum((x - mean_val) ** 2 for x in values) / max(1, n)
+        std_val = math.sqrt(variance) if n > 1 else (mean_val * 0.25)
         preds = [round(max(0.0 if clip_zero else -999999.0, mean_val), 2)] * steps
         lowers = [round(max(0.0 if clip_zero else -999999.0, mean_val - z_score * std_val), 2)] * steps
         uppers = [round(max(0.0 if clip_zero else -999999.0, mean_val + z_score * std_val), 2)] * steps
         return preds, lowers, uppers, "moving_average"
 
-    series = pd.Series(values, dtype=float)
-
-    # If series is completely flat or zero
-    if series.nunique() <= 1:
+    # 2. Constant series
+    if len(set(values)) <= 1:
         val = float(values[-1])
         return [round(val, 2)] * steps, [round(val, 2)] * steps, [round(val, 2)] * steps, "constant_baseline"
 
-    model_used = "holt_linear"
-    fitted = None
-
+    # 3. Holt-Winters with additive seasonality (if at least 2 full years of data)
     if n >= 24:
-        try:
-            # Full Holt-Winters with additive seasonality (12 months cycle)
-            hw = ExponentialSmoothing(
-                series,
-                trend="add",
-                seasonal="add",
-                seasonal_periods=12,
-                initialization_method="estimated"
-            )
-            fitted = hw.fit()
-            model_used = "holt_winters"
-        except Exception:
-            fitted = None
+        m = 12
+        alpha = 0.2
+        beta = 0.1
+        gamma = 0.3
 
-    if fitted is None:
-        try:
-            # Holt's linear trend model
-            hl = ExponentialSmoothing(
-                series,
-                trend="add",
-                seasonal=None,
-                initialization_method="estimated"
-            )
-            fitted = hl.fit()
-            model_used = "holt_linear"
-        except Exception:
-            # Simple exponential smoothing fallback
-            ses = ExponentialSmoothing(series, trend=None, seasonal=None)
-            fitted = ses.fit()
-            model_used = "simple_exp_smoothing"
+        level = sum(values[:m]) / m
+        trend = (sum(values[m : 2 * m]) - sum(values[:m])) / (m * m)
+        seasonals = [values[i] - level for i in range(m)]
+        fitted = []
 
-    # Persist model with joblib
-    try:
-        model_path = os.path.join(MODELS_DIR, f"{property_id}_{metric_name}.joblib")
-        joblib.dump(fitted, model_path)
-    except Exception:
-        pass
+        for t in range(m, n):
+            y = values[t]
+            s_idx = t % m
+            last_level = level
+            last_trend = trend
+            level = alpha * (y - seasonals[s_idx]) + (1 - alpha) * (last_level + last_trend)
+            trend = beta * (level - last_level) + (1 - beta) * last_trend
+            seasonals[s_idx] = gamma * (y - last_level - last_trend) + (1 - gamma) * seasonals[s_idx]
+            fitted.append(last_level + last_trend + seasonals[s_idx])
 
-    raw_preds = fitted.forecast(steps=steps)
-    residuals = getattr(fitted, "resid", pd.Series([0.0]))
-    std_resid = float(np.std(residuals)) if len(residuals) > 0 else 0.0
+        residuals = [y - f for y, f in zip(values[m:], fitted)]
+        std_resid = math.sqrt(sum(r ** 2 for r in residuals) / max(1, len(residuals))) if residuals else 0.0
+
+        preds, lowers, uppers = [], [], []
+        for h in range(1, steps + 1):
+            s_idx = (n + h - 1) % m
+            pred_val = level + h * trend + seasonals[s_idx]
+            step_std = std_resid * math.sqrt(h)
+            low_val = pred_val - z_score * step_std
+            up_val = pred_val + z_score * step_std
+
+            if clip_zero:
+                pred_val = max(0.0, pred_val)
+                low_val = max(0.0, low_val)
+                up_val = max(0.0, up_val)
+
+            preds.append(round(pred_val, 2))
+            lowers.append(round(low_val, 2))
+            uppers.append(round(up_val, 2))
+
+        return preds, lowers, uppers, "holt_winters"
+
+    # 4. Holt Linear trend model (for n between 4 and 23 months)
+    alpha = 0.3
+    beta = 0.1
+    level = values[0]
+    trend = values[1] - values[0]
+    fitted = [level]
+
+    for y in values[1:]:
+        last_level = level
+        level = alpha * y + (1 - alpha) * (level + trend)
+        trend = beta * (level - last_level) + (1 - beta) * trend
+        fitted.append(last_level + trend)
+
+    residuals = [y - f for y, f in zip(values, fitted)]
+    std_resid = math.sqrt(sum(r ** 2 for r in residuals) / max(1, len(residuals)))
 
     preds, lowers, uppers = [], [], []
-    for step_idx, p in enumerate(raw_preds, start=1):
-        # Forecast uncertainty grows with horizon: sqrt(step_idx)
-        step_std = std_resid * np.sqrt(step_idx)
-        pred_val = float(p)
+    for h in range(1, steps + 1):
+        pred_val = level + h * trend
+        step_std = std_resid * math.sqrt(h)
         low_val = pred_val - z_score * step_std
         up_val = pred_val + z_score * step_std
 
@@ -119,17 +129,17 @@ def _fit_and_forecast(
         lowers.append(round(low_val, 2))
         uppers.append(round(up_val, 2))
 
-    return preds, lowers, uppers, model_used
+    return preds, lowers, uppers, "holt_linear"
 
 
 def generate_property_forecast(
     property_id: str,
     reservations: list[dict],
     expenses: list[dict],
-    steps: int = 3
+    steps: int = 3,
 ) -> Tuple[List[MonthForecast], int]:
-    """
-    Extracts continuous monthly history, trains Holt-Winters models,
+    """Extracts continuous monthly history, runs Holt-Winters / Holt Linear models,
+
     and returns forecast estimates for next `steps` months.
     """
     steps = min(max(1, steps), 12)
