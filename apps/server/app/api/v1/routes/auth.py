@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi_limiter.depends import RateLimiter
+from app.core.rate_limit import RateLimiter
 
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token, settings
@@ -48,9 +48,17 @@ def _set_auth_cookies(response: Response, access_token: str, refresh_token: str 
 
 
 def _frontend_callback_url() -> str:
-    if not settings.CORS_ORIGINS:
-        raise HTTPException(status_code=500, detail="No frontend origin is configured.")
-    return f"{settings.CORS_ORIGINS[0].rstrip('/')}/auth/callback"
+    if getattr(settings, "FRONTEND_URL", "").strip():
+        return f"{settings.FRONTEND_URL.rstrip('/')}/auth/callback"
+    if settings.CORS_ORIGINS:
+        for origin in settings.CORS_ORIGINS:
+            if origin and "localhost" not in origin and "127.0.0.1" not in origin:
+                return f"{origin.rstrip('/')}/auth/callback"
+    if settings.APP_ENV == "production":
+        return "https://aifmweb.vercel.app/auth/callback"
+    if settings.CORS_ORIGINS and settings.CORS_ORIGINS[0]:
+        return f"{settings.CORS_ORIGINS[0].rstrip('/')}/auth/callback"
+    return "http://localhost:3000/auth/callback"
 
 
 async def _oauth_state_response(provider: OAuthProvider) -> RedirectResponse:
@@ -165,7 +173,6 @@ async def google_login() -> RedirectResponse:
     "/google/callback",
     response_class=RedirectResponse,
     status_code=303,
-    dependencies=[Depends(RateLimiter(times=10, minutes=1))],
 )
 async def google_callback(
     request: Request,
@@ -188,7 +195,6 @@ async def apple_login() -> RedirectResponse:
     methods=["GET", "POST"],
     response_class=RedirectResponse,
     status_code=303,
-    dependencies=[Depends(RateLimiter(times=10, minutes=1))],
 )
 async def apple_callback(request: Request, db: AsyncSession = Depends(get_db)) -> RedirectResponse:
     """Handle Apple's GET callback and its standard form_post callback."""

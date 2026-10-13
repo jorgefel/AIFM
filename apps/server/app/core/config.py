@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     # â”€â”€ CORS (orÃ­genes permitidos) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     CORS_ORIGIN_REGEX: str = ""  # e.g. r"https://.*\.vercel\.app"
+    FRONTEND_URL: str = ""
 
     # â”€â”€ OAuth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     # Public API base URL, including /api/v1/auth. It is registered with
