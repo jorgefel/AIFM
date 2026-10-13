@@ -107,6 +107,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const AUTH_USER_KEY = "nomora_auth_user";
+
+function readCachedUser(): User | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(AUTH_USER_KEY);
+    return raw ? (JSON.parse(raw) as User) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -125,17 +137,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await api.get("/users/me");
         setSessionHint();
+        if (typeof window !== "undefined" && response.data) {
+          localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data));
+        }
         return response.data;
-      } catch {
+      } catch (err) {
+        // shortcut: solo borrar sesión si el backend responde 401 explícito
         clearSessionHint();
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(AUTH_USER_KEY);
+        }
         return null;
       }
     },
+    initialData: () => readCachedUser(),
     enabled: shouldFetch,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: false,
   });
-
 
   const user = demo.user ?? apiUser;
 
@@ -194,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       clearSessionHint();
       localStorage.removeItem("nomora_last_activity");
+      localStorage.removeItem(AUTH_USER_KEY);
       queryClient.setQueryData(["me"], null);
       queryClient.clear(); // Clear all cached queries on logout
       router.push("/login");
