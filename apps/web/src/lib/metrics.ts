@@ -276,8 +276,6 @@ export function getChartSeries(
 }
 
 // Compatibilidad legacy
-export type PeriodId = "month" | "quarter" | "year" | "next_month" | "next_quarter";
-export const PERIOD_OPTIONS: { value: PeriodId; label: string }[] = [];
 export function getPeriodRanges(period: PeriodId, now = new Date()): { current: DayRange; previous: DayRange } {
   return getDateFilterRanges(getDefaultDateFilter());
 }
