@@ -1236,9 +1236,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/integrations.py": {
-    "mtime": 1791316359.4383976,
-    "seen": 1791900058.2387881,
-    "ast_hash": "cd4773f13edcebe989983867997f57df",
+    "mtime": 1791914640.847933,
+    "seen": 1791914861.2297084,
+    "ast_hash": "b0e62f9791ded549de38a0d87eb64901",
     "semantic_hash": ""
   },
   "apps/server/app/models/integration.py": {
@@ -1248,15 +1248,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/beds24.py": {
-    "mtime": 1791316359.4653957,
-    "seen": 1791900058.238911,
-    "ast_hash": "5eb627d6df5a94a38ec6984041e89a56",
+    "mtime": 1791914590.8198197,
+    "seen": 1791914861.2298012,
+    "ast_hash": "af64ed1b4810a225820c5e57a938b171",
     "semantic_hash": ""
   },
   "apps/web/src/app/settings/integrations/page.tsx": {
-    "mtime": 1791316359.7390752,
-    "seen": 1791900058.239045,
-    "ast_hash": "a99be3d2218f5eaf9a268d205eacee2d",
+    "mtime": 1791914761.0345366,
+    "seen": 1791914861.2299488,
+    "ast_hash": "9fe38acda79565b15886233eea7ae742",
     "semantic_hash": ""
   },
   "apps/server/alembic/versions/2c3d4e5f6a7b_add_beds24_booking_sync.py": {
@@ -1266,9 +1266,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/schemas/integration.py": {
-    "mtime": 1791316359.462395,
-    "seen": 1791900058.2388706,
-    "ast_hash": "8d1c8654f63a83bf5dba8936d3bcfa2d",
+    "mtime": 1791914603.3339314,
+    "seen": 1791914861.2297912,
+    "ast_hash": "3edf47d8544f7a4958c5d5b00756ce66",
     "semantic_hash": ""
   },
   "apps/server/app/services/beds24_sync.py": {
@@ -1284,9 +1284,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/integrations/Beds24SyncPanel.tsx": {
-    "mtime": 1791316359.7640781,
-    "seen": 1791900058.2391284,
-    "ast_hash": "1e6715f2c809a7a94b4364f0b56c6c70",
+    "mtime": 1791914744.9828703,
+    "seen": 1791914861.2300441,
+    "ast_hash": "deca7189ac373933d2fcc441da7575ad",
     "semantic_hash": ""
   },
   "apps/server/append_ota.py": {
@@ -1296,9 +1296,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/settings/integrations/ota/page.tsx": {
-    "mtime": 1791316359.7380762,
-    "seen": 1791900058.239043,
-    "ast_hash": "64c516f9699755ac32d35c9ea2d82759",
+    "mtime": 1791914773.9569607,
+    "seen": 1791914861.2299469,
+    "ast_hash": "10c395097e6b701443a831fe5318f27e",
     "semantic_hash": ""
   },
   "apps/server/alembic/versions/3d4e5f6a7b8c_add_beds24_inventory_snapshot.py": {
@@ -2301,6 +2301,12 @@
     "mtime": 1791900021.101349,
     "seen": 1791900058.239476,
     "ast_hash": "c109985d7036383ee2f570ef543e9f0f",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/services/test_beds24_client.py": {
+    "mtime": 1791914670.6797166,
+    "seen": 1791914861.2298558,
+    "ast_hash": "6c1076a745213bc75e09a841e12492d6",
     "semantic_hash": ""
   }
 }

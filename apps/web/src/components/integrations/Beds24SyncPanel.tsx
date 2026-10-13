@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -61,7 +61,7 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
     retry: false,
   });
 
-  const { data: properties = [] } = useQuery<Property[]>({
+  const { data: properties = [], isLoading: isLoadingProperties } = useQuery<Property[]>({
     queryKey: ["properties"],
     queryFn: () => fetcher("/properties/"),
     enabled: isPro,
@@ -72,6 +72,13 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
   );
 
   const availableProperties = properties.filter((p) => !allLinkedPropertyIds.has(p.id));
+
+  // Auto-select first available property when available
+  useEffect(() => {
+    if (!selectedPropertyId && availableProperties.length > 0) {
+      setSelectedPropertyId(availableProperties[0].id);
+    }
+  }, [availableProperties, selectedPropertyId]);
 
   // Trigger setup (auto-create property in Beds24 master account)
   const handleStartSetup = async () => {
@@ -235,9 +242,18 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
                 </p>
               </div>
 
-              {properties.length === 0 ? (
+              {isLoadingProperties ? (
+                <div className="flex items-center gap-2 text-sm text-slate-400 py-2">
+                  <RefreshCw className="h-4 w-4 animate-spin text-teal-400" />
+                  Cargando propiedades...
+                </div>
+              ) : properties.length === 0 ? (
                 <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200 text-sm">
                   Aún no tienes propiedades registradas en Nomora. Primero crea una propiedad en tu panel.
+                </div>
+              ) : availableProperties.length === 0 ? (
+                <div className="p-4 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-200 text-sm">
+                  Todas tus propiedades ya están conectadas a Beds24.
                 </div>
               ) : (
                 <div className="max-w-md space-y-3">
@@ -246,12 +262,22 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
                     onChange={(e) => setSelectedPropertyId(e.target.value)}
                     className="w-full rounded-xl border border-white/10 bg-obsidian px-3.5 py-2.5 text-sm text-white outline-none focus:border-teal-400/60"
                   >
-                    <option value="">-- Elige una propiedad --</option>
-                    {properties.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} {allLinkedPropertyIds.has(p.id) ? "(Ya vinculada)" : ""}
-                      </option>
-                    ))}
+                    <option value="" className="bg-slate-900 text-white">
+                      -- Elige una propiedad --
+                    </option>
+                    {properties.map((p) => {
+                      const isLinked = allLinkedPropertyIds.has(p.id);
+                      return (
+                        <option
+                          key={p.id}
+                          value={p.id}
+                          disabled={isLinked}
+                          className="bg-slate-900 text-white disabled:text-slate-500"
+                        >
+                          {p.name} {isLinked ? "(Ya vinculada)" : ""}
+                        </option>
+                      );
+                    })}
                   </select>
 
                   <Button
@@ -440,11 +466,6 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
         </div>
       )}
 
-      {connections.length === 0 && !isLoading && !showWizard && (
-        <div className="mt-5 text-center py-6 text-slate-400 text-sm">
-          No tienes canales configurados aún. Usa el botón superior para conectar tu primera propiedad.
-        </div>
-      )}
     </section>
   );
 }

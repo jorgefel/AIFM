@@ -1284,9 +1284,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/integrations/Beds24SyncPanel.tsx": {
-    "mtime": 1791914744.9828703,
-    "seen": 1791914861.2300441,
-    "ast_hash": "deca7189ac373933d2fcc441da7575ad",
+    "mtime": 1791916254.6162882,
+    "seen": 1791916298.2002444,
+    "ast_hash": "0937095561e2170343fae5fc9934b29a",
     "semantic_hash": ""
   },
   "apps/server/append_ota.py": {

@@ -1,7 +1,7 @@
 # Graph Report - AIFM  (2026-10-13)
 
 ## Corpus Check
-- 375 files · ~226,178 words
+- 375 files · ~226,233 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 16 file(s) not represented in the graph (top: (none) 5, .css 4, .mdc 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `aa186d64`
+- Built from commit: `f71fc439`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -836,11 +836,11 @@ Nodes (3): Local Development Infrastructure, PostgreSQL Service, Redis Service
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Funciones del sistema` connect `Funciones del sistema` to `calculate_expense_breakdown`, `app/page.tsx`, `routes/chat.py`?**
-  _High betweenness centrality (0.105) - this node is a cross-community bridge._
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
 - **Why does `verify_property_access()` connect `routes/analysis.py` to `create_automation`, `reservations.py`, `User`, `Property`, `expenses.py`, `dependencies.py`, `Funciones del sistema`, `routes/chat.py`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
 - **Why does `2. Gestión de entidades operativas (Propiedades, Reservas y Gastos)` connect `Funciones del sistema` to `routes/analysis.py`?**
-  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
 - **Are the 71 inferred relationships involving `User` (e.g. with `run_copilot()` and `get_dashboard_data()`) actually correct?**
   _`User` has 71 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 28 inferred relationships involving `Property` (e.g. with `_build_operational_alerts()` and `_get_portfolio_data()`) actually correct?**
