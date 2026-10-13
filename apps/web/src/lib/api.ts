@@ -29,9 +29,6 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 const shouldAttemptRefresh = () => {
-  if (!hasSessionHint()) {
-    return false;
-  }
   if (isPublicAuthRoute()) {
     return false;
   }

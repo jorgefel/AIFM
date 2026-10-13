@@ -16,11 +16,13 @@ export function hasSessionHint(): boolean {
 export function setSessionHint(): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(SESSION_HINT_KEY, "1");
+  document.cookie = `${SESSION_HINT_COOKIE}=1; path=/; max-age=2592000; SameSite=Lax`;
 }
 
 export function clearSessionHint(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(SESSION_HINT_KEY);
+  document.cookie = `${SESSION_HINT_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 export function isPublicAuthRoute(pathname?: string): boolean {

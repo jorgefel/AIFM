@@ -117,8 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const isPublic = typeof window !== "undefined" ? isPublicAuthRoute() : true;
-  const hasHint = typeof window !== "undefined" ? hasSessionHint() : false;
-  const shouldFetch = !isPublic && hasHint && !demo.user;
+  const shouldFetch = !isPublic && !demo.user;
 
   const { data: apiUser = null, isLoading: isQueryLoading, refetch } = useQuery<User | null>({
     queryKey: ["me"],
@@ -194,6 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Logout failed:", error);
     } finally {
       clearSessionHint();
+      localStorage.removeItem("nomora_last_activity");
       queryClient.setQueryData(["me"], null);
       queryClient.clear(); // Clear all cached queries on logout
       router.push("/login");

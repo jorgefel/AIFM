@@ -4,76 +4,114 @@ import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-const HIDDEN_AT_KEY = "nomora_hidden_at";
-const INACTIVITY_THRESHOLD_MS = 300_000; // 5 minutes
+const LAST_ACTIVITY_KEY = "nomora_last_activity";
+const INACTIVITY_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutos (1,800,000 ms)
 
 /**
- * Auto-logout hook — closes the session when the user has been away
- * (tab hidden / browser closed) for ≥ 5 minutes.
- *
- * Uses the Page Visibility API instead of `setInterval` because timers
- * are aggressively throttled by browsers when the tab is in the background.
+ * Auto-logout hook — cierra la sesión cuando transcurren 30 minutos
+ * de inactividad dentro de la aplicación o cuando el usuario ha estado
+ * fuera de la página (pestaña en segundo plano / navegador cerrado) durante ≥ 30 minutos.
  */
 export function useAutoLogout() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
-  const hiddenAtRef = useRef<number | null>(null);
+  const isLoggingOutRef = useRef(false);
 
   const performLogout = useCallback(async () => {
+    if (isLoggingOutRef.current) return;
+    isLoggingOutRef.current = true;
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
     try {
       await logout();
     } catch {
-      // Even if the server call fails, ensure we redirect
+      // Si la llamada al backend falla, aseguramos la redirección local
     }
     router.replace("/login");
   }, [logout, router]);
 
+  const recordActivity = useCallback(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+  }, []);
+
   useEffect(() => {
-    // ── On mount: check if a persisted hidden timestamp exists ──
-    // This covers the case where the user closed/reloaded the tab
-    // while it was hidden.
-    const persisted = localStorage.getItem(HIDDEN_AT_KEY);
-    if (persisted) {
-      const elapsed = Date.now() - Number(persisted);
-      localStorage.removeItem(HIDDEN_AT_KEY);
+    // Si no hay usuario autenticado, no activamos el monitoreo
+    if (!user) return;
+
+    // 1. Al montar el componente (incluyendo recarga de página):
+    // Verificamos si ya pasaron 30 minutos desde la última actividad registrada.
+    const stored = localStorage.getItem(LAST_ACTIVITY_KEY);
+    const now = Date.now();
+
+    if (stored) {
+      const elapsed = now - Number(stored);
       if (elapsed >= INACTIVITY_THRESHOLD_MS) {
         performLogout();
-        return; // skip setting up listeners — we're logging out
+        return;
       }
     }
 
-    // ── visibilitychange handler ──
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        hiddenAtRef.current = Date.now();
-      } else {
-        // Tab became visible again
-        if (hiddenAtRef.current !== null) {
-          const elapsed = Date.now() - hiddenAtRef.current;
-          hiddenAtRef.current = null;
-          if (elapsed >= INACTIVITY_THRESHOLD_MS) {
-            performLogout();
-          }
-        }
+    // Si no ha expirado o es inicio de sesión, actualizamos timestamp de actividad
+    recordActivity();
+
+    // 2. Monitoreo de actividad dentro de la página (clicks, teclas, mouse, scroll, touch)
+    let lastThrottledTime = Date.now();
+    const handleUserInteraction = () => {
+      const currentTime = Date.now();
+      // Throttle a cada 5 segundos para no sobrecargar el almacenamiento local
+      if (currentTime - lastThrottledTime > 5000) {
+        lastThrottledTime = currentTime;
+        recordActivity();
       }
     };
 
-    // ── beforeunload handler ──
-    // Persist the hidden-at timestamp so we can check it on next mount.
-    const handleBeforeUnload = () => {
-      if (hiddenAtRef.current !== null) {
-        localStorage.setItem(HIDDEN_AT_KEY, String(hiddenAtRef.current));
+    const interactionEvents = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "touchstart",
+      "scroll",
+      "click",
+    ];
+
+    interactionEvents.forEach((event) => {
+      window.addEventListener(event, handleUserInteraction, { passive: true });
+    });
+
+    // 3. Cuando el usuario regresa a la pestaña tras estar fuera de la página
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const lastSeen = localStorage.getItem(LAST_ACTIVITY_KEY);
+        if (lastSeen) {
+          const elapsed = Date.now() - Number(lastSeen);
+          if (elapsed >= INACTIVITY_THRESHOLD_MS) {
+            performLogout();
+            return;
+          }
+        }
+        recordActivity();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // 4. Temporizador periódico para detectar inactividad continua con la página abierta
+    const intervalId = setInterval(() => {
+      const lastSeen = localStorage.getItem(LAST_ACTIVITY_KEY);
+      if (lastSeen) {
+        const elapsed = Date.now() - Number(lastSeen);
+        if (elapsed >= INACTIVITY_THRESHOLD_MS) {
+          performLogout();
+        }
+      }
+    }, 15_000); // Evaluar cada 15 segundos
 
     return () => {
+      interactionEvents.forEach((event) => {
+        window.removeEventListener(event, handleUserInteraction);
+      });
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      // Clean up persisted timestamp if unmounting normally
-      localStorage.removeItem(HIDDEN_AT_KEY);
+      clearInterval(intervalId);
     };
-  }, [performLogout]);
+  }, [user, performLogout, recordActivity]);
 }
