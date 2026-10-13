@@ -15,6 +15,7 @@ import { AIReportModal } from "@/components/dashboard/AIReportModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIReport } from "@/hooks/useAIReport";
 import { usePortfolioMetrics } from "@/hooks/usePortfolioMetrics";
+import { useForecast } from "@/hooks/useForecast";
 import { pctChange, type PeriodId } from "@/lib/metrics";
 
 export default function Home() {
@@ -23,6 +24,8 @@ export default function Home() {
   const [period, setPeriod] = useState<PeriodId>("month");
 
   const { properties, current, previous, series, isLoading } = usePortfolioMetrics(period);
+  const activePropertyId = properties[0]?.id;
+  const { data: forecastData } = useForecast(activePropertyId, 3);
 
   const {
     isReportModalOpen,
@@ -80,6 +83,7 @@ export default function Home() {
             total={current.revenue}
             change={pctChange(current.revenue, previous.revenue)}
             isLoading={isLoading}
+            forecast={forecastData?.forecasts}
           />
         </div>
         <ChannelDonut channels={current.channels} total={current.revenue} />

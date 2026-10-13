@@ -69,3 +69,26 @@ export interface CalendarDay {
 }
 
 export interface CalendarSnapshot { days: CalendarDay[]; generated_at: string; }
+
+export interface MonthForecast {
+  month: string;
+  projected_gross_income: number;
+  gross_income_min: number;
+  gross_income_max: number;
+  projected_net_profit: number;
+  net_profit_min: number;
+  net_profit_max: number;
+  confidence_level: number;
+  model_used: string;
+  is_forecast: boolean;
+}
+
+export interface PropertyForecastResponse {
+  property_id: string;
+  property_name: string;
+  currency: string;
+  historical_months_count: number;
+  forecasts: MonthForecast[];
+  disclaimer: string;
+}
+

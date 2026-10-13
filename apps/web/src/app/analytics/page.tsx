@@ -9,6 +9,7 @@ import { TrendBadge } from "@/components/dashboard/TrendBadge";
 import { ChannelDonut } from "@/components/analytics/ChannelDonut";
 import {
   ChannelTable,
+  ForecastChart,
   OccupancyLineChart,
   PropertyTable,
   RevenueBarsChart,
@@ -16,6 +17,7 @@ import {
 } from "@/components/analytics/AnalyticsCharts";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { usePortfolioMetrics } from "@/hooks/usePortfolioMetrics";
+import { useForecast } from "@/hooks/useForecast";
 import { pctChange, pointsChange, type PeriodId } from "@/lib/metrics";
 
 const TABS = [
@@ -23,6 +25,7 @@ const TABS = [
   { id: "revenue", label: "Ingresos" },
   { id: "occupancy", label: "Ocupación" },
   { id: "channels", label: "Canales" },
+  { id: "forecast", label: "Predicciones (IA)" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -33,6 +36,9 @@ export default function AnalyticsPage() {
   const [tab, setTab] = useState<TabId>("summary");
 
   const { properties, current, previous, series, isLoading } = usePortfolioMetrics(period);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
+  const activePropertyId = selectedPropertyId || properties[0]?.id;
+  const { data: forecastData, isLoading: isLoadingForecast } = useForecast(activePropertyId, 3);
 
   const kpis = [
     {
@@ -141,8 +147,68 @@ export default function AnalyticsPage() {
                 <ChannelTable channels={current.channels} />
               </div>
             )}
+            {tab === "forecast" && (
+              <div className="space-y-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-ink-muted">
+                    Pronóstico de ingresos y beneficio neto a 3 meses utilizando modelos predictivos (Holt-Winters / Holt lineal).
+                  </p>
+                  {properties.length > 1 && (
+                    <select
+                      value={activePropertyId}
+                      onChange={(e) => setSelectedPropertyId(e.target.value)}
+                      className="rounded-xl border border-line-soft bg-card px-3 py-1.5 text-sm font-medium text-ink focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+                      {properties.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+
+                {isLoadingForecast ? (
+                  <Skeleton className="h-72 w-full" />
+                ) : forecastData && forecastData.forecasts?.length > 0 ? (
+                  <>
+                    <ForecastChart
+                      forecasts={forecastData.forecasts}
+                      propertyName={forecastData.property_name}
+                    />
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                      {forecastData.forecasts.map((f) => (
+                        <div key={f.month} className="card-surface p-5">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-pink-500">
+                            Mes {f.month} (IA)
+                          </p>
+                          <p className="mt-2 text-xl font-bold text-ink">
+                            {formatCurrency(f.projected_gross_income)}
+                          </p>
+                          <p className="mt-1 text-xs text-ink-muted">
+                            Rango: {formatCurrency(f.gross_income_min)} - {formatCurrency(f.gross_income_max)}
+                          </p>
+                          <div className="mt-3 border-t border-line-soft pt-2">
+                            <span className="text-xs text-ink-muted">Beneficio neto estimado: </span>
+                            <span className="text-xs font-semibold text-emerald-400">
+                              {formatCurrency(f.projected_net_profit)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-line-soft bg-surface text-sm text-ink-muted">
+                    No hay suficientes datos históricos para generar pronósticos en esta propiedad.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
+
 
         <p className="text-xs text-ink-muted">
           Los ingresos se reparten por noche dentro del periodo y solo cuentan reservas confirmadas o

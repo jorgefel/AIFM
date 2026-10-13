@@ -243,3 +243,60 @@ export function ChannelTable({ channels }: { channels: ChannelStat[] }) {
     </section>
   );
 }
+
+export function ForecastChart({
+  forecasts,
+  propertyName,
+}: {
+  forecasts: { month: string; projected_gross_income: number; gross_income_min: number; gross_income_max: number; projected_net_profit: number; net_profit_min: number; net_profit_max: number; model_used: string }[];
+  propertyName: string;
+}) {
+  const { formatCurrency, formatCurrencyCompact } = useCurrency();
+  const theme = useChartTheme();
+
+  const data = forecasts.map((f) => {
+    const parts = f.month.split("-");
+    const monthNames = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+    const label = monthNames[parseInt(parts[1], 10) - 1] ?? f.month;
+    return {
+      label: `${label} ${parts[0]}`,
+      gross: f.projected_gross_income,
+      net: f.projected_net_profit,
+    };
+  });
+
+  return (
+    <ChartCard title={`Proyección financiera (IA) — ${propertyName}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={data} margin={{ top: 10, right: 0, left: -10, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />
+          <XAxis dataKey="label" stroke={theme.axis} fontSize={12} tickLine={false} axisLine={false} />
+          <YAxis
+            stroke={theme.axis}
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(v) => formatCurrencyCompact(v)}
+          />
+          <Tooltip
+            content={
+              <ChartTooltip
+                format={(_name, value) => formatCurrency(value)}
+              />
+            }
+          />
+          <Bar dataKey="gross" name="Ingreso bruto estimado" fill="#EC4899" radius={[6, 6, 0, 0]} maxBarSize={36} />
+          <Line
+            type="monotone"
+            dataKey="net"
+            name="Beneficio neto estimado"
+            stroke="#10B981"
+            strokeWidth={2.5}
+            dot={{ r: 4, fill: "#10B981", strokeWidth: 0 }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </ChartCard>
+  );
+}
+
