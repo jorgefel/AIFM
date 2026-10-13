@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = (
         "postgresql+asyncpg://nomora_user:nomora_pass@localhost:5432/nomora_db"
     )
+    DIRECT_DATABASE_URL: str = ""  # Direct connection (bypasses pooler for migrations)
     DB_ECHO: bool = False       # Logging de SQL queries (True solo en dev)
     DB_POOL_SIZE: int = 5       # Conexiones en el pool de asyncpg
 
