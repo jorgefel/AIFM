@@ -95,7 +95,12 @@ export default function Home() {
         </div>
         <div className="min-h-[220px]">
           <GlassAiDecisions
-            onExplore={() => properties[0] && generateReport(properties[0].id)}
+            onExplore={() => {
+              if (!properties[0]) return;
+              const d = new Date();
+              if (period === "next_month") d.setMonth(d.getMonth() + 1);
+              generateReport(properties[0].id, d.getFullYear(), d.getMonth() + 1);
+            }}
           />
         </div>
       </div>

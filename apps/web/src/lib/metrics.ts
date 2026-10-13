@@ -6,11 +6,13 @@ export interface DayRange {
   to: number;
 }
 
-export type PeriodId = "month" | "quarter" | "year";
+export type PeriodId = "month" | "quarter" | "year" | "next_month" | "next_quarter";
 
 export const PERIOD_OPTIONS: { value: PeriodId; label: string }[] = [
   { value: "month", label: "Este mes" },
+  { value: "next_month", label: "Próximo mes" },
   { value: "quarter", label: "Últimos 3 meses" },
+  { value: "next_quarter", label: "Próximos 3 meses" },
   { value: "year", label: "Este año" },
 ];
 
@@ -168,6 +170,18 @@ export function getPeriodRanges(period: PeriodId, now = new Date()): { current: 
   const y = now.getFullYear();
   const m = now.getMonth();
 
+  if (period === "next_month") {
+    return {
+      current: { from: dayIndex(y, m + 1, 1), to: dayIndex(y, m + 2, 1) },
+      previous: { from: dayIndex(y, m, 1), to: dayIndex(y, m + 1, 1) },
+    };
+  }
+  if (period === "next_quarter") {
+    return {
+      current: { from: dayIndex(y, m + 1, 1), to: dayIndex(y, m + 4, 1) },
+      previous: { from: dayIndex(y, m - 2, 1), to: dayIndex(y, m + 1, 1) },
+    };
+  }
   if (period === "quarter") {
     return {
       current: { from: dayIndex(y, m - 2, 1), to: dayIndex(y, m + 1, 1) },
@@ -200,12 +214,13 @@ export function monthlySeries(
   properties: Property[],
   months: number,
   now = new Date(),
+  futureMonths = 1,
 ): MonthPoint[] {
   const y = now.getFullYear();
   const m = now.getMonth();
   const points: MonthPoint[] = [];
 
-  for (let i = months - 1; i >= 0; i -= 1) {
+  for (let i = months - 1; i >= -futureMonths; i -= 1) {
     const from = dayIndex(y, m - i, 1);
     const to = dayIndex(y, m - i + 1, 1);
     const metrics = computeMetrics(reservations, properties, { from, to });

@@ -8,10 +8,11 @@ export function usePortfolioMetrics(period: PeriodId) {
 
   const metrics = useMemo(() => {
     const ranges = getPeriodRanges(period);
+    const futureMonths = period === "next_quarter" ? 3 : period === "next_month" ? 2 : 1;
     return {
       current: computeMetrics(reservations, properties, ranges.current),
       previous: computeMetrics(reservations, properties, ranges.previous),
-      series: monthlySeries(reservations, properties, period === "year" ? 12 : 6),
+      series: monthlySeries(reservations, properties, period === "year" ? 12 : 6, new Date(), futureMonths),
     };
   }, [period, reservations, properties]);
 

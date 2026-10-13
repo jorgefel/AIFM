@@ -7,7 +7,7 @@ export function useAIReport() {
   const [reportResult, setReportResult] = useState<any>(null);
   const [reportError, setReportError] = useState<string | null>(null);
 
-  const generateReport = async (selectedPropertyId: string) => {
+  const generateReport = async (selectedPropertyId: string, year?: number, month?: number) => {
     if (!selectedPropertyId) return;
     
     setIsReportModalOpen(true);
@@ -20,8 +20,8 @@ export function useAIReport() {
       // Encolar trabajo de IA
       const { data: jobInit } = await api.post("/analysis/ai-insights", {
         property_id: selectedPropertyId,
-        year: date.getFullYear(),
-        month: date.getMonth() + 1
+        year: year ?? date.getFullYear(),
+        month: month ?? (date.getMonth() + 1)
       });
 
       const jobId = jobInit.job_id;

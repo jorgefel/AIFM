@@ -192,15 +192,23 @@ def generate_property_forecast(
     forecasts = []
 
     for idx, (fy, fm) in enumerate(future_months):
+        booked = calculate_monthly_summary(reservations, expenses, fy, fm)
+        booked_gross = float(booked["gross_income"])
+        booked_net = float(booked["net_profit"])
+        proj_gross = max(g_preds[idx], booked_gross)
+        proj_net = max(n_preds[idx], booked_net) if n_preds[idx] >= 0 else booked_net
+        low_gross = max(g_lowers[idx], booked_gross)
+        up_gross = max(g_uppers[idx], booked_gross)
+
         forecasts.append(
             MonthForecast(
                 month=f"{fy:04d}-{fm:02d}",
-                projected_gross_income=g_preds[idx],
-                gross_income_min=g_lowers[idx],
-                gross_income_max=g_uppers[idx],
-                projected_net_profit=n_preds[idx],
-                net_profit_min=n_lowers[idx],
-                net_profit_max=n_uppers[idx],
+                projected_gross_income=round(proj_gross, 2),
+                gross_income_min=round(low_gross, 2),
+                gross_income_max=round(up_gross, 2),
+                projected_net_profit=round(proj_net, 2),
+                net_profit_min=round(n_lowers[idx], 2),
+                net_profit_max=round(up_gross, 2),
                 confidence_level=0.80,
                 model_used=f"{g_model}+{n_model}",
                 is_forecast=True,
