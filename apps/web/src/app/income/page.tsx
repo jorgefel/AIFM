@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FinanceOverview } from "@/components/expenses/FinanceOverview";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { Plus, Filter } from "lucide-react";
@@ -20,8 +21,10 @@ export default function IncomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [period, setPeriod] = useState(() => new Date().toISOString().slice(0, 7));
   
   const { formatCurrency } = useCurrency();
+  const [year, month] = period.split("-").map(Number);
 
   const {
     properties,
@@ -85,6 +88,7 @@ export default function IncomePage() {
             <h1 className="text-3xl font-bold text-ink tracking-tight">Ingresos y Reservas</h1>
             <p className="text-ink-muted mt-1">Lleva el control de todas tus reservaciones.</p>
           </div>
+          <input type="month" value={period} onChange={(e) => setPeriod(e.target.value)} className="rounded-lg border border-white/10 bg-obsidian-light/50 px-3 py-2 text-sm text-white outline-none focus:border-emerald-400/50" aria-label="Período financiero" />
           <div className="flex items-center gap-3">
             {properties.length > 0 && (
               <div className="flex items-center bg-card border border-line rounded-lg px-3 py-1 shadow-sm">
@@ -112,6 +116,8 @@ export default function IncomePage() {
             No tienes propiedades registradas. Crea una propiedad antes de añadir reservas.
           </motion.div>
         )}
+
+        {selectedPropertyId && <motion.div variants={itemVariants}><FinanceOverview propertyId={selectedPropertyId} year={year} month={month} /></motion.div>}
 
         <IncomeList 
           reservations={reservations}

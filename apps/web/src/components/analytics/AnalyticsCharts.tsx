@@ -22,7 +22,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
   return (
     <section className="card-surface flex h-full flex-col p-6">
       <h2 className="mb-4 text-sm font-medium text-ink-muted">{title}</h2>
-      <div className="h-72 min-h-0 flex-1">{children}</div>
+      <div className="h-72">{children}</div>
     </section>
   );
 }

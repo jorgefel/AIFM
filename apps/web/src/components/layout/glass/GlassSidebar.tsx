@@ -183,7 +183,7 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
         </Link>
 
         <div className={`flex items-center gap-2.5 pt-3 mt-1 border-t border-white/[0.06] ${expanded ? "" : "justify-center lg:justify-start"}`}>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-slate-800 flex items-center justify-center text-xs font-bold text-white shrink-0">
+          <div className={`w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-slate-800 flex items-center justify-center text-xs font-bold text-white shrink-0${user?.tier === "pro" ? " ring-2 ring-pink-500 ring-offset-1 ring-offset-transparent shadow-[0_0_12px_rgba(236,72,153,0.5)]" : ""}`}>
             {user?.full_name ? user.full_name.substring(0, 2).toUpperCase() : "AD"}
           </div>
           <div className={`min-w-0 ${labelClasses}`}>

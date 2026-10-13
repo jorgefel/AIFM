@@ -61,7 +61,7 @@ export function GlassHeader({ onMenuClick }: GlassHeaderProps = {}) {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center gap-2.5 cursor-pointer group bg-card pl-1 pr-1 lg:pr-3 py-1 rounded-full shadow-sm border border-line-soft hover:border-violet-200 transition-colors"
             >
-              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center overflow-hidden shrink-0">
+              <div className={`w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center overflow-hidden shrink-0${user?.tier === "pro" ? " ring-2 ring-pink-500 ring-offset-1 ring-offset-transparent shadow-[0_0_12px_rgba(236,72,153,0.5)]" : ""}`}>
                 <span className="text-xs font-bold text-white">
                   {user?.full_name ? user.full_name.substring(0, 2).toUpperCase() : "AD"}
                 </span>

@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { PROPERTIES_QUERY_KEY } from "./useProperties";
+import { PORTFOLIO_QUERY_KEY } from "./usePortfolio";
 import { useToast } from "@/contexts/ToastContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
@@ -80,6 +81,8 @@ export function useIncome() {
         queryClient.invalidateQueries({ queryKey: ["reservations", targetPropertyId] });
       }
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-overview"] });
+      queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY });
       return true;
     } catch (error: any) {
       const detail = error?.response?.data?.detail;
@@ -96,6 +99,8 @@ export function useIncome() {
       toast.success("Reserva cancelada", "La reserva fue eliminada correctamente.");
       queryClient.invalidateQueries({ queryKey: reservationsKey });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-overview"] });
+      queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY });
       return true;
     } catch {
       toast.error("Error", "No se pudo eliminar la reserva.");

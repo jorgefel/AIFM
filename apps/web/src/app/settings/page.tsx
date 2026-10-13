@@ -74,7 +74,7 @@ export default function SettingsPage() {
           <div className="col-span-1 md:col-span-2">
             <div className="glass-panel p-8">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center overflow-hidden border-4 border-obsidian shadow-xl shadow-black/50">
+                <div className={`w-20 h-20 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center overflow-hidden shadow-xl shadow-black/50${user.tier === "pro" ? " border-4 border-pink-500 ring-2 ring-pink-500/50 shadow-[0_0_20px_rgba(236,72,153,0.4)]" : " border-4 border-obsidian"}`}>
                   <span className="text-2xl font-bold text-white">
                     {user.full_name ? user.full_name.substring(0, 2).toUpperCase() : "US"}
                   </span>
