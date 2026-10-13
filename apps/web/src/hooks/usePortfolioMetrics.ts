@@ -1,20 +1,25 @@
 import { useMemo } from "react";
-import { computeMetrics, getPeriodRanges, monthlySeries, type PeriodId } from "@/lib/metrics";
+import {
+  computeMetrics,
+  getDateFilterRanges,
+  getChartSeries,
+  getDefaultDateFilter,
+  type DateFilter,
+} from "@/lib/metrics";
 import { usePortfolio } from "./usePortfolio";
 
-export function usePortfolioMetrics(period: PeriodId) {
+export function usePortfolioMetrics(filter: DateFilter = getDefaultDateFilter()) {
   const portfolio = usePortfolio();
   const { properties, reservations } = portfolio;
 
   const metrics = useMemo(() => {
-    const ranges = getPeriodRanges(period);
-    const futureMonths = period === "next_quarter" ? 3 : period === "next_month" ? 2 : 1;
+    const ranges = getDateFilterRanges(filter);
     return {
       current: computeMetrics(reservations, properties, ranges.current),
       previous: computeMetrics(reservations, properties, ranges.previous),
-      series: monthlySeries(reservations, properties, period === "year" ? 12 : 6, new Date(), futureMonths),
+      series: getChartSeries(reservations, properties, filter),
     };
-  }, [period, reservations, properties]);
+  }, [filter, reservations, properties]);
 
   return { ...portfolio, ...metrics };
 }
