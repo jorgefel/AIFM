@@ -1,17 +1,17 @@
 # Graph Report - AIFM  (2026-10-15)
 
 ## Corpus Check
-- 378 files · ~229,662 words
+- 378 files · ~229,870 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 16 file(s) not represented in the graph (top: (none) 5, .css 4, .mdc 1)
 
 ## Summary
-- 3196 nodes · 5890 edges · 180 communities (149 shown, 31 thin omitted)
+- 3196 nodes · 5890 edges · 182 communities (151 shown, 31 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 243 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a0623a40`
+- Built from commit: `5f324763`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -46,11 +46,11 @@
 - devDependencies
 - Worked example: Agent Teams for competing-hypothesis debugging
 - shared/src/index.ts
-- ReservationDetail.tsx
+- IncomeForm.tsx
 - PropertyWizard.tsx
 - compilerOptions
 - compilerOptions
-- useCalendar.ts
+- ReservationDetail.tsx
 - ReservationsTable.tsx
 - GlassPerformanceChart.tsx
 - test_dashboard_returns_daily_series_for_one_month
@@ -66,7 +66,7 @@
 - web/README.md
 - Security and Hardening
 - automations.py
-- AuthContext.tsx
+- plans/page.tsx
 - lucide-react
 - env.py
 - schemas/__init__.py
@@ -151,6 +151,7 @@
 - Source-Driven Development
 - Refinement & Evaluation Criteria
 - Hardening Patterns
+- AuthContext.tsx
 - Funciones del sistema
 - Refinement & Evaluation Criteria
 - The Standing Checklist
@@ -159,6 +160,7 @@
 - Observability Checklist
 - Ideation Frameworks Reference
 - Ideation Frameworks Reference
+- ExpenseList.tsx
 - OWASP Top 10 Prevention Patterns
 - OWASP Top 10 Prevention Patterns
 - deterministic_analyzer.py
@@ -207,7 +209,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (180 total, 31 thin omitted)
+## Communities (182 total, 31 thin omitted)
 
 ### Community 0 - "models.ts"
 Cohesion: 0.09
@@ -325,9 +327,9 @@ Nodes (31): 1. Direct invocation (no orchestration), 2. Single-persona slash com
 Cohesion: 0.20
 Nodes (10): ApiResponse, Currency, Expense, ExpenseCategory, MonthlyReport, PaginatedResponse, Property, Reservation (+2 more)
 
-### Community 31 - "ReservationDetail.tsx"
-Cohesion: 0.10
-Nodes (33): Fact(), formatDay(), ReservationDetail(), ReservationDetailProps, STATUS_COLORS, STATUS_LABELS, ExpenseForm(), ExpenseFormProps (+25 more)
+### Community 31 - "IncomeForm.tsx"
+Cohesion: 0.13
+Nodes (26): ExpenseForm(), ExpenseFormProps, getNights(), IncomeForm(), IncomeFormProps, ChoiceGroup(), PropertyForm(), PropertyFormProps (+18 more)
 
 ### Community 32 - "PropertyWizard.tsx"
 Cohesion: 0.07
@@ -341,13 +343,13 @@ Nodes (9): compilerOptions, esModuleInterop, lib, module, moduleResolution, skip
 Cohesion: 0.20
 Nodes (9): compilerOptions, declaration, declarationMap, module, moduleResolution, skipLibCheck, sourceMap, strict (+1 more)
 
-### Community 35 - "useCalendar.ts"
-Cohesion: 0.16
-Nodes (16): CalendarPage(), MiniCalendar(), MiniCalendarProps, WEEKDAYS, localizer, messages, ReservationCalendar(), ReservationCalendarProps (+8 more)
+### Community 35 - "ReservationDetail.tsx"
+Cohesion: 0.11
+Nodes (26): CalendarPage(), MiniCalendar(), MiniCalendarProps, WEEKDAYS, localizer, messages, ReservationCalendar(), ReservationCalendarProps (+18 more)
 
 ### Community 36 - "ReservationsTable.tsx"
-Cohesion: 0.11
-Nodes (23): ExpenseList(), ExpenseListProps, IncomeListProps, dateFormatter, formatRange(), initials(), ReservationsTable(), ReservationsTableProps (+15 more)
+Cohesion: 0.18
+Nodes (14): dateFormatter, formatRange(), initials(), ReservationsTable(), StatusBadge(), buildDemoReservations(), FEE_RATES, GUESTS (+6 more)
 
 ### Community 37 - "GlassPerformanceChart.tsx"
 Cohesion: 0.33
@@ -401,9 +403,9 @@ Nodes (12): Always Do (No Exceptions), Ask First (Requires Human Approval), Comm
 Cohesion: 0.31
 Nodes (6): approve_and_execute_automation(), cancel_automation(), create_automation(), list_automations(), AuditLog, AutomationAction
 
-### Community 51 - "AuthContext.tsx"
-Cohesion: 0.08
-Nodes (34): AuthCallbackPage(), Banner(), BillingStatus, longDate, PlansContent(), PlansPage(), shortDate, Subscription (+26 more)
+### Community 51 - "plans/page.tsx"
+Cohesion: 0.15
+Nodes (17): Banner(), BillingStatus, longDate, PlansContent(), PlansPage(), shortDate, Subscription, PlanCard() (+9 more)
 
 ### Community 52 - "lucide-react"
 Cohesion: 0.06
@@ -713,6 +715,10 @@ Nodes (11): 1. User Value, 2. Feasibility, 3. Differentiation, Assumption Audit,
 Cohesion: 0.17
 Nodes (10): Data Classification, Dependency Audit Triage, Destructive Operations on Derived Paths, File Upload Safety, Hardening Patterns, Input Validation Patterns, LLM Output Handling, Rate Limiting (+2 more)
 
+### Community 149 - "AuthContext.tsx"
+Cohesion: 0.17
+Nodes (17): AuthCallbackPage(), AuthContext, AuthContextType, AuthProvider(), buildDemoUser(), OnboardingUpdate, ProfileUpdate, readCachedUser() (+9 more)
+
 ### Community 150 - "Funciones del sistema"
 Cohesion: 0.14
 Nodes (13): 10. Rendimiento y Caché de Borde (Edge Worker), 1. Gestión de usuarios, sesiones y control de acceso (RBAC / Tiers), 2. Gestión de entidades operativas (Propiedades, Reservas y Gastos), 3. Motor financiero determinístico (Golden Rule), 6. Automatizaciones operativas con aprobación humana (Human-in-the-Loop), 7. Facturación, suscripciones y monetización (Stripe), 8. Integración y sincronización de canales externos (Beds24), Arquitectura del sistema (+5 more)
@@ -744,6 +750,10 @@ Nodes (8): Analogous Inspiration, Constraint-Based Ideation, First Principles Th
 ### Community 157 - "Ideation Frameworks Reference"
 Cohesion: 0.22
 Nodes (8): Analogous Inspiration, Constraint-Based Ideation, First Principles Thinking, How Might We (HMW), Ideation Frameworks Reference, Jobs to Be Done (JTBD), Pre-mortem, SCAMPER
+
+### Community 158 - "ExpenseList.tsx"
+Cohesion: 0.36
+Nodes (6): ExpenseList(), ExpenseListProps, Column, DataTable(), DataTableProps, Expense
 
 ### Community 159 - "OWASP Top 10 Prevention Patterns"
 Cohesion: 0.29
@@ -814,11 +824,11 @@ Nodes (13): ActivityList(), ActivityListProps, DashboardCharts(), DashboardChart
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Funciones del sistema` connect `Funciones del sistema` to `app/page.tsx`, `typing`, `calculate_expense_breakdown`?**
-  _High betweenness centrality (0.109) - this node is a cross-community bridge._
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
 - **Why does `verify_property_access()` connect `routes/analysis.py` to `typing`, `Reservation`, `integrations.py`, `User`, `automations.py`, `dependencies.py`, `Funciones del sistema`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **Why does `2. Gestión de entidades operativas (Propiedades, Reservas y Gastos)` connect `Funciones del sistema` to `routes/analysis.py`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **Are the 71 inferred relationships involving `User` (e.g. with `run_copilot()` and `get_dashboard_data()`) actually correct?**
   _`User` has 71 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 28 inferred relationships involving `Property` (e.g. with `_build_operational_alerts()` and `_get_portfolio_data()`) actually correct?**

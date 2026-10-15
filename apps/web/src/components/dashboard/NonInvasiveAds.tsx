@@ -1,203 +1,256 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ExternalLink, X, Sparkles } from "lucide-react";
+import { ExternalLink, X, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-export interface SponsoredAd {
+export interface DisplayAd {
   id: string;
-  name: string;
+  brand: string;
+  domain: string;
+  headline: string;
+  subline: string;
+  ctaText: string;
+  targetUrl: string;
+  imageUrl: string;
   category: string;
-  tagline: string;
-  description: string;
-  cta: string;
-  url: string;
-  badge: string;
 }
 
-const SPONSORED_ADS: SponsoredAd[] = [
+// Banners display de anunciantes reales del sector de alquiler vacacional, domótica y suministros
+const REAL_DISPLAY_ADS: DisplayAd[] = [
   {
-    id: "nuki",
-    name: "Nuki Smart Lock",
-    category: "Cerraduras Inteligentes",
-    tagline: "Check-in 100% autónomo para huéspedes",
-    description: "Entrega llaves digitales sin esperas y automatiza el acceso para tus reservas de Airbnb y Booking.",
-    cta: "Visitar web oficial",
-    url: "https://nuki.io",
-    badge: "Smart Access",
+    id: "nuki-smart-lock",
+    brand: "Nuki Home Solutions",
+    domain: "nuki.io",
+    headline: "Cerraduras inteligentes para Airbnb: Check-in autónomo 24/7",
+    subline: "Entrega llaves digitales sin estar presente y sincroniza códigos con cada reserva.",
+    ctaText: "Ver ofertas",
+    targetUrl: "https://nuki.io/es/",
+    imageUrl: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=720&q=80",
+    category: "Domótica y Seguridad",
   },
   {
-    id: "turno",
-    name: "Turno Cleaner Network",
-    category: "Limpieza Especializada",
-    tagline: "Automatiza la limpieza de tus alojamientos",
-    description: "Encuentra y agenda personal de limpieza automáticamente sincronizado con las fechas de checkout.",
-    cta: "Explorar servicios",
-    url: "https://turno.com",
-    badge: "Operaciones",
+    id: "booking-partners",
+    brand: "Booking.com Partners",
+    domain: "join.booking.com",
+    headline: "Multiplica tus reservas: Da de alta tu alojamiento en Booking",
+    subline: "Llega a viajeros de más de 190 países con reservas instantáneas confirmadas.",
+    ctaText: "Comenzar gratis",
+    targetUrl: "https://join.booking.com/?lang=es",
+    imageUrl: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=720&q=80",
+    category: "Canal OTA",
   },
   {
-    id: "minut",
-    name: "Minut Noise Sensor",
-    category: "Seguridad y Sensores",
-    tagline: "Protege tu propiedad sin cámaras",
-    description: "Monitor de decibelios y ocupación para evitar fiestas o molestias vecinales respetando la privacidad.",
-    cta: "Ver soluciones",
-    url: "https://www.minut.com",
-    badge: "Seguridad",
+    id: "ring-security",
+    brand: "Ring by Amazon",
+    domain: "es-es.ring.com",
+    headline: "Videotimbres y cámaras exteriores para proteger tu propiedad",
+    subline: "Detecta paquetes, entregas y visitas sospechosas en tiempo real desde tu móvil.",
+    ctaText: "Comprar en Amazon",
+    targetUrl: "https://es-es.ring.com/",
+    imageUrl: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=720&q=80",
+    category: "Seguridad para Anfitriones",
   },
   {
-    id: "pricelabs",
-    name: "PriceLabs Dynamic Pricing",
-    category: "Precios Inteligentes",
-    tagline: "Maximiza tus ingresos por noche",
-    description: "Tarificación dinámica impulsada por datos de mercado local y demanda en tiempo real.",
-    cta: "Conocer más",
-    url: "https://pricelabs.co",
-    badge: "Revenue",
+    id: "ikea-business",
+    brand: "IKEA Business Network",
+    domain: "ikea.com",
+    headline: "Equipa tu apartamento turístico con descuentos profesionales",
+    subline: "Mobiliario resistente y diseño nórdico con financiación especial para alojamientos.",
+    ctaText: "Ver catálogo para empresas",
+    targetUrl: "https://www.ikea.com/es/es/ikea-business/",
+    imageUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=720&q=80",
+    category: "Mobiliario y Decoración",
+  },
+  {
+    id: "turno-cleaning",
+    brand: "Turno (TurnoverBnB)",
+    domain: "turno.com",
+    headline: "Encuentra equipos de limpieza especializados para alquiler vacacional",
+    subline: "Pagos automáticos, listas de control fotográficas y rotación de personal certificada.",
+    ctaText: "Buscar limpiadores locales",
+    targetUrl: "https://turno.com",
+    imageUrl: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=720&q=80",
+    category: "Limpieza Profesional",
   },
 ];
 
+/**
+ * Anuncio horizontal con imagen display real para el final del dashboard
+ */
 export function NonInvasiveBottomAd() {
   const { isPro } = useAuth();
   const [dismissed, setDismissed] = useState(true);
-  const [adIndex, setAdIndex] = useState(0);
+  const [selectedAd, setSelectedAd] = useState<DisplayAd>(REAL_DISPLAY_ADS[0]);
 
   useEffect(() => {
-    // Si es pro, no hacemos nada
     if (isPro) return;
 
-    const isDismissed = sessionStorage.getItem("nomora_ad_bottom_dismissed");
+    const isDismissed = sessionStorage.getItem("nomora_bottom_ad_dismissed");
     if (!isDismissed) {
       setDismissed(false);
-      // Seleccionar un anuncio aleatorio para rotación
-      setAdIndex(Math.floor(Math.random() * SPONSORED_ADS.length));
+      // Rotar aleatoriamente
+      const randomIndex = Math.floor(Math.random() * REAL_DISPLAY_ADS.length);
+      setSelectedAd(REAL_DISPLAY_ADS[randomIndex]);
     }
   }, [isPro]);
 
   if (isPro || dismissed) return null;
 
-  const currentAd = SPONSORED_ADS[adIndex] || SPONSORED_ADS[0];
-
   const handleDismiss = () => {
     setDismissed(true);
-    sessionStorage.setItem("nomora_ad_bottom_dismissed", "true");
+    sessionStorage.setItem("nomora_bottom_ad_dismissed", "true");
   };
 
   return (
     <aside
-      aria-label="Anuncio patrocinado"
-      className="relative mt-8 overflow-hidden rounded-2xl border border-line-soft bg-surface/70 backdrop-blur-md p-4 sm:p-5 shadow-sm transition-all hover:border-line"
+      aria-label="Anuncio publicitario"
+      className="relative mt-8 overflow-hidden rounded-2xl border border-line-soft bg-surface/80 backdrop-blur-md shadow-md transition-all hover:border-line"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3.5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
-            <ExternalLink className="h-4 w-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted bg-surface-hover px-2 py-0.5 rounded border border-line-soft">
-                Publicidad externa
-              </span>
-              <span className="text-xs text-ink-muted">· {currentAd.category}</span>
-            </div>
-            <p className="mt-1 text-sm font-semibold text-ink">
-              {currentAd.name}: <span className="font-normal text-ink-muted">{currentAd.description}</span>
-            </p>
+      {/* Etiqueta superior estilo Google AdChoices / Ad banner */}
+      <div className="flex items-center justify-between border-b border-line-soft bg-card/60 px-4 py-1.5 text-[11px] text-ink-muted">
+        <div className="flex items-center gap-1.5">
+          <span className="font-semibold uppercase tracking-wider text-[10px] bg-surface px-1.5 py-0.5 rounded border border-line-soft">
+            Anuncio
+          </span>
+          <span>{selectedAd.domain}</span>
+          <span className="text-line-soft">|</span>
+          <span className="truncate">{selectedAd.category}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/plans"
+            className="text-[10px] text-ink-muted hover:text-ink underline decoration-line-soft"
+            title="Sube a Pro para no ver publicidad"
+          >
+            Quitar anuncios con Plan Pro
+          </Link>
+          <button
+            onClick={handleDismiss}
+            aria-label="Cerrar publicidad"
+            className="rounded p-0.5 text-ink-muted hover:bg-surface-hover hover:text-ink transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Contenido visual del anuncio display con imagen real */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 p-3 sm:p-4">
+        {/* Imagen del anuncio */}
+        <div className="relative h-32 w-full sm:h-28 sm:w-48 shrink-0 overflow-hidden rounded-xl border border-line-soft bg-card">
+          <img
+            src={selectedAd.imageUrl}
+            alt={selectedAd.headline}
+            className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
+          />
+          <div className="absolute bottom-1.5 left-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-medium text-white backdrop-blur-sm">
+            {selectedAd.brand}
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
+        {/* Copy del anuncio */}
+        <div className="flex-1 min-w-0 text-left">
+          <h4 className="text-sm font-semibold text-ink sm:text-base leading-snug line-clamp-1">
+            {selectedAd.headline}
+          </h4>
+          <p className="mt-1 text-xs text-ink-muted leading-relaxed line-clamp-2">
+            {selectedAd.subline}
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-[11px] font-medium text-emerald-500">
+              Patrocinado por {selectedAd.brand}
+            </span>
+          </div>
+        </div>
+
+        {/* Botón CTA externo */}
+        <div className="shrink-0 self-stretch sm:self-center flex sm:flex-col items-center justify-end">
           <a
-            href={currentAd.url}
+            href={selectedAd.targetUrl}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-line-soft bg-card px-3.5 py-2 text-xs font-medium text-ink shadow-sm hover:bg-surface-hover hover:border-line transition-all"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-violet-600/20 hover:bg-violet-500 transition-all"
           >
-            <span>{currentAd.cta}</span>
-            <ExternalLink className="h-3 w-3 text-ink-muted" />
+            <span>{selectedAd.ctaText}</span>
+            <ExternalLink className="h-3.5 w-3.5" />
           </a>
-
-          <Link
-            href="/plans"
-            className="hidden lg:inline-flex text-[11px] text-ink-muted hover:text-ink underline decoration-line-soft underline-offset-2 transition-colors px-1"
-            title="Quitar anuncios suscribiéndote a Pro"
-          >
-            Eliminar anuncios
-          </Link>
-
-          <button
-            onClick={handleDismiss}
-            aria-label="Cerrar anuncio"
-            className="rounded-lg p-2 text-ink-muted hover:bg-surface-hover hover:text-ink transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
       </div>
     </aside>
   );
 }
 
+/**
+ * Anuncio vertical en tarjeta gráfica para el sidebar
+ */
 export function NonInvasiveSideAd() {
   const { isPro } = useAuth();
   const [dismissed, setDismissed] = useState(false);
-  const [adIndex, setAdIndex] = useState(0);
+  const [selectedAd, setSelectedAd] = useState<DisplayAd>(REAL_DISPLAY_ADS[1]);
 
   useEffect(() => {
     if (isPro) return;
-    setAdIndex(Math.floor(Math.random() * SPONSORED_ADS.length));
+    const randomIndex = Math.floor(Math.random() * REAL_DISPLAY_ADS.length);
+    setSelectedAd(REAL_DISPLAY_ADS[randomIndex]);
   }, [isPro]);
 
   if (isPro || dismissed) return null;
 
-  const currentAd = SPONSORED_ADS[adIndex] || SPONSORED_ADS[0];
-
   return (
-    <aside aria-label="Anuncio patrocinado" className="mt-auto px-3 py-2">
-      <div className="relative rounded-2xl border border-line-soft bg-surface/60 p-3 shadow-sm hover:border-line transition-all">
-        <button
-          onClick={() => setDismissed(true)}
-          className="absolute top-2 right-2 rounded p-1 text-ink-muted hover:text-ink hover:bg-surface-hover transition-colors"
-          title="Ocultar"
-          aria-label="Ocultar anuncio"
-        >
-          <X className="h-3 w-3" />
-        </button>
-
-        <div className="flex items-center gap-1.5 text-ink-muted">
-          <span className="text-[10px] font-semibold uppercase tracking-wider bg-surface px-1.5 py-0.5 rounded border border-line-soft">
+    <aside aria-label="Anuncio publicitario" className="mt-auto px-3 py-2">
+      <div className="group relative overflow-hidden rounded-2xl border border-line-soft bg-surface/70 shadow-sm transition-all hover:border-line">
+        {/* Cabecera miniatura */}
+        <div className="flex items-center justify-between border-b border-line-soft bg-card/60 px-2.5 py-1 text-[10px] text-ink-muted">
+          <span className="font-semibold uppercase tracking-wider text-[9px] bg-surface px-1 py-0.2 rounded border border-line-soft">
             Anuncio
           </span>
-          <span className="text-[11px] truncate">{currentAd.badge}</span>
+          <button
+            onClick={() => setDismissed(true)}
+            aria-label="Ocultar anuncio"
+            className="rounded p-0.5 text-ink-muted hover:text-ink transition-colors"
+          >
+            <X className="h-3 w-3" />
+          </button>
         </div>
 
-        <p className="mt-1.5 text-xs font-semibold text-ink line-clamp-1">
-          {currentAd.name}
-        </p>
-        <p className="mt-0.5 text-[11px] text-ink-muted leading-snug line-clamp-2">
-          {currentAd.tagline}
-        </p>
+        {/* Imagen del producto */}
+        <div className="relative h-24 w-full overflow-hidden bg-card">
+          <img
+            src={selectedAd.imageUrl}
+            alt={selectedAd.brand}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          <div className="absolute bottom-1.5 left-2 right-2">
+            <span className="text-[10px] font-bold text-white drop-shadow-sm">
+              {selectedAd.brand}
+            </span>
+          </div>
+        </div>
 
-        <div className="mt-2.5 flex items-center justify-between gap-2">
+        {/* Texto y botón */}
+        <div className="p-2.5 text-left">
+          <p className="text-[11px] font-semibold text-ink leading-tight line-clamp-2">
+            {selectedAd.headline}
+          </p>
+          <p className="mt-1 text-[10px] text-ink-muted leading-tight line-clamp-2">
+            {selectedAd.subline}
+          </p>
+
           <a
-            href={currentAd.url}
+            href={selectedAd.targetUrl}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg border border-line-soft bg-card px-2.5 py-1.5 text-[11px] font-medium text-ink hover:bg-surface-hover transition-colors"
+            className="mt-2.5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-card border border-line-soft py-1.5 px-2 text-[11px] font-medium text-ink shadow-sm hover:bg-surface-hover hover:border-line transition-all"
           >
-            <span>Ver web</span>
+            <span>{selectedAd.ctaText}</span>
             <ExternalLink className="h-3 w-3 text-ink-muted" />
           </a>
-
-          <Link
-            href="/plans"
-            title="Quitar anuncios con Plan Pro"
-            className="text-[10px] text-ink-muted hover:text-ink transition-colors"
-          >
-            Quitar
-          </Link>
         </div>
       </div>
     </aside>

@@ -2310,9 +2310,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/NonInvasiveAds.tsx": {
-    "mtime": 1792053373.490116,
-    "seen": 1792053476.5730572,
-    "ast_hash": "e6ad9ef561f935d4d31f48789389371b",
+    "mtime": 1792053829.5372548,
+    "seen": 1792053885.513158,
+    "ast_hash": "75b3c2c23c9256c4802b77c9ed652955",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {

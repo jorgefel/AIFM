@@ -708,9 +708,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/Sidebar.tsx": {
-    "mtime": 1792051428.4381728,
-    "seen": 1792052037.0996444,
-    "ast_hash": "ac532941287371912ca7c5fc14900f78",
+    "mtime": 1792053398.4955451,
+    "seen": 1792053476.5731215,
+    "ast_hash": "989191663fa8205c71c9aa01acbde094",
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/GlassHeader.tsx": {
@@ -2310,9 +2310,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/NonInvasiveAds.tsx": {
-    "mtime": 1792051655.861974,
-    "seen": 1792052037.0995843,
-    "ast_hash": "5536d1bca956716c7efac3bf1d000873",
+    "mtime": 1792053373.490116,
+    "seen": 1792053476.5730572,
+    "ast_hash": "e6ad9ef561f935d4d31f48789389371b",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {
