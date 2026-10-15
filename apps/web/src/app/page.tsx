@@ -17,12 +17,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAIReport } from "@/hooks/useAIReport";
 import { usePortfolioMetrics } from "@/hooks/usePortfolioMetrics";
 import { useForecast } from "@/hooks/useForecast";
-import { pctChange, type PeriodId } from "@/lib/metrics";
+import { pctChange, getDefaultDateFilter, type DateFilter } from "@/lib/metrics";
 
 export default function Home() {
   const router = useRouter();
   const { user } = useAuth();
-  const [period, setPeriod] = useState<PeriodId>("month");
+  const [period, setPeriod] = useState<DateFilter>(getDefaultDateFilter);
 
   const { properties, current, previous, series, isLoading } = usePortfolioMetrics(period);
   const activePropertyId = properties[0]?.id;

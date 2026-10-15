@@ -22,7 +22,7 @@ import { useToast } from "@/contexts/ToastContext";
 import { usePortfolioMetrics } from "@/hooks/usePortfolioMetrics";
 import { useForecast } from "@/hooks/useForecast";
 import { api } from "@/lib/api";
-import { pctChange, pointsChange, type PeriodId } from "@/lib/metrics";
+import { pctChange, pointsChange, getDefaultDateFilter, type DateFilter } from "@/lib/metrics";
 
 const TABS = [
   { id: "summary", label: "Resumen" },
@@ -36,7 +36,7 @@ type TabId = (typeof TABS)[number]["id"];
 
 export default function AnalyticsPage() {
   const { formatCurrency, formatCurrencyCompact } = useCurrency();
-  const [period, setPeriod] = useState<PeriodId>("month");
+  const [period, setPeriod] = useState<DateFilter>(getDefaultDateFilter);
   const [tab, setTab] = useState<TabId>("summary");
 
   const { properties, current, previous, series, isLoading } = usePortfolioMetrics(period);

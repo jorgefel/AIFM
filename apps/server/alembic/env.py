@@ -6,6 +6,7 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
+from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.core.config import settings
@@ -21,11 +22,13 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+db_url = settings.DIRECT_DATABASE_URL or settings.DATABASE_URL
+
 
 def run_migrations_offline() -> None:
     """Ejecuta migraciones en modo 'offline' (solo genera SQL)."""
     context.configure(
-        url=settings.DATABASE_URL,
+        url=db_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -47,8 +50,8 @@ def do_run_migrations(connection) -> None:  # type: ignore[no-untyped-def]
 async def run_migrations_online() -> None:
     """Ejecuta migraciones en modo 'online' con motor async."""
     connectable = create_async_engine(
-        settings.DATABASE_URL,
-        pool_pre_ping=True,
+        db_url,
+        poolclass=pool.NullPool,
     )
 
     async with connectable.connect() as connection:

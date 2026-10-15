@@ -6,11 +6,13 @@ export interface DayRange {
   to: number;
 }
 
-export type PeriodId = "month" | "quarter" | "year";
+export type PeriodId = "month" | "quarter" | "year" | "next_month" | "next_quarter";
 
 export const PERIOD_OPTIONS: { value: PeriodId; label: string }[] = [
   { value: "month", label: "Este mes" },
+  { value: "next_month", label: "Próximo mes" },
   { value: "quarter", label: "Últimos 3 meses" },
+  { value: "next_quarter", label: "Próximos 3 meses" },
   { value: "year", label: "Este año" },
 ];
 
@@ -164,59 +166,127 @@ export function computeMetrics(
   };
 }
 
-export function getPeriodRanges(period: PeriodId, now = new Date()): { current: DayRange; previous: DayRange } {
+export type DateRangeMode = "months" | "days";
+
+export interface DateFilter {
+  mode: DateRangeMode;
+  start: string; // "YYYY-MM" en modo months, o "YYYY-MM-DD" en modo days
+  end: string;   // "YYYY-MM" en modo months, o "YYYY-MM-DD" en modo days
+}
+
+export function getDefaultDateFilter(): DateFilter {
+  const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
-
-  if (period === "quarter") {
-    return {
-      current: { from: dayIndex(y, m - 2, 1), to: dayIndex(y, m + 1, 1) },
-      previous: { from: dayIndex(y, m - 5, 1), to: dayIndex(y, m - 2, 1) },
-    };
-  }
-  if (period === "year") {
-    return {
-      current: { from: dayIndex(y, 0, 1), to: dayIndex(y + 1, 0, 1) },
-      previous: { from: dayIndex(y - 1, 0, 1), to: dayIndex(y, 0, 1) },
-    };
-  }
+  const startD = new Date(y, m - 5, 1);
+  const endD = new Date(y, m + 1, 1);
+  const pad = (n: number) => String(n).padStart(2, "0");
   return {
-    current: { from: dayIndex(y, m, 1), to: dayIndex(y, m + 1, 1) },
-    previous: { from: dayIndex(y, m - 1, 1), to: dayIndex(y, m, 1) },
+    mode: "months",
+    start: `${startD.getFullYear()}-${pad(startD.getMonth() + 1)}`,
+    end: `${endD.getFullYear()}-${pad(endD.getMonth() + 1)}`,
   };
 }
 
-export interface MonthPoint {
+export function getDateFilterRanges(filter: DateFilter): { current: DayRange; previous: DayRange } {
+  if (filter.mode === "days") {
+    const from = parseDay(filter.start);
+    const to = parseDay(filter.end) + 1; // fin inclusivo
+    const validTo = to > from ? to : from + 1;
+    const duration = validTo - from;
+    return {
+      current: { from, to: validTo },
+      previous: { from: from - duration, to: from },
+    };
+  }
+
+  const [y1, m1] = (filter.start || "").split("-").map(Number);
+  const [y2, m2] = (filter.end || "").split("-").map(Number);
+  const from = dayIndex(y1 || 2026, (m1 || 1) - 1, 1);
+  const to = dayIndex(y2 || y1 || 2026, m2 || m1 || 1, 1);
+  const validTo = to > from ? to : dayIndex(y1 || 2026, m1 || 1, 1);
+  const duration = validTo - from;
+  return {
+    current: { from, to: validTo },
+    previous: { from: from - duration, to: from },
+  };
+}
+
+export interface SeriesPoint {
   key: string;
   label: string;
   revenue: number;
   occupancy: number;
 }
+export type MonthPoint = SeriesPoint;
 
 const monthFormatter = new Intl.DateTimeFormat("es", { month: "short", timeZone: "UTC" });
+const dayFormatter = new Intl.DateTimeFormat("es", { day: "numeric", month: "short", timeZone: "UTC" });
 
+export function getChartSeries(
+  reservations: Reservation[],
+  properties: Property[],
+  filter: DateFilter,
+): SeriesPoint[] {
+  if (filter.mode === "days") {
+    const fromIdx = parseDay(filter.start);
+    const toIdx = parseDay(filter.end);
+    const points: SeriesPoint[] = [];
+    const validTo = toIdx >= fromIdx ? toIdx : fromIdx;
+    for (let day = fromIdx; day <= validTo; day += 1) {
+      const from = day;
+      const to = day + 1;
+      const metrics = computeMetrics(reservations, properties, { from, to });
+      points.push({
+        key: String(day),
+        label: dayFormatter.format(dayToDate(day)).replace(".", ""),
+        revenue: metrics.revenue,
+        occupancy: metrics.occupancy,
+      });
+    }
+    return points;
+  }
+
+  const [y1, m1] = (filter.start || "").split("-").map(Number);
+  const [y2, m2] = (filter.end || "").split("-").map(Number);
+  const points: SeriesPoint[] = [];
+
+  let curY = y1 || 2026;
+  let curM = m1 || 1;
+  const targetY = y2 || curY;
+  const targetM = m2 || curM;
+
+  while (curY < targetY || (curY === targetY && curM <= targetM)) {
+    const from = dayIndex(curY, curM - 1, 1);
+    const to = dayIndex(curY, curM, 1);
+    const metrics = computeMetrics(reservations, properties, { from, to });
+    points.push({
+      key: `${curY}-${String(curM).padStart(2, "0")}`,
+      label: monthFormatter.format(dayToDate(from)).replace(".", ""),
+      revenue: metrics.revenue,
+      occupancy: metrics.occupancy,
+    });
+    curM += 1;
+    if (curM > 12) {
+      curM = 1;
+      curY += 1;
+    }
+  }
+  return points;
+}
+
+// Compatibilidad legacy
+export function getPeriodRanges(period: PeriodId, now = new Date()): { current: DayRange; previous: DayRange } {
+  return getDateFilterRanges(getDefaultDateFilter());
+}
 export function monthlySeries(
   reservations: Reservation[],
   properties: Property[],
   months: number,
   now = new Date(),
+  futureMonths = 1,
 ): MonthPoint[] {
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  const points: MonthPoint[] = [];
-
-  for (let i = months - 1; i >= 0; i -= 1) {
-    const from = dayIndex(y, m - i, 1);
-    const to = dayIndex(y, m - i + 1, 1);
-    const metrics = computeMetrics(reservations, properties, { from, to });
-    points.push({
-      key: String(from),
-      label: monthFormatter.format(dayToDate(from)).replace(".", ""),
-      revenue: metrics.revenue,
-      occupancy: metrics.occupancy,
-    });
-  }
-  return points;
+  return getChartSeries(reservations, properties, getDefaultDateFilter());
 }
 
 /** Variación porcentual contra el periodo anterior; null cuando no hay base de comparación. */

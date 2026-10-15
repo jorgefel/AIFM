@@ -20,10 +20,10 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
   const { formatCurrency, formatCurrencyCompact } = useCurrency();
   const theme = useChartTheme();
 
-  // Si hay pronósticos, unificamos los puntos históricos con los pronosticados
+  // Si hay pronósticos, unificamos los puntos históricos/actuales con los pronosticados
   const chartPoints = [...data.map((p) => ({ ...p, isForecast: false, projected: undefined as number | undefined }))];
   if (forecast && forecast.length > 0 && chartPoints.length > 0) {
-    // Puente: el último mes histórico también inicia la línea proyectada para continuidad visual
+    // Puente: el último mes también inicia la línea proyectada para continuidad visual
     const lastPoint = chartPoints[chartPoints.length - 1];
     lastPoint.projected = lastPoint.revenue;
 
@@ -31,10 +31,15 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
     forecast.forEach((f) => {
       const parts = f.month.split("-");
       const mIdx = parseInt(parts[1], 10) - 1;
-      const label = monthNames[mIdx] ?? f.month;
+      const baseLabel = monthNames[mIdx] ?? f.month;
+      const existing = chartPoints.find((p) => p.label.toLowerCase() === baseLabel.toLowerCase());
+      if (existing) {
+        existing.projected = Math.max(existing.revenue || 0, f.projected_gross_income);
+        return;
+      }
       chartPoints.push({
         key: f.month,
-        label: `${label} (IA)`,
+        label: `${baseLabel} (IA)`,
         revenue: undefined as any,
         occupancy: 0,
         projected: f.projected_gross_income,
