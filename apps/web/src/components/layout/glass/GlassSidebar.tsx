@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { NonInvasiveSideAd } from "@/components/dashboard/NonInvasiveAds";
 
 interface NavItem {
   name: string;
@@ -48,11 +49,6 @@ const NAV_ITEMS: NavItem[] = [
     name: "Análisis",
     href: "/analytics",
     icon: BarChart3,
-    matchPrefixes: ["/analytics", "/reports"],
-    children: [
-      { name: "Resumen", href: "/analytics" },
-      { name: "Reportes", href: "/reports" },
-    ],
   },
   { name: "Automatizaciones", href: "/automations", icon: Zap },
   { name: "Integraciones", href: "/settings/integrations", icon: Plug },
@@ -162,6 +158,11 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
           );
         })}
       </nav>
+
+      {/* Side Ad - Non invasive */}
+      <div className={expanded ? "block" : "hidden lg:block"}>
+        <NonInvasiveSideAd />
+      </div>
 
       {/* Footer Area */}
       <div className={`border-t border-white/[0.06] shrink-0 ${expanded ? "p-4" : "p-2.5 lg:p-4"}`}>

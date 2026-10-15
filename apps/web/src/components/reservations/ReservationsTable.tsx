@@ -12,6 +12,7 @@ interface ReservationsTableProps {
   properties: Property[];
   onEdit: (reservation: Reservation) => void;
   onDelete: (id: string) => void;
+  onStatusChange?: (id: string, newStatus: string) => void;
 }
 
 const dateFormatter = new Intl.DateTimeFormat("es", { day: "numeric", month: "short", timeZone: "UTC" });
@@ -34,7 +35,7 @@ function initials(name: string) {
 const actionClass =
   "rounded-md p-1.5 text-ink-muted transition-colors focus-visible:outline-2 focus-visible:outline-violet-500";
 
-export function ReservationsTable({ reservations, properties, onEdit, onDelete }: ReservationsTableProps) {
+export function ReservationsTable({ reservations, properties, onEdit, onDelete, onStatusChange }: ReservationsTableProps) {
   const { formatCurrency } = useCurrency();
   const propertyName = (id: string) => properties.find((p) => p.id === id)?.name ?? "Propiedad";
 
@@ -95,7 +96,12 @@ export function ReservationsTable({ reservations, properties, onEdit, onDelete }
                 <td className="px-5 py-3.5 text-right text-sm font-medium text-ink">
                   {formatCurrency(grossOf(reservation))}
                 </td>
-                <td className="px-5 py-3.5"><StatusBadge status={reservation.status} /></td>
+                <td className="px-5 py-3.5">
+                  <StatusBadge
+                    status={reservation.status}
+                    onChange={onStatusChange ? (newStatus) => onStatusChange(reservation.id, newStatus) : undefined}
+                  />
+                </td>
                 <td className="px-5 py-3.5">{actions(reservation)}</td>
               </tr>
             ))}
@@ -116,7 +122,10 @@ export function ReservationsTable({ reservations, properties, onEdit, onDelete }
                   <p className="truncate text-xs text-ink-muted">{propertyName(reservation.property_id)}</p>
                 </div>
               </div>
-              <StatusBadge status={reservation.status} />
+              <StatusBadge
+                status={reservation.status}
+                onChange={onStatusChange ? (newStatus) => onStatusChange(reservation.id, newStatus) : undefined}
+              />
             </div>
             <div className="flex items-end justify-between border-t border-line-soft pt-3">
               <div>

@@ -60,10 +60,10 @@
     "semantic_hash": "e68950f7811799beaac04267ca0ba0b7"
   },
   "apps/server/app/agents/rate_limiter.py": {
-    "mtime": 1785184411.2340298,
-    "seen": 1790986749.3484285,
-    "ast_hash": "4d65024fb4a1c45c8a13532c0d4f99b6",
-    "semantic_hash": "4d65024fb4a1c45c8a13532c0d4f99b6"
+    "mtime": 1792050971.9845579,
+    "seen": 1792052037.0992775,
+    "ast_hash": "5597ba7ef471aa76708058934437777d",
+    "semantic_hash": ""
   },
   "apps/server/app/api/__init__.py": {
     "mtime": 1781388291.9361327,
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/reservations.py": {
-    "mtime": 1791760826.6196523,
-    "seen": 1791900058.238797,
-    "ast_hash": "e334f8648fe3b290bf02de42d11bc78d",
+    "mtime": 1792051250.3236089,
+    "seen": 1792052037.0993145,
+    "ast_hash": "b3946614988a7cf22973a2303baba71a",
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/search.py": {
@@ -474,9 +474,9 @@
     "semantic_hash": "0268dc97f32e8ef29a38a9724d5b79c9"
   },
   "apps/web/src/app/page.tsx": {
-    "mtime": 1791898396.6967976,
-    "seen": 1791900058.2390144,
-    "ast_hash": "df72d356e273e16cb4af8841469c69f5",
+    "mtime": 1792051699.9623902,
+    "seen": 1792052037.0995057,
+    "ast_hash": "0e703cf3d6930597148b0040952d774c",
     "semantic_hash": ""
   },
   "apps/web/src/app/properties/layout.tsx": {
@@ -510,9 +510,9 @@
     "semantic_hash": "dc048c22d3b911fb247a4005c404031d"
   },
   "apps/web/src/app/reports/page.tsx": {
-    "mtime": 1791317787.6238105,
-    "seen": 1791900058.2390358,
-    "ast_hash": "c1a230a9c4bbec57cb7e38b758b88831",
+    "mtime": 1792051441.5579114,
+    "seen": 1792052037.0995276,
+    "ast_hash": "491b0864b7dc7270bdbf76c8a909b18d",
     "semantic_hash": ""
   },
   "apps/web/src/app/robots.ts": {
@@ -708,9 +708,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/Sidebar.tsx": {
-    "mtime": 1791316359.7700834,
-    "seen": 1791900058.239137,
-    "ast_hash": "a3eca1448fac2563d5c2022885c4afce",
+    "mtime": 1792051428.4381728,
+    "seen": 1792052037.0996444,
+    "ast_hash": "ac532941287371912ca7c5fc14900f78",
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/GlassHeader.tsx": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/GlassSidebar.tsx": {
-    "mtime": 1791898396.701798,
-    "seen": 1791900058.239143,
-    "ast_hash": "f495ef1eff9509b36a8f2752392a46c2",
+    "mtime": 1792051745.8545277,
+    "seen": 1792052037.0996501,
+    "ast_hash": "ac3f94b4e7896e4217550e8147abd7e2",
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/PropertyForm.tsx": {
@@ -894,9 +894,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/fetcher.ts": {
-    "mtime": 1791898396.7067986,
-    "seen": 1791900058.239269,
-    "ast_hash": "07a184aa927756a6838e7a28b2f10fdb",
+    "mtime": 1792051866.196179,
+    "seen": 1792052037.0997777,
+    "ast_hash": "adb322b73b18159c16f1ab88f0e65e27",
     "semantic_hash": ""
   },
   "apps/web/src/lib/queryClient.ts": {
@@ -1236,9 +1236,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/integrations.py": {
-    "mtime": 1791914640.847933,
-    "seen": 1791914861.2297084,
-    "ast_hash": "b0e62f9791ded549de38a0d87eb64901",
+    "mtime": 1792051125.835785,
+    "seen": 1792052037.0993059,
+    "ast_hash": "5717202ed16fb5c00fd18100d140da02",
     "semantic_hash": ""
   },
   "apps/server/app/models/integration.py": {
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/beds24.py": {
-    "mtime": 1791914590.8198197,
-    "seen": 1791914861.2298012,
-    "ast_hash": "af64ed1b4810a225820c5e57a938b171",
+    "mtime": 1792051105.4499485,
+    "seen": 1792052037.099398,
+    "ast_hash": "e018558a66119830add429cb63c49259",
     "semantic_hash": ""
   },
   "apps/web/src/app/settings/integrations/page.tsx": {
@@ -1284,9 +1284,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/integrations/Beds24SyncPanel.tsx": {
-    "mtime": 1791916254.6162882,
-    "seen": 1791916298.2002444,
-    "ast_hash": "0937095561e2170343fae5fc9934b29a",
+    "mtime": 1792051233.5820763,
+    "seen": 1792052037.0996344,
+    "ast_hash": "c7197ab8390c4fa0ea1991630bd7bf88",
     "semantic_hash": ""
   },
   "apps/server/append_ota.py": {
@@ -1308,15 +1308,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/agents/copilot.py": {
-    "mtime": 1791316359.4284022,
-    "seen": 1791900058.2387564,
-    "ast_hash": "a889e7a08a04430d22ce8afd0f3d099e",
+    "mtime": 1792050997.190185,
+    "seen": 1792052037.0992727,
+    "ast_hash": "3d47b33818e7745e5176788693dc4244",
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/chat.py": {
-    "mtime": 1791316359.4343958,
-    "seen": 1791900058.2387805,
-    "ast_hash": "97e31fbfb9ef508a8398d2034d64b2c0",
+    "mtime": 1792051043.7984686,
+    "seen": 1792052037.0992975,
+    "ast_hash": "9041fb2a7db866b6d7f71fe3305f766c",
     "semantic_hash": ""
   },
   "apps/server/app/models/chat.py": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/chat/AIChatCopilot.tsx": {
-    "mtime": 1791316359.7460847,
-    "seen": 1791900058.2390754,
-    "ast_hash": "852b9d44840c5731a848741081a6c24a",
+    "mtime": 1792051066.6735666,
+    "seen": 1792052037.0995736,
+    "ast_hash": "75acef625bcb74b6ba835cceaf9bfa87",
     "semantic_hash": ""
   },
   "apps/server/alembic/versions/b41746437a05_add_chat_models.py": {
@@ -1914,9 +1914,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/analytics/page.tsx": {
-    "mtime": 1791898396.6957998,
-    "seen": 1791900058.23898,
-    "ast_hash": "838df9544ac261d63411c1f387dc6818",
+    "mtime": 1792051548.9967017,
+    "seen": 1792052037.0994706,
+    "ast_hash": "6897b07fe0f9277723ebd3b13da899bb",
     "semantic_hash": ""
   },
   "apps/web/src/app/plans/layout.tsx": {
@@ -1944,9 +1944,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/reservations/page.tsx": {
-    "mtime": 1791760097.4770815,
-    "seen": 1791900058.2390397,
-    "ast_hash": "604272a2f0a0cd92808efee8084d604d",
+    "mtime": 1792051366.8883686,
+    "seen": 1792052037.0995314,
+    "ast_hash": "325c6828c434c04703bbdabbbf8f565b",
     "semantic_hash": ""
   },
   "apps/web/src/components/analytics/AnalyticsCharts.tsx": {
@@ -2112,15 +2112,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/reservations/ReservationsTable.tsx": {
-    "mtime": 1791316485.4054675,
-    "seen": 1791900058.2391887,
-    "ast_hash": "43fe2a48303372d3b5b0e80e0bf16976",
+    "mtime": 1792051310.3564901,
+    "seen": 1792052037.0996873,
+    "ast_hash": "be2dfb321dbaee6373b61ca135115ca3",
     "semantic_hash": ""
   },
   "apps/web/src/components/reservations/StatusBadge.tsx": {
-    "mtime": 1791316485.4064703,
-    "seen": 1791900058.2391906,
-    "ast_hash": "bf6ed4d6895b7c945c4d19710855c834",
+    "mtime": 1792051270.0476453,
+    "seen": 1792052037.0996933,
+    "ast_hash": "9238074551a8a7062bb8eaec954ce5ec",
     "semantic_hash": ""
   },
   "apps/web/src/components/settings/AppearanceSection.tsx": {
@@ -2307,6 +2307,24 @@
     "mtime": 1791914670.6797166,
     "seen": 1791914861.2298558,
     "ast_hash": "6c1076a745213bc75e09a841e12492d6",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/dashboard/NonInvasiveAds.tsx": {
+    "mtime": 1792051655.861974,
+    "seen": 1792052037.0995843,
+    "ast_hash": "5536d1bca956716c7efac3bf1d000873",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {
+    "mtime": 1792051935.9676366,
+    "seen": 1792052037.0995882,
+    "ast_hash": "2618e62cb60751dcec0827cb39cf47fc",
+    "semantic_hash": ""
+  },
+  "AIFM-Brain/propuestas/comparacion_alojamientos_cercanos.md": {
+    "mtime": 1792051790.8788505,
+    "seen": 1792052037.100008,
+    "ast_hash": "cf1d7f0a8ca0f2af036042c4ab1de1de",
     "semantic_hash": ""
   }
 }

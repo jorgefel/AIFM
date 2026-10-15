@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { name: "Gastos", href: "/expenses", icon: ReceiptText },
   { name: "Propiedades", href: "/properties", icon: Building2 },
   { name: "Calendario", href: "/calendar", icon: CalendarDays },
-  { name: "Reportes", href: "/reports", icon: BarChart3 },
+  { name: "Análisis", href: "/analytics", icon: BarChart3 },
 ];
 
 import { usePathname } from "next/navigation";

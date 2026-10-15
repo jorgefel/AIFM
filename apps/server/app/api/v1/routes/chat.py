@@ -1,3 +1,4 @@
+import logging
 import uuid
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -5,19 +6,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.database import get_db
-from app.core.dependencies import get_current_user, require_tier, verify_property_access
+from app.core.dependencies import get_current_user, verify_property_access
 from app.models.user import User
 from app.models.chat import AIChatSession, AIChatMessage
 from app.schemas.chat import AIChatRequest, AIChatSessionRead, AIChatMessageRead, AIChatMessageCreate
 from app.agents.copilot import run_copilot
 from app.agents.rate_limiter import check_user_ai_limit, check_global_ai_limit, increment_ai_usage
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 @router.get("/sessions", response_model=list[AIChatSessionRead])
 async def list_chat_sessions(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_tier("pro"))
+    current_user: User = Depends(get_current_user)
 ):
     result = await db.execute(
         select(AIChatSession).where(AIChatSession.user_id == current_user.id).order_by(AIChatSession.updated_at.desc())
@@ -28,7 +31,7 @@ async def list_chat_sessions(
 async def get_chat_session(
     session_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_tier("pro"))
+    current_user: User = Depends(get_current_user)
 ):
     session = await db.get(AIChatSession, session_id)
     if not session or session.user_id != current_user.id:
@@ -45,8 +48,15 @@ async def get_chat_session(
 async def send_chat_message(
     payload: AIChatRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_tier("pro"))
+    current_user: User = Depends(get_current_user)
 ):
+    # Validar cuota mensual para cuentas Free
+    if current_user.tier != "pro" and (current_user.ai_usage_count or 0) >= (current_user.ai_limit_monthly or 10):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Has alcanzado el límite de consultas gratuitas de IA para este mes. Pasa a Pro para acceso ilimitado."
+        )
+
     await check_global_ai_limit()
     await check_user_ai_limit(str(current_user.id))
     
@@ -92,7 +102,11 @@ async def send_chat_message(
             period=payload.period
         )
     except Exception as exc:
-        raise HTTPException(status_code=500, detail="Error en el Asistente IA") from exc
+        logger.error(f"Error procesando mensaje en run_copilot: {exc}")
+        response_data = {
+            "content": "Lo siento, tuve un problema temporal al consultar los datos financieros. Por favor intenta de nuevo en unos momentos.",
+            "metadata_json": {"error": str(exc)}
+        }
         
     # Guardar respuesta del asistente
     assistant_msg = AIChatMessage(
@@ -103,6 +117,7 @@ async def send_chat_message(
     )
     db.add(assistant_msg)
     session.message_count += 1
+    current_user.ai_usage_count = (current_user.ai_usage_count or 0) + 1
     
     await increment_ai_usage(str(current_user.id))
     await db.commit()

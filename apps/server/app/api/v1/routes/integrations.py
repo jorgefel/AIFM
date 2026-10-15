@@ -45,33 +45,49 @@ async def _owned_connection(connection_id: uuid.UUID, current_user: User, db: As
 
 async def _acquire_sync_lock(connection_id: uuid.UUID) -> str:
     key, token = f"beds24:bookings-sync:{connection_id}", str(uuid.uuid4())
-    if not await redis_client.set(key, token, nx=True, ex=SYNC_LOCK_TTL_SECONDS):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="A booking sync is already running for this connection.")
+    try:
+        if not await redis_client.set(key, token, nx=True, ex=SYNC_LOCK_TTL_SECONDS):
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="A booking sync is already running for this connection.")
+    except HTTPException:
+        raise
+    except Exception:
+        pass
     return token
 
 
 async def _release_sync_lock(connection_id: uuid.UUID, token: str) -> None:
     key = f"beds24:bookings-sync:{connection_id}"
-    if await redis_client.get(key) == token:
-        await redis_client.delete(key)
+    try:
+        if await redis_client.get(key) == token:
+            await redis_client.delete(key)
+    except Exception:
+        pass
 
 
 async def _acquire_inventory_sync_slot(connection_id: uuid.UUID) -> str:
     """Protect Beds24's account-level credit budget from repeated UI requests."""
     key, token = f"beds24:inventory-sync:{connection_id}", str(uuid.uuid4())
-    if not await redis_client.set(key, token, nx=True, ex=INVENTORY_SYNC_COOLDOWN_SECONDS):
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Inventory is synced at most once every 6 hours. The calendar uses the stored snapshot.",
-            headers={"Retry-After": str(INVENTORY_SYNC_COOLDOWN_SECONDS)},
-        )
+    try:
+        if not await redis_client.set(key, token, nx=True, ex=INVENTORY_SYNC_COOLDOWN_SECONDS):
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Inventory is synced at most once every 6 hours. The calendar uses the stored snapshot.",
+                headers={"Retry-After": str(INVENTORY_SYNC_COOLDOWN_SECONDS)},
+            )
+    except HTTPException:
+        raise
+    except Exception:
+        pass
     return token
 
 
 async def _release_inventory_slot_on_failure(connection_id: uuid.UUID, token: str) -> None:
     key = f"beds24:inventory-sync:{connection_id}"
-    if await redis_client.get(key) == token:
-        await redis_client.delete(key)
+    try:
+        if await redis_client.get(key) == token:
+            await redis_client.delete(key)
+    except Exception:
+        pass
 
 
 @router.get("/beds24/properties")

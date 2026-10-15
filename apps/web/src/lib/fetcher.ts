@@ -99,6 +99,44 @@ function mockResponse(url: string): any {
     };
   }
 
+  if (url.startsWith("/integrations/beds24/connections")) {
+    return [
+      {
+        id: "demo-beds24-conn-1",
+        user_id: "demo-user-id",
+        channel_name: "beds24",
+        channel_account_id: "master_nomora_demo",
+        is_active: true,
+        last_booking_sync_at: new Date().toISOString(),
+        last_inventory_sync_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        property_links: [
+          {
+            id: "link-1",
+            channel_connection_id: "demo-beds24-conn-1",
+            property_id: "prop-1",
+            beds24_property_id: "284719",
+            created_at: new Date().toISOString()
+          }
+        ]
+      }
+    ];
+  }
+
+  if (url.includes("/sync-history")) {
+    return [
+      {
+        id: "log-1",
+        channel_connection_id: "demo-beds24-conn-1",
+        sync_type: "bookings",
+        status: "success",
+        records_processed: 8,
+        started_at: new Date(Date.now() - 3600000).toISOString(),
+        completed_at: new Date().toISOString()
+      }
+    ];
+  }
+
   // Ruta no simulada: devuelve vacío en vez de fallar
   return [];
 }

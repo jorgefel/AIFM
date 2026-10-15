@@ -20,7 +20,7 @@ interface ChatMessage {
 
 
 export function AIChatCopilot() {
-  const { user, isPro } = useAuth();
+  const { user, isPro, isDemoMode } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [propertyId, setPropertyId] = useState<string>("all");
@@ -36,14 +36,28 @@ export function AIChatCopilot() {
   const { data: properties = [] } = useQuery<Property[]>({
     queryKey: PROPERTIES_QUERY_KEY,
     queryFn: async () => {
+      if (isDemoMode) {
+        const { DEMO_PROPERTIES } = await import("@/lib/demoData");
+        return DEMO_PROPERTIES;
+      }
       const res = await api.get("/properties/");
       return res.data;
     },
-    enabled: isPro,
   });
 
   const chatMutation = useMutation({
     mutationFn: async (msg: string) => {
+      if (isDemoMode) {
+        await new Promise((r) => setTimeout(r, 600));
+        return {
+          id: `msg-${Date.now()}`,
+          role: "assistant",
+          content: `He analizado las métricas de tu portafolio para este periodo. Tus ingresos se mantienen estables con una ocupación promedio cercana al 72%. Te recomiendo revisar las tarifas por noche en temporadas de alta demanda para maximizar el margen de beneficio.`,
+          metadata_json: { source: "Simulador IA", period },
+          session_id: "demo-session"
+        };
+      }
+
       const payload: any = { message: msg, period };
       if (propertyId !== "all") payload.property_id = propertyId;
       if (sessionId) payload.session_id = sessionId;
@@ -59,7 +73,7 @@ export function AIChatCopilot() {
     onError: (error: any) => {
       setMessages(prev => [...prev, {
         id: "err", role: "assistant", 
-        content: `Error: ${error.response?.data?.detail || "No pudimos conectar con el Asistente IA."}` 
+        content: `Error: ${error.response?.data?.detail || "No pudimos conectar con el Asistente IA. Por favor intenta de nuevo."}` 
       }]);
     }
   });
@@ -82,10 +96,6 @@ export function AIChatCopilot() {
     setInput("");
     chatMutation.mutate(input);
   };
-
-
-
-  if (!isPro) return null; // Solo PRO
 
   return (
     <div className="fixed bottom-6 right-6 z-50">

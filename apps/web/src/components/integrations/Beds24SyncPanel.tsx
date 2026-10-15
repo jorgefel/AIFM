@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Property } from "@/types/models";
 
 type Link = { id: string; property_id: string; beds24_property_id: string };
@@ -37,6 +38,7 @@ type SyncLog = {
 };
 
 export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
+  const { isDemoMode } = useAuth();
   const toast = useToast();
   const queryClient = useQueryClient();
   const [syncing, setSyncing] = useState<string | null>(null);
@@ -84,6 +86,20 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
   const handleStartSetup = async () => {
     if (!selectedPropertyId) return;
     setIsSettingUp(true);
+    if (isDemoMode) {
+      setTimeout(() => {
+        setSetupData({
+          beds24_property_id: "284719",
+          dashboard_url: "https://beds24.com/control3.php?pagetype=channelmgr",
+          property_id: selectedPropertyId,
+          connection_id: "demo-beds24-conn-1"
+        });
+        setWizardStep(3);
+        toast.success("Canal creado en Beds24", "Ahora conecta tu cuenta de Airbnb.");
+        setIsSettingUp(false);
+      }, 500);
+      return;
+    }
     try {
       const res = await api.post("/integrations/beds24/setup-channel", {
         property_id: selectedPropertyId,
@@ -106,6 +122,14 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
   const handleVerify = async () => {
     if (!selectedPropertyId) return;
     setIsVerifying(true);
+    if (isDemoMode) {
+      setTimeout(() => {
+        setWizardStep(4);
+        toast.success("¡Canal conectado!", "Tu cuenta de Airbnb está sincronizada.");
+        setIsVerifying(false);
+      }, 500);
+      return;
+    }
     try {
       const res = await api.get(`/integrations/beds24/channel-status/${selectedPropertyId}`);
       if (res.data.airbnb_connected) {
@@ -128,6 +152,14 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
   const handleConfirmManual = async () => {
     if (!selectedPropertyId) return;
     setIsVerifying(true);
+    if (isDemoMode) {
+      setTimeout(() => {
+        setWizardStep(4);
+        toast.success("¡Conexión guardada!", "Iniciando sincronización inicial.");
+        setIsVerifying(false);
+      }, 500);
+      return;
+    }
     try {
       await api.post(`/integrations/beds24/confirm-channel/${selectedPropertyId}`);
       setWizardStep(4);
@@ -146,6 +178,13 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
 
   const sync = async (connectionId: string) => {
     setSyncing(connectionId);
+    if (isDemoMode) {
+      setTimeout(() => {
+        toast.success("Sincronización terminada", "8 reservas revisadas; 2 nuevas.");
+        setSyncing(null);
+      }, 800);
+      return;
+    }
     try {
       const result = await api.post(`/integrations/beds24/connections/${connectionId}/sync-bookings`);
       await queryClient.invalidateQueries({ queryKey: ["beds24-connections"] });
@@ -166,6 +205,13 @@ export function Beds24SyncPanel({ isPro }: { isPro: boolean }) {
 
   const syncInventory = async (connectionId: string) => {
     setSyncing(`inventory-${connectionId}`);
+    if (isDemoMode) {
+      setTimeout(() => {
+        toast.success("Inventario actualizado", "90 días quedaron disponibles en el calendario local.");
+        setSyncing(null);
+      }, 800);
+      return;
+    }
     try {
       const result = await api.post(`/integrations/beds24/connections/${connectionId}/sync-inventory`);
       await queryClient.invalidateQueries({ queryKey: ["beds24-connections"] });

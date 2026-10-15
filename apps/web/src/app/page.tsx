@@ -10,7 +10,8 @@ import { PortfolioStatCards } from "@/components/dashboard/PortfolioStatCards";
 import { RevenueTrendChart } from "@/components/dashboard/RevenueTrendChart";
 import { PropertySummaryGrid } from "@/components/dashboard/PropertySummaryGrid";
 import { ChannelDonut } from "@/components/analytics/ChannelDonut";
-import { GlassAiDecisions } from "@/components/dashboard/glass/GlassAiDecisions";
+import { PredictiveRecommendations } from "@/components/dashboard/PredictiveRecommendations";
+import { NonInvasiveBottomAd } from "@/components/dashboard/NonInvasiveAds";
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIReport } from "@/hooks/useAIReport";
@@ -86,7 +87,11 @@ export default function Home() {
             forecast={forecastData?.forecasts}
           />
         </div>
-        <ChannelDonut channels={current.channels} total={current.revenue} />
+        <PredictiveRecommendations
+          forecast={forecastData?.forecasts}
+          currentRevenue={current.revenue}
+          isLoading={isLoading}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
@@ -94,11 +99,11 @@ export default function Home() {
           <PropertySummaryGrid properties={properties} stats={current.byProperty} />
         </div>
         <div className="min-h-[220px]">
-          <GlassAiDecisions
-            onExplore={() => properties[0] && generateReport(properties[0].id)}
-          />
+          <ChannelDonut channels={current.channels} total={current.revenue} />
         </div>
       </div>
+
+      <NonInvasiveBottomAd />
 
       <AIReportModal
         isOpen={isReportModalOpen}

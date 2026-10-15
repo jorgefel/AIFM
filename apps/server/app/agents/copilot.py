@@ -9,9 +9,12 @@ from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import logging
 from app.core.config import settings
 from app.models.property import Property
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 from app.api.v1.routes.analysis import _get_property_data, _get_portfolio_data, _build_operational_alerts, _portfolio_summary
 from app.engine.golden_rule import calculate_monthly_summary
 
@@ -107,13 +110,35 @@ async def run_copilot(
             
     messages.append(HumanMessage(content=message))
     
-    response = await llm.ainvoke(messages)
-    
-    return {
-        "content": response.content,
-        "metadata_json": {
-            "source": "PostgreSQL (Deterministic) -> OpenAI",
-            "period": f"{year}-{month:02d}",
-            "tokens_used": response.response_metadata.get("token_usage", {})
+    try:
+        response = await llm.ainvoke(messages)
+        content_text = response.content if isinstance(response.content, str) else str(response.content)
+        return {
+            "content": content_text,
+            "metadata_json": {
+                "source": "PostgreSQL (Deterministic) -> LLM",
+                "period": f"{year}-{month:02d}",
+                "tokens_used": response.response_metadata.get("token_usage", {})
+            }
         }
-    }
+    except Exception as exc:
+        logger.warning(f"Error invocando LLM en Copilot: {exc}")
+        # Respuesta analítica de respaldo basada en el contexto determinístico calculado
+        net_profit = summary.get("net_profit", 0)
+        net_income = summary.get("net_income", 0)
+        occupancy = summary.get("occupancy_rate", 0) * 100
+        fallback_msg = (
+            f"He consultado tus datos financieros para el periodo {year}-{month:02d}:\n\n"
+            f"• **Ingresos netos:** ${net_income:,.2f}\n"
+            f"• **Beneficio neto:** ${net_profit:,.2f}\n"
+            f"• **Ocupación:** {occupancy:.1f}%\n\n"
+            f"💡 **Recomendación:** Mantén controlados tus costos fijos y revisa las tarifas por noche en días de baja ocupación para maximizar tu margen neto."
+        )
+        return {
+            "content": fallback_msg,
+            "metadata_json": {
+                "source": "PostgreSQL (Deterministic Fallback)",
+                "period": f"{year}-{month:02d}",
+                "error": str(exc)[:200]
+            }
+        }

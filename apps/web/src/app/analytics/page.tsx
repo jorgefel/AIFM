@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Banknote, BedDouble, Gauge, PieChart, TrendingUp } from "lucide-react";
+import { Banknote, BedDouble, Download, Gauge, PieChart, TrendingUp } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { PeriodSelect } from "@/components/ui/PeriodSelect";
+import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TrendBadge } from "@/components/dashboard/TrendBadge";
 import { ChannelDonut } from "@/components/analytics/ChannelDonut";
@@ -16,8 +17,11 @@ import {
   RevenueOccupancyChart,
 } from "@/components/analytics/AnalyticsCharts";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import { usePortfolioMetrics } from "@/hooks/usePortfolioMetrics";
 import { useForecast } from "@/hooks/useForecast";
+import { api } from "@/lib/api";
 import { pctChange, pointsChange, type PeriodId } from "@/lib/metrics";
 
 const TABS = [
@@ -39,6 +43,48 @@ export default function AnalyticsPage() {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
   const activePropertyId = selectedPropertyId || properties[0]?.id;
   const { data: forecastData, isLoading: isLoadingForecast } = useForecast(activePropertyId, 3);
+  const [isExporting, setIsExporting] = useState(false);
+  const toast = useToast();
+  const { isDemoMode } = useAuth();
+
+  const handleExportCSV = async () => {
+    if (!activePropertyId) {
+      toast.info("Sin propiedad", "No hay propiedades disponibles para exportar.");
+      return;
+    }
+    setIsExporting(true);
+    try {
+      if (isDemoMode) {
+        await new Promise((r) => setTimeout(r, 600));
+        const demoCsv = "Fecha,Tipo,Concepto,Monto,Moneda,Canal,Estado\n2026-10-01,Reserva,Guest Demo,450.00,USD,Airbnb,Confirmada\n2026-10-05,Gasto,Mantenimiento,75.00,USD,-,Pagado\n2026-10-12,Reserva,Guest Demo 2,620.00,USD,Directo,Confirmada";
+        const blob = new Blob([demoCsv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `nomora_analisis_${activePropertyId}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        toast.success("CSV descargado", "Datos exportados correctamente.");
+        return;
+      }
+      const response = await api.get(`/export/csv?property_id=${activePropertyId}`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `nomora_analisis_${activePropertyId}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("CSV descargado", "Datos exportados correctamente.");
+    } catch (error: any) {
+      toast.error("Error al exportar", error?.response?.data?.detail || "No se pudo exportar el archivo CSV.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const kpis = [
     {
@@ -81,7 +127,18 @@ export default function AnalyticsPage() {
             <h1 className="text-3xl font-bold tracking-tight text-ink">Análisis</h1>
             <p className="mt-1 text-ink-muted">Entiende cómo rinde tu negocio y de dónde vienen tus ingresos.</p>
           </div>
-          <PeriodSelect value={period} onChange={setPeriod} />
+          <div className="flex flex-wrap items-center gap-2.5">
+            <PeriodSelect value={period} onChange={setPeriod} />
+            <Button
+              variant="secondary"
+              onClick={handleExportCSV}
+              isLoading={isExporting}
+              className="h-10 text-xs sm:text-sm font-medium shadow-sm border border-line-soft hover:bg-surface/80"
+            >
+              <Download className="mr-1.5 h-4 w-4 text-violet-500" />
+              Descargar CSV
+            </Button>
+          </div>
         </div>
 
         <div role="tablist" aria-label="Secciones del análisis" className="flex gap-1 overflow-x-auto rounded-xl bg-surface p-1 sm:w-fit">

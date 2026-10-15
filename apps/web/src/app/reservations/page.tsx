@@ -12,10 +12,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { IncomeForm } from "@/components/income/IncomeForm";
 import { ReservationsTable } from "@/components/reservations/ReservationsTable";
 import { PropertyPickerModal } from "@/components/reservations/PropertyPickerModal";
+import { getStatusLabel } from "@/components/reservations/StatusBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useIncome } from "@/hooks/useIncome";
 import { PORTFOLIO_QUERY_KEY, usePortfolio } from "@/hooks/usePortfolio";
+import { api } from "@/lib/api";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { parseDay } from "@/lib/metrics";
 import type { Reservation } from "@/types/models";
@@ -110,6 +112,33 @@ function ReservationsContent() {
       if (await income.deleteReservation(deleteTarget)) refresh();
     }
     setDeleteTarget(null);
+  };
+
+  const handleStatusChange = async (reservationId: string, newStatus: string) => {
+    if (isDemoMode) {
+      const reservation = reservations.find((r) => r.id === reservationId);
+      if (reservation) {
+        reservation.status = newStatus as any;
+        queryClient.setQueryData(PORTFOLIO_QUERY_KEY, (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            reservations: old.reservations?.map((r: any) =>
+              r.id === reservationId ? { ...r, status: newStatus } : r
+            ),
+          };
+        });
+      }
+      toast.success("Estado actualizado", `La reserva ahora está marcada como ${getStatusLabel(newStatus)}.`);
+      return;
+    }
+    try {
+      await api.put(`/reservations/${reservationId}`, { status: newStatus });
+      toast.success("Estado actualizado", `La reserva ahora está marcada como ${getStatusLabel(newStatus)}.`);
+      refresh();
+    } catch (error: any) {
+      toast.error("Error al actualizar estado", error?.response?.data?.detail || "No se pudo actualizar el estado.");
+    }
   };
 
   const counts = useMemo(() => {
@@ -209,6 +238,7 @@ function ReservationsContent() {
             properties={properties}
             onEdit={openEdit}
             onDelete={setDeleteTarget}
+            onStatusChange={handleStatusChange}
           />
         )}
       </motion.div>

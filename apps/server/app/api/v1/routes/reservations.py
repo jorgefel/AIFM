@@ -97,8 +97,7 @@ async def update_reservation(reservation_id: uuid.UUID, reservation_in: Reservat
     result = await db.execute(
         select(Reservation).join(Property).where(
             Reservation.id == reservation_id, 
-            Property.owner_id == current_user.id,
-            Reservation.status != "cancelled"
+            Property.owner_id == current_user.id
         )
     )
     db_reservation = result.scalars().first()
