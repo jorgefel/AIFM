@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { 
   LayoutDashboard, 
@@ -8,6 +10,7 @@ import {
   BarChart3, 
   Settings
 } from "lucide-react";
+import { NonInvasiveSideAd } from "@/components/dashboard/NonInvasiveAds";
 
 const NAV_ITEMS = [
   { name: "Resumen", href: "/", icon: LayoutDashboard },
@@ -64,6 +67,9 @@ export function Sidebar({ onClose }: SidebarProps = {}) {
           );
         })}
       </nav>
+
+      {/* Non-invasive ad for Free tier users */}
+      <NonInvasiveSideAd />
 
       {/* Footer Area */}
       <div className="p-4 border-t border-white/5">

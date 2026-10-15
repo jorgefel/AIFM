@@ -1,9 +1,9 @@
 {
   "apps/server/alembic/env.py": {
-    "mtime": 1782851846.613844,
-    "seen": 1790986749.3484075,
-    "ast_hash": "73bfca02ac1ff817ade1964b5921bf15",
-    "semantic_hash": "73bfca02ac1ff817ade1964b5921bf15"
+    "mtime": 1792052473.275811,
+    "seen": 1792052718.2624607,
+    "ast_hash": "dddee20c1e1894dac2073d5075ac99fa",
+    "semantic_hash": ""
   },
   "apps/server/alembic/versions/ab1ce79a8fc7_initial_database_schema.py": {
     "mtime": 1791002746.9552765,
@@ -156,16 +156,16 @@
     "semantic_hash": "a870b2e3ad23f7381029a9abe9baffd2"
   },
   "apps/server/app/core/config.py": {
-    "mtime": 1791898396.6897993,
-    "seen": 1791900058.2388053,
-    "ast_hash": "e1580b0f9f53da97d321ddb49d22deb4",
+    "mtime": 1792052473.2768133,
+    "seen": 1792052718.262547,
+    "ast_hash": "c7667207d82bd2a27973ccb2dad0f836",
     "semantic_hash": ""
   },
   "apps/server/app/core/database.py": {
-    "mtime": 1782851729.5388503,
-    "seen": 1790986749.3484523,
-    "ast_hash": "28a8bb9cec4638f6b2a5704fd0a903c1",
-    "semantic_hash": "28a8bb9cec4638f6b2a5704fd0a903c1"
+    "mtime": 1792052473.2788143,
+    "seen": 1792052718.2625487,
+    "ast_hash": "f8a0bf9806a90f59e116a16a3bcc4c54",
+    "semantic_hash": ""
   },
   "apps/server/app/core/dependencies.py": {
     "mtime": 1791316359.4463983,
@@ -474,9 +474,9 @@
     "semantic_hash": "0268dc97f32e8ef29a38a9724d5b79c9"
   },
   "apps/web/src/app/page.tsx": {
-    "mtime": 1792051699.9623902,
-    "seen": 1792052037.0995057,
-    "ast_hash": "0e703cf3d6930597148b0040952d774c",
+    "mtime": 1792052650.0638974,
+    "seen": 1792052718.262734,
+    "ast_hash": "86ba41e4ee5bb220c19eb34acad7e16d",
     "semantic_hash": ""
   },
   "apps/web/src/app/properties/layout.tsx": {
@@ -828,10 +828,10 @@
     "semantic_hash": "d4fd8dfac4845a1f52ad741d284d2633"
   },
   "apps/web/src/hooks/useAIReport.ts": {
-    "mtime": 1788378263.6646883,
-    "seen": 1790986749.348606,
-    "ast_hash": "18f04f11bb15d4a71035cfe13ee8ec69",
-    "semantic_hash": "18f04f11bb15d4a71035cfe13ee8ec69"
+    "mtime": 1792052473.2858143,
+    "seen": 1792052718.2629578,
+    "ast_hash": "00c4377fd49c804ccdb0082cfa68d1f3",
+    "semantic_hash": ""
   },
   "apps/web/src/hooks/useAutoLogout.ts": {
     "mtime": 1791898396.703802,
@@ -1896,9 +1896,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/forecast.py": {
-    "mtime": 1791898396.691797,
-    "seen": 1791900058.2389195,
-    "ast_hash": "3478409bc57dcbffe6bf885db5002eda",
+    "mtime": 1792052473.2798152,
+    "seen": 1792052718.2626336,
+    "ast_hash": "7b45a1ed4543ebe60ebecd0528b32628",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_forecast.py": {
@@ -1914,9 +1914,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/analytics/page.tsx": {
-    "mtime": 1792051548.9967017,
-    "seen": 1792052037.0994706,
-    "ast_hash": "6897b07fe0f9277723ebd3b13da899bb",
+    "mtime": 1792052639.7439618,
+    "seen": 1792052718.2626982,
+    "ast_hash": "4e0b1a2743c24bc3c18784d2ba90a25f",
     "semantic_hash": ""
   },
   "apps/web/src/app/plans/layout.tsx": {
@@ -2022,9 +2022,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/RevenueTrendChart.tsx": {
-    "mtime": 1791898396.6997983,
-    "seen": 1791900058.2390907,
-    "ast_hash": "ac2587cd335b7356f728727d1ba50cfe",
+    "mtime": 1792052473.2838154,
+    "seen": 1792052718.2628248,
+    "ast_hash": "9be5b85fc1b9759b82cb9c83b6a82ea4",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/TrendBadge.tsx": {
@@ -2130,9 +2130,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/ui/PeriodSelect.tsx": {
-    "mtime": 1791316485.4134693,
-    "seen": 1791900058.2392042,
-    "ast_hash": "ea39df7d0607dfb37d0eaad0472dbf9b",
+    "mtime": 1792052473.284814,
+    "seen": 1792052718.2629354,
+    "ast_hash": "ba265039482be6fbb3979be03f5e9335",
     "semantic_hash": ""
   },
   "apps/web/src/components/ui/Textarea.tsx": {
@@ -2184,9 +2184,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/hooks/usePortfolioMetrics.ts": {
-    "mtime": 1791316485.4224753,
-    "seen": 1791900058.23925,
-    "ast_hash": "19c82331e1cb8a46426d49c0c80734ee",
+    "mtime": 1792052473.2868137,
+    "seen": 1792052718.2629807,
+    "ast_hash": "910ed64577f34e30fc55b8d32c5601f8",
     "semantic_hash": ""
   },
   "apps/web/src/hooks/useProperty.ts": {
@@ -2226,9 +2226,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/metrics.ts": {
-    "mtime": 1791316485.4304698,
-    "seen": 1791900058.239271,
-    "ast_hash": "97fa5d6c10c400789dcbca73b4922d4c",
+    "mtime": 1792052473.2878137,
+    "seen": 1792052718.2630053,
+    "ast_hash": "fa52822a3cef5986e8ee99be690f7597",
     "semantic_hash": ""
   },
   "apps/web/src/lib/plans.ts": {
