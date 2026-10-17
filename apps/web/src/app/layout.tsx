@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 
@@ -37,6 +38,12 @@ export default function RootLayout({
     <html lang="es" className={`${outfit.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9712620157990148"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className="antialiased min-h-screen">
         <ThemeProvider>
