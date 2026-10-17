@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/layout.tsx": {
-    "mtime": 1791316485.3484695,
-    "seen": 1791900058.2390003,
-    "ast_hash": "a71e7c08b9cad5f2048055d76e064844",
+    "mtime": 1792214777.8898013,
+    "seen": 1792214898.525402,
+    "ast_hash": "c2d5877c9282e1c9b4e3578d000598a8",
     "semantic_hash": ""
   },
   "apps/web/src/app/login/layout.tsx": {
@@ -2310,9 +2310,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/NonInvasiveAds.tsx": {
-    "mtime": 1792053829.5372548,
-    "seen": 1792053885.513158,
-    "ast_hash": "75b3c2c23c9256c4802b77c9ed652955",
+    "mtime": 1792214808.898173,
+    "seen": 1792214898.5254955,
+    "ast_hash": "18472037e5bb7c3eab88a7355208a49c",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {

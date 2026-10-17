@@ -2310,9 +2310,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/NonInvasiveAds.tsx": {
-    "mtime": 1792214808.898173,
-    "seen": 1792214898.5254955,
-    "ast_hash": "18472037e5bb7c3eab88a7355208a49c",
+    "mtime": 1792215283.3234434,
+    "seen": 1792215340.19239,
+    "ast_hash": "8088f0253b8723e59d21ead00f27ec11",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {
@@ -2325,6 +2325,18 @@
     "mtime": 1792051790.8788505,
     "seen": 1792052037.100008,
     "ast_hash": "cf1d7f0a8ca0f2af036042c4ab1de1de",
+    "semantic_hash": ""
+  },
+  "apps/web/src/app/ads.txt/route.ts": {
+    "mtime": 1792215267.931767,
+    "seen": 1792215340.192267,
+    "ast_hash": "3ddd5455dc11723dd852852fd743d7fa",
+    "semantic_hash": ""
+  },
+  "apps/web/public/ads.txt": {
+    "mtime": 1792215260.0709696,
+    "seen": 1792215340.1928484,
+    "ast_hash": "bcdbbc386c65500a8670b49f825817eb",
     "semantic_hash": ""
   }
 }

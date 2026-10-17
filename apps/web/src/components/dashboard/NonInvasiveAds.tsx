@@ -130,7 +130,7 @@ export function GoogleAdSenseSlot({
  */
 export function NonInvasiveBottomAd({ slotId }: { slotId?: string }) {
   const { isPro } = useAuth();
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
   const [selectedAd, setSelectedAd] = useState<DisplayAd>(REAL_DISPLAY_ADS[0]);
 
   const activeSlot = slotId || process.env.NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM;
@@ -139,8 +139,9 @@ export function NonInvasiveBottomAd({ slotId }: { slotId?: string }) {
     if (isPro) return;
 
     const isDismissed = sessionStorage.getItem("nomora_bottom_ad_dismissed");
-    if (!isDismissed) {
-      setDismissed(false);
+    if (isDismissed) {
+      setDismissed(true);
+    } else {
       const randomIndex = Math.floor(Math.random() * REAL_DISPLAY_ADS.length);
       setSelectedAd(REAL_DISPLAY_ADS[randomIndex]);
     }
