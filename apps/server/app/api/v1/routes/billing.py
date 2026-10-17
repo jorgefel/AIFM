@@ -61,11 +61,21 @@ async def _latest_subscription(user_id: Any, db: AsyncSession) -> Subscription |
     return result.scalars().first()
 
 
+async def _sync_user_tier_with_subscription(user: User, db: AsyncSession) -> Subscription | None:
+    subscription = await _latest_subscription(user.id, db)
+    if subscription and subscription.status == "active":
+        if user.tier != "pro":
+            user.tier = "pro"
+            await db.commit()
+            await db.refresh(user)
+    return subscription
+
+
 @router.get("/status", response_model=BillingStatus)
 async def get_billing_status(
     db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    subscription = await _latest_subscription(current_user.id, db)
+    subscription = await _sync_user_tier_with_subscription(current_user, db)
     return BillingStatus(tier=current_user.tier, subscription=_subscription_read(subscription) if subscription else None)
 
 
@@ -84,8 +94,16 @@ async def create_checkout_session(
     db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     _require_stripe()
-    current = await _latest_subscription(current_user.id, db)
+    current = await _sync_user_tier_with_subscription(current_user, db)
     if current and current.status == "active":
+        frontend_url = _frontend_url()
+        if current.customer_id:
+            return_url = settings.STRIPE_BILLING_PORTAL_RETURN_URL or f"{frontend_url}/plans"
+            try:
+                portal = stripe.billing_portal.Session.create(customer=current.customer_id, return_url=return_url)
+                return CheckoutSessionResponse(url=portal.url)
+            except Exception:
+                pass
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Your Pro subscription is already active.")
 
     frontend_url = _frontend_url()

@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle2, CreditCard, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -54,6 +54,7 @@ function Banner({
 
 function PlansContent() {
   const { checkAuth, isDemoMode } = useAuth();
+  const queryClient = useQueryClient();
   const toast = useToast();
   const params = useSearchParams();
   const checkoutState = params.get("checkout");
@@ -92,8 +93,15 @@ function PlansContent() {
       const url = response.data?.url;
       if (typeof url !== "string" || !url.startsWith("https://")) throw new Error("Invalid url");
       window.location.assign(url);
-    } catch {
-      toast.error("No se pudo continuar", "Inténtalo de nuevo en unos minutos.");
+    } catch (err: any) {
+      if (err?.response?.status === 409) {
+        toast.success("¡Plan Pro activo!", "Tu suscripción Pro ya se encuentra activa.");
+        await checkAuth();
+        queryClient.invalidateQueries({ queryKey: ["billing-status"] });
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      } else {
+        toast.error("No se pudo continuar", "Inténtalo de nuevo en unos minutos.");
+      }
       setBusy(false);
     }
   };
