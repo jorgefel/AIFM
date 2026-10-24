@@ -1,4 +1,5 @@
-from contextlib import asynccontextmanager
+import asyncio
+from contextlib import asynccontextmanager, suppress
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -7,15 +8,22 @@ from app.core.config import settings
 from app.core.redis import redis_client
 from app.api.v1.api import api_router
 from app.services.storage import UPLOAD_DIR
+from app.services.demo import run_demo_cleanup_forever
 import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield
+    cleanup_task = asyncio.create_task(run_demo_cleanup_forever())
     try:
-        await redis_client.close()
-    except Exception:
-        pass
+        yield
+    finally:
+        cleanup_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await cleanup_task
+        try:
+            await redis_client.close()
+        except Exception:
+            pass
 
 app = FastAPI(
     title="Nomora API",

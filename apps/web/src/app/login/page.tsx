@@ -22,7 +22,7 @@ const itemVariants = {
 };
 
 export default function LoginPage() {
-  const { login, loginDemo } = useAuth();
+  const { login, loginDemo, startDemo } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +39,18 @@ export default function LoginPage() {
     } catch (err: any) {
       // Si no hay conexión con el servidor, entra igual con datos de vista previa.
       loginDemo({ email: email || undefined });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemo = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await startDemo();
+    } catch {
+      setError("No fue posible iniciar la demo. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -135,6 +147,18 @@ export default function LoginPage() {
 
           <motion.div variants={itemVariants}>
             <SocialAuthButtons />
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="mt-5 text-center">
+            <button
+              type="button"
+              onClick={handleDemo}
+              disabled={loading}
+              className="text-sm font-medium text-violet-300 transition-colors hover:text-violet-200 disabled:opacity-50"
+            >
+              {loading ? "Preparando demo..." : "Probar demo"}
+            </button>
+            <p className="mt-1 text-xs text-slate-500">Crea un espacio Pro temporal con datos simulados; vence en 2 horas.</p>
           </motion.div>
 
           <motion.p variants={itemVariants} className="text-center text-slate-500 text-sm mt-8">

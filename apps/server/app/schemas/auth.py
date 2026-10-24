@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, HttpUrl
@@ -14,6 +15,10 @@ class RegisterPayload(BaseModel):
     email: str
     password: str
     full_name: str
+
+
+class DemoSessionResponse(BaseModel):
+    expires_at: datetime
 
 
 class OAuthCallbackResponse(BaseModel):

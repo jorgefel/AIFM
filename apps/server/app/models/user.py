@@ -49,6 +49,9 @@ class User(Base, UUIDMixin, TimestampMixin):
     tier: Mapped[str] = mapped_column(
         String(10), nullable=False, default="free"  # "free" | "pro"
     )
+    demo_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, index=True
+    )
     phone: Mapped[str | None] = mapped_column(String(30), nullable=True)
     age: Mapped[int | None] = mapped_column(Integer, nullable=True)
     rental_experience_years: Mapped[int | None] = mapped_column(Integer, nullable=True)

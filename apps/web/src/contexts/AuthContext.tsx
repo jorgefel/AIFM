@@ -95,6 +95,7 @@ interface AuthContextType {
   isLoading: boolean;
   isDemoMode: boolean;
   loginDemo: (overrides?: Partial<User>) => void;
+  startDemo: () => Promise<void>;
   login: (data: any) => Promise<void>;
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
@@ -197,6 +198,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router]
   );
 
+  const startDemo = useCallback(async () => {
+    await api.post("/auth/demo");
+    setSessionHint();
+    await refetch();
+    router.push("/");
+  }, [refetch, router]);
+
   const logout = useCallback(async () => {
     if (demo.user) {
       localStorage.removeItem(DEMO_FLAG);
@@ -266,8 +274,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refetch]);
 
   const value = useMemo(
-    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading || !demo.checked, isDemoMode: demo.user !== null, loginDemo, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
-    [user, isQueryLoading, demo, loginDemo, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
+    () => ({ user, isPro: user?.tier === "pro", isLoading: isQueryLoading || !demo.checked, isDemoMode: demo.user !== null, loginDemo, startDemo, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin }),
+    [user, isQueryLoading, demo, loginDemo, startDemo, login, registerUser, logout, checkAuth, updateProfile, updateOnboarding, startSocialLogin, completeSocialLogin]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

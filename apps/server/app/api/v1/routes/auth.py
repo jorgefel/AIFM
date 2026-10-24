@@ -20,7 +20,8 @@ from app.core.oauth import (
     verify_signed_state,
 )
 from app.models.user import User
-from app.schemas.auth import LoginPayload, RegisterPayload
+from app.schemas.auth import DemoSessionResponse, LoginPayload, RegisterPayload
+from app.services.demo import create_demo_workspace
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 OAUTH_STATE_COOKIE = "oauth_state"
@@ -236,6 +237,21 @@ async def register(payload: RegisterPayload, response: Response, db: AsyncSessio
 
     _set_auth_cookies(response, access_token, refresh_token)
     return {"message": "Registration successful"}
+
+
+@router.post(
+    "/demo",
+    status_code=201,
+    response_model=DemoSessionResponse,
+    dependencies=[Depends(RateLimiter(times=5, minutes=1))],
+)
+async def start_demo(response: Response, db: AsyncSession = Depends(get_db)):
+    """Start a fresh two-hour Pro demo with server-owned synthetic data."""
+    user = await create_demo_workspace(db)
+    access_token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(subject=str(user.id))
+    _set_auth_cookies(response, access_token, refresh_token)
+    return DemoSessionResponse(expires_at=user.demo_expires_at)
 
 @router.post("/login", dependencies=[Depends(RateLimiter(times=5, minutes=1))])
 async def login(payload: LoginPayload, response: Response, db: AsyncSession = Depends(get_db)):

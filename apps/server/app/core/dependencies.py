@@ -1,5 +1,6 @@
 import uuid
 import jwt
+from datetime import datetime, timezone
 from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -65,6 +66,9 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+
+    if user.demo_expires_at and user.demo_expires_at <= datetime.now(timezone.utc):
+        raise credentials_exception
         
     t_end = time.time()
     logger.info(f"[AUTH_PERF] Total: {(t_end - start_time)*1000:.1f}ms | Cookie/Init: {(t_cookie - start_time)*1000:.1f}ms | JWT Decode: {(t_jwt - t_cookie)*1000:.1f}ms | DB Query: {(t_end - t_jwt)*1000:.1f}ms")
