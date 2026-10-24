@@ -5,6 +5,6 @@ compatibility_date = "2024-01-01"
 # The origin URL where the FastAPI backend is hosted. 
 # During dev, it might be local, but the worker runs at the edge.
 [vars]
-ORIGIN_URL = "http://localhost:8000" # Change to production URL for deployment
+ORIGIN_URL = "https://aifmweb.vercel.app" # Change to production URL for deployment
 
 # JWT_SECRET should be set via `wrangler secret put JWT_SECRET`
