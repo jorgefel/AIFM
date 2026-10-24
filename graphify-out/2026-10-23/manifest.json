@@ -2356,5 +2356,17 @@
     "seen": 1792808899.3571243,
     "ast_hash": "3eade47627822b62febf056c5d4a8136",
     "semantic_hash": ""
+  },
+  "apps/server/alembic/versions/c8d0e1f2a3b4_merge_demo_and_chat_heads.py": {
+    "mtime": 1792814217.7800837,
+    "seen": 1792814267.2814028,
+    "ast_hash": "23a9f26cbad48bae1bbf5c4cdb69a35d",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/test_migration_heads.py": {
+    "mtime": 1792814199.8202953,
+    "seen": 1792814267.281627,
+    "ast_hash": "7afd6292df3b931a8b205ae301ff4e84",
+    "semantic_hash": ""
   }
 }

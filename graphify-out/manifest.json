@@ -2346,15 +2346,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/demo.py": {
-    "mtime": 1792808608.7504892,
-    "seen": 1792808899.3569832,
-    "ast_hash": "a1f321e84b31d6d89847f86d46762945",
+    "mtime": 1792814997.3773773,
+    "seen": 1792815035.8538985,
+    "ast_hash": "99f3f7387954abf78d5302d3e24d1a5e",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_demo.py": {
-    "mtime": 1792808678.7442794,
-    "seen": 1792808899.3571243,
-    "ast_hash": "3eade47627822b62febf056c5d4a8136",
+    "mtime": 1792814916.0891147,
+    "seen": 1792815035.853952,
+    "ast_hash": "b25a9d1d403b46e747b0069f745f6f60",
     "semantic_hash": ""
   },
   "apps/server/alembic/versions/c8d0e1f2a3b4_merge_demo_and_chat_heads.py": {

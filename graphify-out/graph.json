@@ -2770,7 +2770,7 @@
       "file_type": "code",
       "norm_label": "fakesession",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "apps_server_app_schemas_reservation_reservationbase",
@@ -4689,7 +4689,7 @@
       "file_type": "code",
       "norm_label": "test_expired_demo_user_cannot_access_their_workspace()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L51"
+      "source_location": "L53"
     },
     {
       "id": "apps_server_tests_services_test_demo_test_expired_demo_user_cannot_access_their_workspace_execute",
@@ -4701,7 +4701,7 @@
       "file_type": "code",
       "norm_label": "execute()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L70"
+      "source_location": "L72"
     },
     {
       "id": "apps_server_tests_services_test_demo_test_expired_demo_user_cannot_access_their_workspace_first",
@@ -4713,7 +4713,7 @@
       "file_type": "code",
       "norm_label": "first()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L66"
+      "source_location": "L68"
     },
     {
       "id": "apps_server_tests_services_test_demo_test_expired_demo_user_cannot_access_their_workspace_scalars",
@@ -4725,7 +4725,7 @@
       "file_type": "code",
       "norm_label": "scalars()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L63"
+      "source_location": "L65"
     },
     {
       "id": "apps_server_app_engine_golden_rule_calculate_net_amount",
@@ -8937,7 +8937,7 @@
       "file_type": "code",
       "norm_label": "test_demo_workspaces_are_isolated_and_expire_after_two_hours()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "apps_server_patch_migrations_replacer",
@@ -9033,7 +9033,7 @@
       "file_type": "code",
       "norm_label": ".add()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "apps_server_tests_services_test_demo_fakesession_add_all",
@@ -9045,7 +9045,7 @@
       "file_type": "code",
       "norm_label": ".add_all()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L20"
+      "source_location": "L21"
     },
     {
       "id": "apps_server_tests_services_test_demo_fakesession_flush",
@@ -9057,7 +9057,7 @@
       "file_type": "code",
       "norm_label": ".flush()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "apps_server_tests_services_test_demo_fakesession_init",
@@ -9069,7 +9069,7 @@
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L14"
+      "source_location": "L15"
     },
     {
       "id": "apps_server_app_schemas_reservation_reservationbase_check_dates",
@@ -38437,6 +38437,42 @@
       "type": "external"
     },
     {
+      "id": "alembic_config",
+      "label": "alembic_config",
+      "_origin": "semantic",
+      "community": 95,
+      "community_name": "DashboardLayoutRead",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "alembic_config",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "alembic_script",
+      "label": "alembic_script",
+      "_origin": "semantic",
+      "community": 95,
+      "community_name": "DashboardLayoutRead",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "alembic_script",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "pathlib",
+      "label": "pathlib",
+      "_origin": "semantic",
+      "community": 95,
+      "community_name": "DashboardLayoutRead",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "pathlib",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "pydantic",
       "label": "pydantic",
       "_origin": "semantic",
@@ -38469,39 +38505,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "ref_node_path",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "alembic_config",
-      "label": "alembic_config",
-      "community": 95,
-      "community_name": "DashboardLayoutRead",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "alembic_config",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "alembic_script",
-      "label": "alembic_script",
-      "community": 95,
-      "community_name": "DashboardLayoutRead",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "alembic_script",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "pathlib",
-      "label": "pathlib",
-      "community": 95,
-      "community_name": "DashboardLayoutRead",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "pathlib",
       "source_file": "",
       "type": "external"
     }
@@ -41612,7 +41615,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -41624,7 +41627,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -41636,7 +41639,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L76",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -41648,7 +41651,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L80",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -47444,7 +47447,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -47456,7 +47459,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -53109,7 +53112,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -53133,7 +53136,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -53145,7 +53148,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -64106,7 +64109,7 @@
     },
     {
       "source": "apps_server_tests_services_test_demo",
-      "target": "apps_server_app_services_demo",
+      "target": "apps_server_app_models_init",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -64114,6 +64117,18 @@
       "context": "import",
       "source_file": "apps/server/tests/services/test_demo.py",
       "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_server_tests_services_test_demo",
+      "target": "apps_server_app_services_demo",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "apps/server/tests/services/test_demo.py",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -64142,19 +64157,19 @@
     },
     {
       "source": "apps_server_tests_services_test_demo",
-      "target": "apps_server_app_core_dependencies",
+      "target": "pydantic",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
       "source": "apps_server_tests_services_test_demo",
-      "target": "apps_server_app_core_security",
+      "target": "apps_server_app_core_dependencies",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -64166,7 +64181,7 @@
     },
     {
       "source": "apps_server_tests_services_test_demo",
-      "target": "apps_server_app_models_init",
+      "target": "apps_server_app_core_security",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -74662,7 +74677,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -74674,7 +74689,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -74686,7 +74701,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -74698,7 +74713,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -87030,7 +87045,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -87041,7 +87056,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -87052,7 +87067,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L51",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -87063,7 +87078,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L63",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -87074,7 +87089,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -87085,7 +87100,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -103440,7 +103455,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -103451,7 +103466,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -103462,7 +103477,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -103473,7 +103488,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/server/tests/services/test_demo.py",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -107617,5 +107632,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5b71e28af8f987a8f6549039c022d871aa7e01df"
+  "built_at_commit": "27cf9518f16de1d099ee8bd9e552df8379c02fea"
 }
