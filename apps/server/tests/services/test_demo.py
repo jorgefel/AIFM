@@ -3,6 +3,7 @@ from uuid import uuid4
 
 import pytest
 from fastapi import HTTPException
+from pydantic import EmailStr, TypeAdapter
 
 from app.core.dependencies import get_current_user
 from app.core.security import create_access_token
@@ -37,6 +38,7 @@ async def test_demo_workspaces_are_isolated_and_expire_after_two_hours():
     assert first.id != second.id
     assert first.tier == second.tier == "pro"
     assert first.demo_expires_at == second.demo_expires_at == now + DEMO_DURATION
+    assert TypeAdapter(EmailStr).validate_python(first.email) == first.email
 
     properties = [obj for obj in session.objects if isinstance(obj, Property)]
     reservations = [obj for obj in session.objects if isinstance(obj, Reservation)]

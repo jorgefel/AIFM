@@ -19,7 +19,7 @@ async def create_demo_workspace(db: AsyncSession, *, now: datetime | None = None
     """Create an isolated, synthetic Pro workspace for a short-lived demo."""
     created_at = now or datetime.now(timezone.utc)
     user = User(
-        email=f"demo-{uuid4()}@demo.nomora.invalid",
+        email=f"demo-{uuid4()}@demo.nomora.app",
         full_name="Demostración Nomora",
         role="admin",
         tier="pro",
