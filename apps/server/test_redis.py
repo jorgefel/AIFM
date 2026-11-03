@@ -25,3 +25,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+#no se que hace esto sinceramente jajajaj#
