@@ -14,6 +14,11 @@ function Position({ value, median, higherIsBetter }: { value: number | null | un
 
 export function MarketComparisonTable({ property, comparison }: Props) {
   const aggregates = comparison.aggregates;
+  const propertyNightlyRate = typeof property.nightly_rate === "number"
+    ? property.nightly_rate
+    : typeof property.nightly_rate === "string" && property.nightly_rate.trim() !== ""
+      ? Number(property.nightly_rate)
+      : null;
   return (
     <div className="overflow-x-auto rounded-xl border border-line-soft">
       <table className="w-full min-w-[720px] text-left text-sm">
@@ -35,7 +40,7 @@ export function MarketComparisonTable({ property, comparison }: Props) {
             <td className="px-4 py-3 text-ink-muted">No disponible</td>
             <td className="px-4 py-3 text-ink-muted">No disponible</td>
             <td className="px-4 py-3">{property.max_guests}</td>
-            <td className="px-4 py-3"><Position value={property.nightly_rate} median={aggregates?.median_nightly_rate} higherIsBetter={false} /></td>
+            <td className="px-4 py-3"><Position value={Number.isFinite(propertyNightlyRate) ? propertyNightlyRate : null} median={aggregates?.median_nightly_rate} higherIsBetter={false} /></td>
           </tr>
           {comparison.listings.map((listing) => (
             <tr key={listing.id}>

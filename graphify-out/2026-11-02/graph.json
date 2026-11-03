@@ -46274,7 +46274,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "apps/web/src/components/properties/MarketComparisonTable.tsx",
-      "source_location": "L29",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -110983,5 +110983,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "94ac08788aa92807720b366df03284ea39d4a54a"
+  "built_at_commit": "f96ea7509ad2946ca19577bbd40c4106ebcf7064"
 }

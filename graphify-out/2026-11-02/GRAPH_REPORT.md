@@ -1,7 +1,7 @@
-# Graph Report - AIFM  (2026-10-29)
+# Graph Report - AIFM  (2026-11-02)
 
 ## Corpus Check
-- 396 files · ~236,919 words
+- 396 files · ~236,940 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 5, .css 4, .mdc 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `94ac0878`
+- Built from commit: `f96ea750`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -832,9 +832,9 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Funciones del sistema` connect `Funciones del sistema` to `metrics.ts`, `calculate_expense_breakdown`, `routes/analysis.py`?**
   _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **Why does `2. Gestión de entidades operativas (Propiedades, Reservas y Gastos)` connect `Funciones del sistema` to `User`?**
-  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+  _High betweenness centrality (0.069) - this node is a cross-community bridge._
 - **Why does `verify_property_access()` connect `User` to `reservations.py`, `dependencies.py`, `Property`, `services/market_comparison.py`, `FastAPI`, `routes/analysis.py`, `_get_property_data`, `Funciones del sistema`, `get_forecast`?**
-  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Are the 75 inferred relationships involving `User` (e.g. with `run_copilot()` and `get_dashboard_data()`) actually correct?**
   _`User` has 75 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 30 inferred relationships involving `Property` (e.g. with `_build_operational_alerts()` and `_get_portfolio_data()`) actually correct?**
