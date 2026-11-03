@@ -19,21 +19,42 @@ export function MarketComparisonTable({ property, comparison }: Props) {
       <table className="w-full min-w-[720px] text-left text-sm">
         <caption className="sr-only">Comparación entre tu propiedad y los alojamientos Airbnb encontrados</caption>
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-          <tr><th className="px-4 py-3">Alojamiento</th><th className="px-4 py-3">Precio/noche</th><th className="px-4 py-3">Calificación</th><th className="px-4 py-3">Reseñas públicas</th><th className="px-4 py-3">Capacidad</th><th className="px-4 py-3">Posición</th></tr>
+          <tr>
+            <th className="px-4 py-3">Alojamiento</th>
+            <th className="px-4 py-3">Precio/noche</th>
+            <th className="px-4 py-3">Calificación</th>
+            <th className="px-4 py-3">Reseñas públicas</th>
+            <th className="px-4 py-3">Capacidad</th>
+            <th className="px-4 py-3">Posición</th>
+          </tr>
         </thead>
         <tbody className="divide-y divide-line-soft">
           <tr className="bg-violet-50/60">
             <th scope="row" className="px-4 py-3 font-semibold text-ink">Tu propiedad: {property.name}</th>
             <td className="px-4 py-3">{property.nightly_rate == null ? "Sin definir" : `${property.currency} ${property.nightly_rate.toLocaleString()}`}</td>
-            <td className="px-4 py-3 text-ink-muted">No disponible</td><td className="px-4 py-3 text-ink-muted">No disponible</td><td className="px-4 py-3">{property.max_guests}</td>
+            <td className="px-4 py-3 text-ink-muted">No disponible</td>
+            <td className="px-4 py-3 text-ink-muted">No disponible</td>
+            <td className="px-4 py-3">{property.max_guests}</td>
             <td className="px-4 py-3"><Position value={property.nightly_rate} median={aggregates?.median_nightly_rate} higherIsBetter={false} /></td>
           </tr>
-          {comparison.listings.map((listing) => <tr key={listing.id}>
-            <th scope="row" className="px-4 py-3 font-medium text-ink">{listing.url ? <a className="hover:text-violet-600 hover:underline" href={listing.url} target="_blank" rel="noreferrer">{listing.title || "Alojamiento Airbnb"}</a> : listing.title || "Alojamiento Airbnb"}</th>
-            <td className="px-4 py-3">{listing.nightly_rate == null ? "—" : `${listing.currency || comparison.currency || ""} ${listing.nightly_rate.toLocaleString()}`}</td>
-            <td className="px-4 py-3">{listing.rating?.toFixed(1) ?? "—"}</td><td className="px-4 py-3">{listing.public_review_count ?? "—"}</td><td className="px-4 py-3">{listing.max_guests ?? "—"}</td>
-            <td className="px-4 py-3 text-ink-muted">Referencia del mercado</td>
-          </tr>)}
+          {comparison.listings.map((listing) => (
+            <tr key={listing.id}>
+              <th scope="row" className="px-4 py-3 font-medium text-ink">
+                {listing.url ? (
+                  <a className="hover:text-violet-600 hover:underline" href={listing.url} target="_blank" rel="noreferrer">
+                    {listing.title || "Alojamiento Airbnb"}
+                  </a>
+                ) : listing.title || "Alojamiento Airbnb"}
+              </th>
+              <td className="px-4 py-3">
+                {listing.nightly_rate == null ? "—" : `${listing.currency || comparison.currency || ""} ${listing.nightly_rate.toLocaleString()}`}
+              </td>
+              <td className="px-4 py-3">{listing.rating?.toFixed(1) ?? "—"}</td>
+              <td className="px-4 py-3">{listing.public_review_count ?? "—"}</td>
+              <td className="px-4 py-3">{listing.max_guests ?? "—"}</td>
+              <td className="px-4 py-3 text-ink-muted">Referencia del mercado</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

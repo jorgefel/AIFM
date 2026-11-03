@@ -2400,9 +2400,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/MarketComparisonTable.tsx": {
-    "mtime": 1793313210.0456443,
-    "seen": 1793313391.435787,
-    "ast_hash": "a10523247eea3c34fd0a129a4c2a5d7c",
+    "mtime": 1793673115.347905,
+    "seen": 1793673184.17798,
+    "ast_hash": "87a6ba65e3aa0e31503cfdc6e9582d8b",
     "semantic_hash": ""
   },
   "apps/web/src/hooks/useMarketComparison.ts": {
