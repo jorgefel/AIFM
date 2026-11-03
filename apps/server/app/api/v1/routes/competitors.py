@@ -16,11 +16,11 @@ router = APIRouter(prefix="/properties/{property_id}/competitors", tags=["compet
 
 @router.get("", response_model=CompetitorSnapshot, dependencies=[Depends(RateLimiter(times=5, minutes=1))])
 async def read_competitors(
-    property_id: uuid.UUID, fallback_to_city: bool = True, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user),
+    property_id: uuid.UUID, fallback_to_city: bool = True, force: bool = False, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user),
 ):
     property_ = await verify_property_access(property_id, current_user, db)
     try:
-        return await get_competitors(property_, fallback_to_city=fallback_to_city)
+        return await get_competitors(property_, fallback_to_city=fallback_to_city, force=force)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except ProviderUnavailableError as exc:

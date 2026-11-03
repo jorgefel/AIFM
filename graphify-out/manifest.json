@@ -156,9 +156,9 @@
     "semantic_hash": "a870b2e3ad23f7381029a9abe9baffd2"
   },
   "apps/server/app/core/config.py": {
-    "mtime": 1793676178.481112,
-    "seen": 1793677647.9377048,
-    "ast_hash": "b3fa92f99c5f9e13d279d6367945a3f7",
+    "mtime": 1793681954.3923726,
+    "seen": 1793682125.473296,
+    "ast_hash": "f968885a6b55389b23b50afc545b5cbb",
     "semantic_hash": ""
   },
   "apps/server/app/core/database.py": {
@@ -342,10 +342,10 @@
     "semantic_hash": "6d7e0c124a87fdf85f12902c446d8a48"
   },
   "apps/server/test_redis.py": {
-    "mtime": 1789632942.4018867,
-    "seen": 1790986749.3484936,
-    "ast_hash": "0ce78bc9ca0be11f13f531aaa6fbba75",
-    "semantic_hash": "0ce78bc9ca0be11f13f531aaa6fbba75"
+    "mtime": 1793679361.0775735,
+    "seen": 1793682125.4734116,
+    "ast_hash": "cea3c6abdfe6ceb91473c0afb0f4a30a",
+    "semantic_hash": ""
   },
   "apps/server/tests/api/test_analysis_dashboard.py": {
     "mtime": 1786607618.1496465,
@@ -2376,21 +2376,21 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/MarketComparisonTable.tsx": {
-    "mtime": 1793675477.0295115,
-    "seen": 1793675739.8173678,
-    "ast_hash": "605c2295ba97d7843a6116287d39fd13",
+    "mtime": 1793682273.6123023,
+    "seen": 1793682296.7391737,
+    "ast_hash": "a368844493ebd75599e3f98dcf853119",
     "semantic_hash": ""
   },
   "apps/web/src/hooks/useMarketComparison.ts": {
-    "mtime": 1793675615.0113814,
-    "seen": 1793675739.8174987,
-    "ast_hash": "d91728c5d088ee4a5eb9b49134f84e78",
+    "mtime": 1793682212.0863507,
+    "seen": 1793682255.2101457,
+    "ast_hash": "410f16c23d22a4fe8305f8a094c3abdd",
     "semantic_hash": ""
   },
   "apps/web/src/types/marketComparison.ts": {
-    "mtime": 1793677597.3621771,
-    "seen": 1793677647.9382179,
-    "ast_hash": "9e5d2de865928e935f986d8cbee58cb7",
+    "mtime": 1793681957.2746673,
+    "seen": 1793682125.4737964,
+    "ast_hash": "b33211599791cb9bbccbd7f08aa8b051",
     "semantic_hash": ""
   },
   "docs/SPEC-market-snapshot.md": {
@@ -2436,15 +2436,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/competitors.py": {
-    "mtime": 1793675613.9185956,
-    "seen": 1793675739.816902,
-    "ast_hash": "0bb998af19f91102bcc226bffe286d4e",
+    "mtime": 1793682211.157389,
+    "seen": 1793682255.2096727,
+    "ast_hash": "592fc37a1a972a6277caa99b78d4cbf8",
     "semantic_hash": ""
   },
   "apps/server/app/schemas/competitors.py": {
-    "mtime": 1793675395.0433764,
-    "seen": 1793675739.8169856,
-    "ast_hash": "bcede9eb64a55c5cf36d2c4c764ffe81",
+    "mtime": 1793681955.3751514,
+    "seen": 1793682125.4733589,
+    "ast_hash": "8d2fc8234e7d7608cce3259f19372a36",
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/__init__.py": {
@@ -2466,15 +2466,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/service.py": {
-    "mtime": 1793676188.3501403,
-    "seen": 1793677647.9377935,
-    "ast_hash": "37faeb735d395b68341430a80c560ffd",
+    "mtime": 1793682210.174979,
+    "seen": 1793682255.2097874,
+    "ast_hash": "f6f6c507a10492bfa03224eea12972fb",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_competitors.py": {
-    "mtime": 1793676205.4699953,
-    "seen": 1793677647.9378483,
-    "ast_hash": "a154731c07921ccc036f06fc5092d89c",
+    "mtime": 1793682184.9305682,
+    "seen": 1793682255.2098417,
+    "ast_hash": "3ca63bccfcbe70651b37e39629c45f2b",
     "semantic_hash": ""
   }
 }

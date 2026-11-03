@@ -12,7 +12,7 @@ export function useMarketComparison(propertyId: string | undefined) {
     staleTime: 1000 * 60 * 60 * 24,
   });
   const refresh = useMutation({
-    mutationFn: () => api.get(`/properties/${propertyId}/competitors`),
+    mutationFn: () => api.get(`/properties/${propertyId}/competitors?force=true`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
   return { ...query, refresh };

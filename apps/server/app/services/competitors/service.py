@@ -43,6 +43,20 @@ def _quantile(values: list[float], percentile: float) -> float | None:
     return ordered[low] + (ordered[high] - ordered[low]) * (position - low)
 
 
+def _image_url(raw: dict[str, Any]) -> str | None:
+    images = raw.get("images")
+    if not isinstance(images, list) or not images:
+        return None
+    first = images[0]
+    if isinstance(first, str) and first.startswith("https://"):
+        return first
+    if isinstance(first, dict):
+        url = first.get("url")
+        if isinstance(url, str) and url.startswith("https://"):
+            return url
+    return None
+
+
 def build_competitor_snapshot(
     results: list[Any], *, stay_nights: int, currency: str, resolved_level: str,
 ) -> CompetitorSnapshot:
@@ -56,6 +70,7 @@ def build_competitor_snapshot(
             id=str(raw["id"]),
             title=raw.get("name") if isinstance(raw.get("name"), str) else raw.get("title") if isinstance(raw.get("title"), str) else None,
             url=raw.get("link") if isinstance(raw.get("link"), str) and raw["link"].startswith("https://") else None,
+            image_url=_image_url(raw),
             nightly_rate=total / stay_nights if total is not None and stay_nights else None,
             currency=price.get("currency") if isinstance(price.get("currency"), str) else currency,
             rating=_number(raw.get("rating")),
@@ -99,13 +114,13 @@ async def invalidate_competitors(property_id: str) -> None:
 
 
 async def get_competitors(
-    property_: Property, *, fallback_to_city: bool = True, provider: CompetitorProvider | None = None,
+    property_: Property, *, fallback_to_city: bool = True, force: bool = False, provider: CompetitorProvider | None = None,
 ) -> CompetitorSnapshot:
     if not property_.country or not property_.city or not property_.neighborhood:
         raise ValueError("Completa país, ciudad y barrio de la propiedad antes de compararla.")
     key = _cache_key(str(property_.id), fallback_to_city)
     cached = await redis_client.get(key)
-    if cached:
+    if cached and not force:
         return CompetitorSnapshot.model_validate_json(cached)
     lock_key = _lock_key(str(property_.id), fallback_to_city)
     if not await redis_client.set(lock_key, "1", ex=30, nx=True):

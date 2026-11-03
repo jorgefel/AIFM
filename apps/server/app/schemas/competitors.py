@@ -8,6 +8,7 @@ class CompetitorListing(BaseModel):
     id: str
     title: str | None = None
     url: str | None = None
+    image_url: str | None = None
     nightly_rate: float | None = Field(default=None, ge=0)
     currency: str | None = Field(default=None, max_length=3)
     rating: float | None = Field(default=None, ge=0, le=5)

@@ -1,8 +1,10 @@
 from datetime import date
+from types import SimpleNamespace
+from uuid import uuid4
 
 import pytest
 
-from app.services.competitors.service import build_competitor_snapshot, country_domain
+from app.services.competitors.service import build_competitor_snapshot, country_domain, get_competitors
 from app.services.competitors.omkar import OmkarProvider
 
 
@@ -28,7 +30,7 @@ def test_country_domain_uses_colombian_domain_and_default():
 
 def test_snapshot_calculates_nightly_prices_and_statistics():
     snapshot = build_competitor_snapshot(
-        [{"id": "a", "name": "Casa A", "price": {"amount": "300", "currency": "COP"}, "rating": 4.8, "reviews_count": 10},
+        [{"id": "a", "name": "Casa A", "price": {"amount": "300", "currency": "COP"}, "rating": 4.8, "reviews_count": 10, "images": ["https://images.example/casa-a.jpg"]},
          {"id": "b", "name": "Casa B", "price": {"amount": 500, "currency": "COP"}, "rating": 4.6, "reviews_count": 20},
          {"name": "invalida"}],
         stay_nights=2,
@@ -42,6 +44,7 @@ def test_snapshot_calculates_nightly_prices_and_statistics():
     assert snapshot.aggregates.p25_nightly_rate == 175
     assert snapshot.aggregates.p75_nightly_rate == 225
     assert snapshot.resolved_level == "neighborhood"
+    assert snapshot.listings[0].image_url == "https://images.example/casa-a.jpg"
 
 
 @pytest.mark.asyncio
@@ -59,3 +62,24 @@ async def test_omkar_falls_back_to_city_only_when_enabled(monkeypatch):
     assert level == "city"
     assert provider.calls[1][1]["query"] == "Cartagena, Colombia"
     assert provider.calls[-1][1]["adults"] == 2
+
+
+@pytest.mark.asyncio
+async def test_force_refresh_ignores_a_cached_snapshot(monkeypatch):
+    cached = build_competitor_snapshot([], stay_nights=1, currency="COP", resolved_level="neighborhood")
+
+    class Cache:
+        async def get(self, key): return cached.model_dump_json()
+        async def set(self, *args, **kwargs): return True
+        async def setex(self, *args, **kwargs): return True
+        async def delete(self, *args, **kwargs): return 1
+
+    class Provider:
+        async def search(self, **kwargs): return ([{"id": "fresh"}], "neighborhood")
+
+    monkeypatch.setattr("app.services.competitors.service.redis_client", Cache())
+    property_ = SimpleNamespace(id=uuid4(), country="Colombia", city="Cartagena", neighborhood="Getsemaní", currency="COP", max_guests=2)
+
+    snapshot = await get_competitors(property_, force=True, provider=Provider())
+
+    assert snapshot.aggregates.listing_count == 1

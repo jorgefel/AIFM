@@ -2,6 +2,7 @@ export type MarketListing = {
   id: string;
   title: string | null;
   url: string | null;
+  image_url: string | null;
   nightly_rate: number | null;
   currency: string | null;
   rating: number | null;
