@@ -14,6 +14,7 @@ import {
   Zap,
   Plug,
   Crown,
+  GitCompareArrows,
   type LucideIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -32,6 +33,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { name: "Inicio", href: "/", icon: LayoutDashboard },
   { name: "Propiedades", href: "/properties", icon: Building2 },
+  { name: "Comparación", href: "/comparison", icon: GitCompareArrows },
   { name: "Reservas", href: "/reservations", icon: CalendarCheck },
   { name: "Calendario", href: "/calendar", icon: Calendar },
   { name: "Huéspedes", icon: Users, soon: true },

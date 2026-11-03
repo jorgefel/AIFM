@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/GlassSidebar.tsx": {
-    "mtime": 1792051745.8545277,
-    "seen": 1792052037.0996501,
-    "ast_hash": "ac3f94b4e7896e4217550e8147abd7e2",
+    "mtime": 1793674203.1435418,
+    "seen": 1793674243.5491438,
+    "ast_hash": "bb3a4bb17a9e407d537159cda09e963a",
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/PropertyForm.tsx": {
@@ -2040,9 +2040,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/MobileBottomNav.tsx": {
-    "mtime": 1791316485.3944707,
-    "seen": 1791900058.2391446,
-    "ast_hash": "4481e343a82c48c2b8bfcd4e5ffacdea",
+    "mtime": 1793674204.0810034,
+    "seen": 1793674243.5491462,
+    "ast_hash": "56d94e8674a0cdf2c0bd74cecafd6ba6",
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/PropertyGallery.tsx": {
@@ -2445,6 +2445,12 @@
     "mtime": 1793222399.2487557,
     "seen": 1793313391.4361837,
     "ast_hash": "5a5624fd743130105f3b6e8d5ac2c972",
+    "semantic_hash": ""
+  },
+  "apps/web/src/app/comparison/page.tsx": {
+    "mtime": 1793674206.726609,
+    "seen": 1793674243.5489101,
+    "ast_hash": "8d3fecbe7f552475e8e033e920e6c3fe",
     "semantic_hash": ""
   }
 }

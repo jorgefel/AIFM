@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, Calendar, CalendarCheck, LayoutDashboard, Menu, type LucideIcon } from "lucide-react";
+import { Building2, CalendarCheck, GitCompareArrows, LayoutDashboard, Menu, type LucideIcon } from "lucide-react";
 
 const ITEMS: { name: string; href: string; icon: LucideIcon }[] = [
   { name: "Inicio", href: "/", icon: LayoutDashboard },
   { name: "Propiedades", href: "/properties", icon: Building2 },
-  { name: "Calendario", href: "/calendar", icon: Calendar },
+  { name: "Comparación", href: "/comparison", icon: GitCompareArrows },
   { name: "Reservas", href: "/reservations", icon: CalendarCheck },
 ];
 
