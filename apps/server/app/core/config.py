@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     AI_USER_DAILY_LIMIT: int = 50
     AI_GLOBAL_DAILY_LIMIT: int = 500
 
+    # ── Market comparison ───────────────────────────────────
+    APIFY_TOKEN: str = ""
+
     # ── Beds24 ───────────────────────────────────────────────
     BEDS24_REFRESH_TOKEN: str = ""
 

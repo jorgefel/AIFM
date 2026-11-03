@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="850" viewBox="0 0 1400 850" role="img" aria-labelledby="title desc">
+  <title id="title">Nomora — diagrama UML de componentes</title>
+  <desc id="desc">Arquitectura de Nomora con cliente web, worker, API, servicios, datos e integraciones externas.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker>
+    <style>
+      text { font-family: Inter, Arial, sans-serif; fill: #172033; }
+      .title { font-size: 29px; font-weight: 700; }
+      .subtitle { font-size: 14px; fill: #64748b; }
+      .section { font-size: 13px; font-weight: 700; fill: #64748b; letter-spacing: 1px; }
+      .node { stroke: #64748b; stroke-width: 1.5; rx: 12; }
+      .node-title { font-size: 16px; font-weight: 700; }
+      .node-text { font-size: 13px; fill: #475569; }
+      .link { fill: none; stroke: #475569; stroke-width: 1.7; marker-end: url(#arrow); }
+      .link-label { font-size: 12px; fill: #475569; }
+    </style>
+  </defs>
+  <rect width="1400" height="850" fill="#f8fafc"/>
+  <text x="60" y="57" class="title">Nomora · UML de componentes</text>
+  <text x="60" y="84" class="subtitle">Vista de la arquitectura implementada</text>
+
+  <text x="80" y="135" class="section">USUARIO Y CLIENTE</text>
+  <rect x="70" y="160" width="190" height="105" class="node" fill="#e0f2fe"/>
+  <text x="165" y="201" class="node-title" text-anchor="middle">Administrador</text>
+  <text x="165" y="224" class="node-text" text-anchor="middle">de propiedades</text>
+  <rect x="330" y="160" width="225" height="105" class="node" fill="#dbeafe"/>
+  <text x="442" y="198" class="node-title" text-anchor="middle">Web</text>
+  <text x="442" y="221" class="node-text" text-anchor="middle">Next.js · React · React Query</text>
+
+  <text x="650" y="135" class="section">BORDE Y API</text>
+  <rect x="635" y="160" width="195" height="105" class="node" fill="#ede9fe"/>
+  <text x="732" y="198" class="node-title" text-anchor="middle">Cloudflare Worker</text>
+  <text x="732" y="221" class="node-text" text-anchor="middle">proxy · caché GET · JWT</text>
+  <rect x="910" y="160" width="220" height="105" class="node" fill="#ede9fe"/>
+  <text x="1020" y="198" class="node-title" text-anchor="middle">FastAPI</text>
+  <text x="1020" y="221" class="node-text" text-anchor="middle">/api/v1 · rutas REST</text>
+
+  <text x="510" y="355" class="section">LÓGICA DE NEGOCIO</text>
+  <rect x="370" y="380" width="235" height="130" class="node" fill="#dcfce7"/>
+  <text x="487" y="418" class="node-title" text-anchor="middle">Servicios</text>
+  <text x="487" y="442" class="node-text" text-anchor="middle">Beds24 · billing · caché</text>
+  <text x="487" y="463" class="node-text" text-anchor="middle">jobs · export · storage</text>
+  <rect x="680" y="380" width="235" height="130" class="node" fill="#dcfce7"/>
+  <text x="797" y="418" class="node-title" text-anchor="middle">Motor financiero</text>
+  <text x="797" y="442" class="node-text" text-anchor="middle">golden_rule.py</text>
+  <text x="797" y="463" class="node-text" text-anchor="middle">fuente de verdad</text>
+  <rect x="990" y="380" width="235" height="130" class="node" fill="#dcfce7"/>
+  <text x="1107" y="418" class="node-title" text-anchor="middle">Asesor IA</text>
+  <text x="1107" y="442" class="node-text" text-anchor="middle">financial_advisor.py</text>
+  <text x="1107" y="463" class="node-text" text-anchor="middle">solo recomendaciones</text>
+
+  <text x="385" y="600" class="section">DATOS E INTEGRACIONES</text>
+  <rect x="250" y="625" width="190" height="105" class="node" fill="#fef3c7"/>
+  <text x="345" y="664" class="node-title" text-anchor="middle">PostgreSQL</text>
+  <text x="345" y="687" class="node-text" text-anchor="middle">SQLAlchemy · Alembic</text>
+  <rect x="510" y="625" width="160" height="105" class="node" fill="#fef3c7"/>
+  <text x="590" y="664" class="node-title" text-anchor="middle">Redis</text>
+  <text x="590" y="687" class="node-text" text-anchor="middle">caché</text>
+  <rect x="740" y="625" width="150" height="105" class="node" fill="#fee2e2"/>
+  <text x="815" y="664" class="node-title" text-anchor="middle">Beds24</text>
+  <text x="815" y="687" class="node-text" text-anchor="middle">reservas e inventario</text>
+  <rect x="960" y="625" width="130" height="105" class="node" fill="#fee2e2"/>
+  <text x="1025" y="664" class="node-title" text-anchor="middle">Stripe</text>
+  <text x="1025" y="687" class="node-text" text-anchor="middle">suscripciones</text>
+  <rect x="1160" y="625" width="130" height="105" class="node" fill="#fee2e2"/>
+  <text x="1225" y="664" class="node-title" text-anchor="middle">OpenAI</text>
+  <text x="1225" y="687" class="node-text" text-anchor="middle">análisis IA</text>
+
+  <path d="M260 212 H330" class="link"/><text x="278" y="199" class="link-label">HTTPS</text>
+  <path d="M555 212 H635" class="link"/><text x="575" y="199" class="link-label">API</text>
+  <path d="M830 212 H910" class="link"/><text x="847" y="199" class="link-label">proxy</text>
+  <path d="M1020 265 V325 H487 V380" class="link"/>
+  <path d="M1020 265 V325 H797 V380" class="link"/>
+  <path d="M1020 265 V325 H1107 V380" class="link"/>
+  <path d="M487 510 V575 H345 V625" class="link"/>
+  <path d="M487 510 V575 H590 V625" class="link"/>
+  <path d="M487 510 V575 H815 V625" class="link"/>
+  <path d="M487 510 V575 H1025 V625" class="link"/>
+  <path d="M797 510 V565 H345 V625" class="link"/>
+  <path d="M1107 510 V565 H1225 V625" class="link"/>
+  <path d="M1107 470 H797" class="link"/><text x="873" y="459" class="link-label">consume métricas</text>
+  <text x="700" y="800" class="subtitle" text-anchor="middle">La IA asesora; el motor determinista conserva la decisión financiera.</text>
+</svg>

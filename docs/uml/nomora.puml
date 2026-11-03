@@ -1,0 +1,224 @@
+@startuml Nomora_Componentes
+title Nomora — diagrama UML de componentes
+left to right direction
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Administrador\nde propiedades" as User
+
+package "Cliente" {
+  [Next.js 16 + React 19\napps/web] as Web
+  [React Query + Axios\napi.ts] as Query
+  Web --> Query
+}
+
+component "Cloudflare Worker\napps/worker" as Worker
+component "FastAPI\napps/server/main.py" as API
+component "Rutas API v1\nauth · properties · reservations\nexpenses · analysis · billing · integrations" as Routes
+component "Servicios\nBeds24 · facturación · caché\nexportación · trabajos · storage" as Services
+component "Motor financiero\ndeterminista\ngolden_rule.py" as Engine
+component "Asesor financiero IA\nfinancial_advisor.py" as Advisor
+database "PostgreSQL\nSQLAlchemy + Alembic" as DB
+component "Redis" as Redis
+cloud "Beds24 API" as Beds24
+cloud "Stripe" as Stripe
+cloud "OpenAI API" as OpenAI
+folder "Almacenamiento\nde uploads" as Storage
+
+User --> Web : HTTPS
+Web --> Worker : solicitudes API
+Worker --> API : proxy / caché GET\nJWT verificado
+Web --> API : fallback / desarrollo
+API --> Routes
+Routes --> Services
+Routes --> Engine
+Routes --> Advisor
+Services --> DB
+Services --> Redis
+Services --> Beds24
+Services --> Stripe
+Services --> Storage
+Engine --> DB : lee reservas y gastos
+Advisor --> OpenAI : análisis consultivo
+Advisor --> Engine : consume resúmenes\ny discrepancias
+
+note bottom of Engine
+Fuente de verdad de los cálculos financieros.
+La IA no modifica registros financieros.
+end note
+
+@enduml
+
+@startuml Nomora_Dominio
+title Nomora — diagrama UML del modelo de dominio
+hide methods
+skinparam classAttributeIconSize 0
+
+abstract class UUIDMixin {
+  +id: UUID
+}
+
+abstract class TimestampMixin {
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class User {
+  +email: string
+  +full_name: string
+  +role: string
+  +tier: string
+  +is_active: boolean
+}
+
+class Property {
+  +name: string
+  +address: string
+  +currency: string
+  +nightly_rate: decimal?
+  +is_active: boolean
+}
+
+class Reservation {
+  +guest_name: string
+  +check_in: date
+  +check_out: date
+  +total_amount: decimal
+  +platform_fee: decimal
+  +net_amount: decimal
+  +status: string
+}
+
+class Expense {
+  +description: string
+  +amount: decimal
+  +category: string
+  +date: date
+  +is_deleted: boolean
+}
+
+class Subscription {
+  +provider: string
+  +status: string
+  +current_period_end: datetime?
+}
+
+class BillingEvent {
+  +provider_event_id: string
+  +event_type: string
+  +processed_at: datetime
+}
+
+class ChannelConnection {
+  +channel_name: string
+  +channel_account_id: string
+  +is_active: boolean
+  +bookings_cursor: datetime?
+}
+
+class Beds24PropertyLink {
+  +beds24_property_id: string
+}
+
+class OtaConnection {
+  +ota_name: string
+  +ota_listing_id: string?
+  +status: string
+}
+
+class ChannelInventoryDay {
+  +date: date
+  +available_units: int
+  +price: decimal?
+}
+
+class SyncLog {
+  +sync_type: string
+  +status: string
+  +records_processed: int
+}
+
+class AutomationAction {
+  +action_type: string
+  +payload: JSON
+  +status: string
+}
+
+class AuditLog {
+  +action: string
+  +details: JSON
+}
+
+class AIChatSession {
+  +title: string
+  +message_count: int
+}
+
+class AIChatMessage {
+  +role: string
+  +content: text
+}
+
+class DashboardLayout {
+  +layout_data: JSONB
+}
+
+UUIDMixin <|-- User
+UUIDMixin <|-- Property
+UUIDMixin <|-- Reservation
+UUIDMixin <|-- Expense
+UUIDMixin <|-- Subscription
+UUIDMixin <|-- BillingEvent
+UUIDMixin <|-- ChannelConnection
+UUIDMixin <|-- Beds24PropertyLink
+UUIDMixin <|-- OtaConnection
+UUIDMixin <|-- ChannelInventoryDay
+UUIDMixin <|-- SyncLog
+UUIDMixin <|-- AutomationAction
+UUIDMixin <|-- AuditLog
+UUIDMixin <|-- AIChatSession
+UUIDMixin <|-- AIChatMessage
+UUIDMixin <|-- DashboardLayout
+
+TimestampMixin <|-- User
+TimestampMixin <|-- Property
+TimestampMixin <|-- Reservation
+TimestampMixin <|-- Expense
+TimestampMixin <|-- Subscription
+TimestampMixin <|-- ChannelConnection
+TimestampMixin <|-- SyncLog
+TimestampMixin <|-- Beds24PropertyLink
+TimestampMixin <|-- OtaConnection
+TimestampMixin <|-- ChannelInventoryDay
+TimestampMixin <|-- AutomationAction
+TimestampMixin <|-- AuditLog
+TimestampMixin <|-- AIChatSession
+TimestampMixin <|-- AIChatMessage
+TimestampMixin <|-- DashboardLayout
+
+User "1" -- "0..*" Property : owns >
+Property "1" -- "0..*" Reservation : contains >
+Property "1" -- "0..*" Expense : records >
+User "1" -- "0..*" Subscription : has >
+User "0..1" -- "0..*" BillingEvent : subject >
+User "1" -- "0..*" ChannelConnection : connects >
+ChannelConnection "1" *-- "0..*" SyncLog
+ChannelConnection "1" *-- "0..*" Beds24PropertyLink
+ChannelConnection "1" *-- "0..*" ChannelInventoryDay
+Beds24PropertyLink "1" *-- "0..*" OtaConnection
+Property "1" -- "0..*" Beds24PropertyLink : maps >
+Property "1" -- "0..*" OtaConnection
+Property "1" -- "0..*" ChannelInventoryDay
+User "1" -- "0..*" AutomationAction
+Property "0..1" -- "0..*" AutomationAction
+User "1" -- "0..*" AuditLog
+User "1" -- "0..*" AIChatSession
+Property "0..1" -- "0..*" AIChatSession
+AIChatSession "1" *-- "0..*" AIChatMessage
+User "1" -- "0..1" DashboardLayout
+
+note right of Beds24PropertyLink
+Asociación explícita entre
+una propiedad Nomora y Beds24.
+end note
+@enduml

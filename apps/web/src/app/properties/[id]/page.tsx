@@ -106,6 +106,9 @@ export default function PropertyDetailPage() {
               <Pencil className="mr-2 h-4 w-4" />
               Editar propiedad
             </Button>
+            <Link href={`/properties/${property.id}/comparison`} className="inline-flex h-10 items-center rounded-lg border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-surface">
+              Comparación
+            </Link>
           </div>
         </div>
 

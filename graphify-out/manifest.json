@@ -78,9 +78,9 @@
     "semantic_hash": "8599515097361be7c37ed627730f0226"
   },
   "apps/server/app/api/v1/api.py": {
-    "mtime": 1791763036.7709153,
-    "seen": 1791900058.2387683,
-    "ast_hash": "36d8166eafed8ec22b780d417fbf276f",
+    "mtime": 1793313162.3813145,
+    "seen": 1793313391.4353883,
+    "ast_hash": "fa8204d1bda9058503b1f9910d7b8004",
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/__init__.py": {
@@ -120,10 +120,10 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/jobs.py": {
-    "mtime": 1783017189.46901,
-    "seen": 1790986749.3484423,
-    "ast_hash": "0c8f78cb25ca11411891ed644b1e8b24",
-    "semantic_hash": "0c8f78cb25ca11411891ed644b1e8b24"
+    "mtime": 1793313163.2983162,
+    "seen": 1793313391.4354138,
+    "ast_hash": "fa06040f830f11868c415148d3ce0736",
+    "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/properties.py": {
     "mtime": 1791316359.439397,
@@ -156,9 +156,9 @@
     "semantic_hash": "a870b2e3ad23f7381029a9abe9baffd2"
   },
   "apps/server/app/core/config.py": {
-    "mtime": 1792052473.2768133,
-    "seen": 1792052718.262547,
-    "ast_hash": "c7667207d82bd2a27973ccb2dad0f836",
+    "mtime": 1793313161.470049,
+    "seen": 1793313391.435431,
+    "ast_hash": "c208ac4ded05d928ceff3a14457f9b94",
     "semantic_hash": ""
   },
   "apps/server/app/core/database.py": {
@@ -1134,9 +1134,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/properties/[id]/page.tsx": {
-    "mtime": 1791317479.3552792,
-    "seen": 1791900058.2390215,
-    "ast_hash": "7260f8c251e14ec6c0236026a124f322",
+    "mtime": 1793313213.671232,
+    "seen": 1793313391.435641,
+    "ast_hash": "29d1972bf3ed9a76e94a16a768fc4c74",
     "semantic_hash": ""
   },
   "apps/server/tests/schemas/test_reservation_dates.py": {
@@ -2367,6 +2367,84 @@
     "mtime": 1792814199.8202953,
     "seen": 1792814267.281627,
     "ast_hash": "7afd6292df3b931a8b205ae301ff4e84",
+    "semantic_hash": ""
+  },
+  "apps/server/app/api/v1/routes/market_comparisons.py": {
+    "mtime": 1793313443.3979301,
+    "seen": 1793313547.9882135,
+    "ast_hash": "eab0845daaa1452e071d1be125ec9514",
+    "semantic_hash": ""
+  },
+  "apps/server/app/schemas/market_comparison.py": {
+    "mtime": 1793313158.7590497,
+    "seen": 1793313391.4354975,
+    "ast_hash": "746fd6a65eeb3a1e1d99c928c6a01e52",
+    "semantic_hash": ""
+  },
+  "apps/server/app/services/market_comparison.py": {
+    "mtime": 1793313327.706592,
+    "seen": 1793313391.435523,
+    "ast_hash": "00d51afd695f61513c74c5193ac13643",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/services/test_market_comparison.py": {
+    "mtime": 1793313264.5150535,
+    "seen": 1793313391.4355776,
+    "ast_hash": "7ecacebc130bffec2fe3fd9c7ec8d8ae",
+    "semantic_hash": ""
+  },
+  "apps/web/src/app/properties/[id]/comparison/page.tsx": {
+    "mtime": 1793313212.7582333,
+    "seen": 1793313391.435637,
+    "ast_hash": "a8da796493eda1e2c71b4cffb7f88299",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/properties/MarketComparisonTable.tsx": {
+    "mtime": 1793313210.0456443,
+    "seen": 1793313391.435787,
+    "ast_hash": "a10523247eea3c34fd0a129a4c2a5d7c",
+    "semantic_hash": ""
+  },
+  "apps/web/src/hooks/useMarketComparison.ts": {
+    "mtime": 1793313208.9637265,
+    "seen": 1793313391.4358835,
+    "ast_hash": "79976eeccf2159aaea621ca03317593f",
+    "semantic_hash": ""
+  },
+  "apps/web/src/types/marketComparison.ts": {
+    "mtime": 1793313207.8207226,
+    "seen": 1793313391.4359286,
+    "ast_hash": "de66bf33b4d5b3ea67bbb5345591639c",
+    "semantic_hash": ""
+  },
+  "docs/SPEC-market-snapshot.md": {
+    "mtime": 1793313481.3888574,
+    "seen": 1793313547.9889743,
+    "ast_hash": "aec46262c8b1a1736fe0bae2f34aced2",
+    "semantic_hash": ""
+  },
+  "docs/market-intelligence-capability-map.md": {
+    "mtime": 1793312459.9188974,
+    "seen": 1793313391.4361646,
+    "ast_hash": "8831970d111028a0ff975a141535b809",
+    "semantic_hash": ""
+  },
+  "tasks/plan.md": {
+    "mtime": 1793313482.3384247,
+    "seen": 1793313547.9889827,
+    "ast_hash": "477a71473a8809dc8b06b46cc9952d66",
+    "semantic_hash": ""
+  },
+  "tasks/todo.md": {
+    "mtime": 1793313483.2534244,
+    "seen": 1793313547.9889846,
+    "ast_hash": "397bcbc7214304a0a841f40e6d32aaaf",
+    "semantic_hash": ""
+  },
+  "docs/uml/nomora-componentes.svg": {
+    "mtime": 1793222399.2487557,
+    "seen": 1793313391.4361837,
+    "ast_hash": "5a5624fd743130105f3b6e8d5ac2c972",
     "semantic_hash": ""
   }
 }
