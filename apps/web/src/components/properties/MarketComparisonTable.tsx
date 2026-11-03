@@ -29,7 +29,7 @@ export function MarketComparisonTable({ property, comparison }: Props) {
             <th className="px-4 py-3">Precio/noche</th>
             <th className="px-4 py-3">Calificación</th>
             <th className="px-4 py-3">Reseñas públicas</th>
-            <th className="px-4 py-3">Capacidad</th>
+            <th className="px-4 py-3">Camas</th>
             <th className="px-4 py-3">Posición</th>
           </tr>
         </thead>
@@ -39,7 +39,7 @@ export function MarketComparisonTable({ property, comparison }: Props) {
             <td className="px-4 py-3">{property.nightly_rate == null ? "Sin definir" : `${property.currency} ${property.nightly_rate.toLocaleString()}`}</td>
             <td className="px-4 py-3 text-ink-muted">No disponible</td>
             <td className="px-4 py-3 text-ink-muted">No disponible</td>
-            <td className="px-4 py-3">{property.max_guests}</td>
+            <td className="px-4 py-3">—</td>
             <td className="px-4 py-3"><Position value={Number.isFinite(propertyNightlyRate) ? propertyNightlyRate : null} median={aggregates?.median_nightly_rate} higherIsBetter={false} /></td>
           </tr>
           {comparison.listings.map((listing) => (
@@ -56,7 +56,7 @@ export function MarketComparisonTable({ property, comparison }: Props) {
               </td>
               <td className="px-4 py-3">{listing.rating?.toFixed(1) ?? "—"}</td>
               <td className="px-4 py-3">{listing.public_review_count ?? "—"}</td>
-              <td className="px-4 py-3">{listing.max_guests ?? "—"}</td>
+              <td className="px-4 py-3">{listing.beds ?? "—"}</td>
               <td className="px-4 py-3 text-ink-muted">Referencia del mercado</td>
             </tr>
           ))}

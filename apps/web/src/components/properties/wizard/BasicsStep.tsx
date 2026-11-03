@@ -29,6 +29,11 @@ export function BasicsStep({ draft, errors, onChange }: StepProps) {
         onChange={(e) => onChange({ address: e.target.value })}
         maxLength={500}
       />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Input label="País" placeholder="Colombia" value={draft.country} error={errors.country} onChange={(e) => onChange({ country: e.target.value })} maxLength={100} />
+        <Input label="Ciudad" placeholder="Cartagena" value={draft.city} error={errors.city} onChange={(e) => onChange({ city: e.target.value })} maxLength={100} />
+        <Input label="Barrio" placeholder="Getsemaní" value={draft.neighborhood} error={errors.neighborhood} onChange={(e) => onChange({ neighborhood: e.target.value })} maxLength={100} />
+      </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select
           label="Tipo de propiedad"

@@ -7,12 +7,12 @@ export function useMarketComparison(propertyId: string | undefined) {
   const queryKey = ["market-comparison", propertyId];
   const query = useQuery<MarketComparison>({
     queryKey,
-    queryFn: () => api.get(`/properties/${propertyId}/market-comparisons/latest`).then((res) => res.data),
+    queryFn: () => api.get(`/properties/${propertyId}/competitors`).then((res) => res.data),
     enabled: Boolean(propertyId),
-    refetchInterval: (result) => result.state.data?.status === "READY" ? false : 3000,
+    staleTime: 1000 * 60 * 60 * 24,
   });
   const refresh = useMutation({
-    mutationFn: () => api.post(`/properties/${propertyId}/market-comparisons`),
+    mutationFn: () => api.get(`/properties/${propertyId}/competitors`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
   return { ...query, refresh };

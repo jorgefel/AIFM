@@ -9,6 +9,7 @@ from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.models.property import Property
 from app.schemas.property import PropertyRead, PropertyCreate, PropertyUpdate
+from app.services.competitors.service import invalidate_competitors
 
 router = APIRouter(prefix="/properties", tags=["properties"])
 
@@ -54,6 +55,8 @@ async def update_property(property_id: uuid.UUID, property_in: PropertyUpdate, d
         
     await db.commit()
     await db.refresh(db_property)
+    if {"country", "city", "neighborhood", "currency", "max_guests"} & update_data.keys():
+        await invalidate_competitors(str(property_id))
     return db_property
 
 @router.delete("/{property_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -67,4 +70,5 @@ async def delete_property(property_id: uuid.UUID, db: AsyncSession = Depends(get
         
     db_property.is_active = False # Soft delete
     await db.commit()
+    await invalidate_competitors(str(property_id))
     return None

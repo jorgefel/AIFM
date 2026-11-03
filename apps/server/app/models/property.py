@@ -30,6 +30,9 @@ class Property(Base, UUIDMixin, TimestampMixin):
     address: Mapped[str] = mapped_column(
         String(500), nullable=False
     )
+    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    city: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    neighborhood: Mapped[str | None] = mapped_column(String(100), nullable=True)
     currency: Mapped[str] = mapped_column(
         String(3), nullable=False, default="MXN"  # "USD" | "MXN" | "EUR"
     )

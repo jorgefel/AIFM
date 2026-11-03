@@ -11,6 +11,9 @@ Platform = Literal["airbnb", "booking", "vrbo", "direct", "other"]
 class PropertyBase(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     address: str = Field(min_length=1, max_length=500)
+    country: str | None = Field(default=None, min_length=1, max_length=100)
+    city: str | None = Field(default=None, min_length=1, max_length=100)
+    neighborhood: str | None = Field(default=None, min_length=1, max_length=100)
     currency: str = Field(default="MXN", pattern=r"^[A-Z]{3}$")
     property_type: PropertyType = "apartment"
     max_guests: int = Field(default=1, ge=1, le=100)
@@ -28,6 +31,9 @@ class PropertyCreate(PropertyBase):
 class PropertyUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     address: str | None = Field(default=None, min_length=1, max_length=500)
+    country: str | None = Field(default=None, min_length=1, max_length=100)
+    city: str | None = Field(default=None, min_length=1, max_length=100)
+    neighborhood: str | None = Field(default=None, min_length=1, max_length=100)
     currency: str | None = Field(default=None, pattern=r"^[A-Z]{3}$")
     property_type: PropertyType | None = None
     max_guests: int | None = Field(default=None, ge=1, le=100)

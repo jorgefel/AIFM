@@ -8,6 +8,9 @@ export interface Property {
   id: string;
   name: string;
   address: string;
+  country?: string | null;
+  city?: string | null;
+  neighborhood?: string | null;
   currency: string;
   property_type: string;
   max_guests: number;

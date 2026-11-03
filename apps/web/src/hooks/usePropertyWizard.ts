@@ -22,6 +22,9 @@ export const WIZARD_STEPS = [
 export interface PropertyDraft {
   name: string;
   address: string;
+  country: string;
+  city: string;
+  neighborhood: string;
   currency: string;
   property_type: string;
   nightly_rate: string;
@@ -41,6 +44,9 @@ function toDraft(property?: Property): PropertyDraft {
   return {
     name: property?.name ?? "",
     address: property?.address ?? "",
+    country: property?.country ?? "",
+    city: property?.city ?? "",
+    neighborhood: property?.neighborhood ?? "",
     currency: property?.currency ?? "USD",
     property_type: property?.property_type ?? "apartment",
     nightly_rate: text(property?.nightly_rate),
@@ -65,6 +71,9 @@ function validateStep(step: number, d: PropertyDraft): DraftErrors {
   if (step === 0) {
     if (!d.name.trim()) errors.name = "Escribe el nombre de la propiedad";
     if (!d.address.trim()) errors.address = "Escribe la dirección";
+    if (!d.country.trim()) errors.country = "Escribe el país";
+    if (!d.city.trim()) errors.city = "Escribe la ciudad";
+    if (!d.neighborhood.trim()) errors.neighborhood = "Escribe el barrio";
     if (!d.currency) errors.currency = "Selecciona una moneda";
     if (!d.property_type) errors.property_type = "Selecciona el tipo de propiedad";
   }
@@ -198,6 +207,9 @@ export function usePropertyWizard(property?: Property) {
     const payload = {
       name: draft.name.trim(),
       address: draft.address.trim(),
+      country: draft.country.trim(),
+      city: draft.city.trim(),
+      neighborhood: draft.neighborhood.trim(),
       currency: draft.currency,
       property_type: draft.property_type,
       nightly_rate: Number(draft.nightly_rate),
