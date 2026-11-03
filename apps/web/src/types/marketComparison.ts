@@ -27,5 +27,5 @@ export type MarketComparison = {
     average_nightly_rate: number | null;
     p25_nightly_rate: number | null;
     p75_nightly_rate: number | null;
-  };
+  } | null;
 };

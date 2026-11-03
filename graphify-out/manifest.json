@@ -156,9 +156,9 @@
     "semantic_hash": "a870b2e3ad23f7381029a9abe9baffd2"
   },
   "apps/server/app/core/config.py": {
-    "mtime": 1793675422.539104,
-    "seen": 1793675739.8169274,
-    "ast_hash": "d0698ab8c5ca145833f3bed713fb2320",
+    "mtime": 1793676178.481112,
+    "seen": 1793677647.9377048,
+    "ast_hash": "b3fa92f99c5f9e13d279d6367945a3f7",
     "semantic_hash": ""
   },
   "apps/server/app/core/database.py": {
@@ -2370,9 +2370,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/properties/[id]/comparison/page.tsx": {
-    "mtime": 1793675458.9628308,
-    "seen": 1793675739.8171535,
-    "ast_hash": "a25bd0ae33371c035d2f2308e04c9903",
+    "mtime": 1793677598.3426747,
+    "seen": 1793677647.9379103,
+    "ast_hash": "40e19f503ece82c7686b5982959755bf",
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/MarketComparisonTable.tsx": {
@@ -2388,9 +2388,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/types/marketComparison.ts": {
-    "mtime": 1793675476.1344645,
-    "seen": 1793675739.8175435,
-    "ast_hash": "bcc3bd7a0dcb753b35421e9be00d9158",
+    "mtime": 1793677597.3621771,
+    "seen": 1793677647.9382179,
+    "ast_hash": "9e5d2de865928e935f986d8cbee58cb7",
     "semantic_hash": ""
   },
   "docs/SPEC-market-snapshot.md": {
@@ -2466,15 +2466,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/service.py": {
-    "mtime": 1793676069.9893074,
-    "seen": 1793676132.4354846,
-    "ast_hash": "620a8318f4a745473990e4503f2a7be2",
+    "mtime": 1793676188.3501403,
+    "seen": 1793677647.9377935,
+    "ast_hash": "37faeb735d395b68341430a80c560ffd",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_competitors.py": {
-    "mtime": 1793675698.6481028,
-    "seen": 1793675739.8170733,
-    "ast_hash": "f0f52b784ee2a4670998e9a9985c0fe0",
+    "mtime": 1793676205.4699953,
+    "seen": 1793677647.9378483,
+    "ast_hash": "a154731c07921ccc036f06fc5092d89c",
     "semantic_hash": ""
   }
 }
