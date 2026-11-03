@@ -2370,9 +2370,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/properties/[id]/comparison/page.tsx": {
-    "mtime": 1793677598.3426747,
-    "seen": 1793677647.9379103,
-    "ast_hash": "40e19f503ece82c7686b5982959755bf",
+    "mtime": 1793678291.352798,
+    "seen": 1793678330.4733012,
+    "ast_hash": "7cf97a06c6039c777215f0371f299805",
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/MarketComparisonTable.tsx": {
