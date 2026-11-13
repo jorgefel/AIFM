@@ -7,7 +7,6 @@ import {
   Building2,
   BarChart3,
   Settings,
-  Sparkles,
   CalendarCheck,
   Calendar,
   Users,
@@ -75,15 +74,13 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
 
   return (
     <aside
-      className={`${widthClasses} flex flex-col h-full bg-sidebar rounded-3xl shadow-[0_20px_50px_-15px_rgba(20,18,31,0.5)] transition-[width] duration-200 overflow-hidden`}
+      className={`${widthClasses} flex flex-col h-full bg-sidebar border border-line-soft backdrop-blur-xl rounded-[1.75rem] shadow-[0_24px_60px_-20px_rgba(27,18,56,0.55)] transition-[width] duration-200 overflow-hidden`}
     >
       {/* Logo Area */}
       <div className={`h-20 flex items-center shrink-0 ${expanded ? "px-6" : "px-4 lg:px-6 justify-center lg:justify-start"}`}>
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(124,92,252,0.4)]">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className={`text-xl font-bold tracking-wide text-white ${logoLabelClasses}`}>
+          <div className="hero-orb w-9 h-9 rounded-full shrink-0 shadow-[0_4px_16px_rgba(168,85,247,0.55)]" aria-hidden="true" />
+          <span className={`font-display text-xl font-extrabold tracking-tight text-white ${logoLabelClasses}`}>
             Nomora
           </span>
         </div>
@@ -103,11 +100,11 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
                 key={item.name}
                 aria-disabled="true"
                 title={`${item.name} (próximamente)`}
-                className={`${rowClasses} cursor-not-allowed text-slate-600`}
+                className={`${rowClasses} cursor-not-allowed text-sidebar-ink/50`}
               >
                 <Icon className="w-[18px] h-[18px] shrink-0" />
                 <span className={`text-sm font-medium whitespace-nowrap ${labelClasses}`}>{item.name}</span>
-                <span className={`ml-auto rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-slate-400 ${labelClasses}`}>
+                <span className={`ml-auto rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-sidebar-ink ${labelClasses}`}>
                   Pronto
                 </span>
               </div>
@@ -127,8 +124,8 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
                 aria-current={isActive && !item.children ? "page" : undefined}
                 className={`${rowClasses} ${
                   isActive
-                    ? "bg-violet-600 text-white shadow-[0_4px_14px_rgba(124,92,252,0.35)]"
-                    : "text-slate-400 hover:text-white hover:bg-white/[0.06]"
+                    ? "bg-gradient-to-r from-violet-500 to-violet-600 text-white shadow-[0_6px_18px_rgba(112,48,239,0.45)]"
+                    : "text-sidebar-ink hover:text-white hover:bg-white/[0.06]"
                 }`}
               >
                 <Icon className="w-[18px] h-[18px] shrink-0 transition-transform duration-300 group-hover:scale-110" />
@@ -146,7 +143,7 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
                           onClick={onClose}
                           aria-current={childActive ? "page" : undefined}
                           className={`block rounded-lg px-3 py-1.5 text-[13px] transition-colors ${
-                            childActive ? "text-white font-medium" : "text-slate-500 hover:text-white"
+                            childActive ? "text-white font-medium" : "text-sidebar-ink/70 hover:text-white"
                           }`}
                         >
                           {child.name}
@@ -177,8 +174,8 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
             expanded ? "px-3.5" : "px-3 lg:px-3.5 justify-center lg:justify-start"
           } ${
             pathname.startsWith("/settings") && !pathname.startsWith("/settings/integrations")
-              ? "bg-violet-600 text-white"
-              : "text-slate-400 hover:text-white hover:bg-white/[0.06]"
+              ? "bg-gradient-to-r from-violet-500 to-violet-600 text-white"
+              : "text-sidebar-ink hover:text-white hover:bg-white/[0.06]"
           }`}
         >
           <Settings className="w-[18px] h-[18px] shrink-0 transition-transform duration-300 group-hover:rotate-90" />
@@ -191,7 +188,7 @@ export function GlassSidebar({ onClose, expanded = false }: GlassSidebarProps = 
           </div>
           <div className={`min-w-0 ${labelClasses}`}>
             <p className="text-xs font-semibold text-white truncate">{user?.full_name || "Usuario"}</p>
-            <p className="text-[11px] text-slate-500 truncate">{user?.role || "Admin"}</p>
+            <p className="text-[11px] text-sidebar-ink/70 truncate">{user?.role || "Admin"}</p>
           </div>
         </div>
       </div>

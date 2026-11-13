@@ -16,6 +16,8 @@ const SKIP_PATHS = [
   "components/auth",
   "components/dashboard/glass/GlassAiDecisions.tsx",
   "app/error.tsx",
+  "components/billing/PlanCard.tsx",
+  "components/dashboard/PromoBanner.tsx",
 ];
 
 const SIMPLE_RULES = [

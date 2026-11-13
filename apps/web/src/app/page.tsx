@@ -6,10 +6,12 @@ import { Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { GlassLayout } from "@/components/layout/glass/GlassLayout";
 import { PeriodSelect } from "@/components/ui/PeriodSelect";
+import { DashboardHero } from "@/components/dashboard/DashboardHero";
 import { PortfolioStatCards } from "@/components/dashboard/PortfolioStatCards";
 import { RevenueTrendChart } from "@/components/dashboard/RevenueTrendChart";
 import { PropertySummaryGrid } from "@/components/dashboard/PropertySummaryGrid";
-import { ChannelDonut } from "@/components/analytics/ChannelDonut";
+import { PromoBanner } from "@/components/dashboard/PromoBanner";
+import { ChannelBars } from "@/components/analytics/ChannelBars";
 import { PredictiveRecommendations } from "@/components/dashboard/PredictiveRecommendations";
 import { NonInvasiveBottomAd } from "@/components/dashboard/NonInvasiveAds";
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
@@ -21,7 +23,7 @@ import { pctChange, getDefaultDateFilter, type DateFilter } from "@/lib/metrics"
 
 export default function Home() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const [period, setPeriod] = useState<DateFilter>(getDefaultDateFilter);
 
   const { properties, current, previous, series, isLoading } = usePortfolioMetrics(period);
@@ -42,15 +44,17 @@ export default function Home() {
 
   return (
     <GlassLayout>
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            ¡Bienvenido de vuelta, {firstName}!
-          </h1>
-          <p className="mt-1 text-sm text-ink-muted">Aquí tienes el resumen de tu negocio.</p>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <p className="font-display text-base font-bold text-ink">Hola, {firstName}</p>
         <PeriodSelect value={period} onChange={setPeriod} />
       </div>
+
+      <DashboardHero
+        revenue={current.revenue}
+        change={pctChange(current.revenue, previous.revenue)}
+        periodLabel="del periodo"
+        isLoading={isLoading}
+      />
 
       {!hasProperties && !isLoading && (
         <motion.div
@@ -61,14 +65,14 @@ export default function Home() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-100">
             <Building2 className="h-8 w-8 text-violet-600" />
           </div>
-          <h3 className="mb-2 text-xl font-semibold text-ink">Bienvenido a Nomora</h3>
+          <h2 className="mb-2 text-xl font-semibold text-ink">Bienvenido a Nomora</h2>
           <p className="max-w-md text-sm text-ink-muted">
             Aún no tienes propiedades registradas. Para empezar a ver tu resumen, añade tu primera
             propiedad.
           </p>
           <button
             onClick={() => router.push("/properties/new")}
-            className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-violet-700 px-6 py-2.5 font-medium text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-400 hover:to-violet-600"
+            className="mt-6 rounded-full bg-gradient-to-r from-violet-500 to-violet-600 px-6 py-2.5 font-medium text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-400 hover:to-violet-500"
           >
             Añadir propiedad
           </button>
@@ -99,9 +103,11 @@ export default function Home() {
           <PropertySummaryGrid properties={properties} stats={current.byProperty} />
         </div>
         <div className="min-h-[220px]">
-          <ChannelDonut channels={current.channels} total={current.revenue} />
+          <ChannelBars channels={current.channels} />
         </div>
       </div>
+
+      {!isPro && <PromoBanner />}
 
       <NonInvasiveBottomAd />
 
