@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Outfit } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
-// Fuente principal del sistema
-const outfit = Outfit({
+// Texto general y titulares
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-outfit",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  weight: ["600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -35,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${outfit.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Script

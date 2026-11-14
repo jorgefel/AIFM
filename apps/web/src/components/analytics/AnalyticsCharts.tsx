@@ -88,7 +88,7 @@ export function RevenueOccupancyChart({ data }: { data: MonthPoint[] }) {
               />
             }
           />
-          <Bar yAxisId="revenue" dataKey="revenue" name="Ingresos" fill="#7C5CFC" radius={[6, 6, 0, 0]} maxBarSize={28} />
+          <Bar yAxisId="revenue" dataKey="revenue" name="Ingresos" fill="#A855F7" radius={[6, 6, 0, 0]} maxBarSize={28} />
           <Line
             yAxisId="occupancy"
             type="monotone"
@@ -122,7 +122,7 @@ export function RevenueBarsChart({ data }: { data: MonthPoint[] }) {
             tickFormatter={(v) => formatCurrencyCompact(v)}
           />
           <Tooltip content={<ChartTooltip format={(_n, value) => formatCurrency(value)} />} />
-          <Bar dataKey="revenue" name="Ingresos" fill="#7C5CFC" radius={[6, 6, 0, 0]} maxBarSize={36} />
+          <Bar dataKey="revenue" name="Ingresos" fill="#A855F7" radius={[6, 6, 0, 0]} maxBarSize={36} />
         </BarChart>
       </ResponsiveContainer>
     </ChartCard>
