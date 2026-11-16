@@ -1,7 +1,8 @@
 from datetime import date, datetime, timedelta, timezone
 import math
 import statistics
-from typing import Any
+from typing import Any, Optional
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.redis import redis_client
 from app.models.property import Property
@@ -114,7 +115,12 @@ async def invalidate_competitors(property_id: str) -> None:
 
 
 async def get_competitors(
-    property_: Property, *, fallback_to_city: bool = True, force: bool = False, provider: CompetitorProvider | None = None,
+    property_: Property,
+    *,
+    fallback_to_city: bool = True,
+    force: bool = False,
+    provider: CompetitorProvider | None = None,
+    db: Optional[AsyncSession] = None,
 ) -> CompetitorSnapshot:
     if not property_.country or not property_.city or not property_.neighborhood:
         raise ValueError("Completa país, ciudad y barrio de la propiedad antes de compararla.")
@@ -135,6 +141,12 @@ async def get_competitors(
         snapshot = build_competitor_snapshot(results, stay_nights=(checkout - checkin).days, currency=property_.currency, resolved_level=level)
         snapshot.checkin, snapshot.checkout = checkin, checkout
         await redis_client.setex(key, CACHE_TTL_SECONDS, snapshot.model_dump_json())
+        if db is not None:
+            try:
+                from app.services.market_evidence import record_market_snapshot
+                await record_market_snapshot(db, property_, snapshot)
+            except Exception:
+                pass
         return snapshot
     finally:
         await redis_client.delete(lock_key)

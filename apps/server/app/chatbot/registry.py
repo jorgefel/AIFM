@@ -1127,12 +1127,18 @@ async def handle_recomendaciones(
         return_metadata=True,
     )
 
+    from app.services.market_evidence import get_market_evidence
+
+    market_data = await get_market_evidence(prop.id, db, prop)
+
     recs = generate_predictive_recommendations(
         property_id=str(prop.id),
         reservations=reservations,
         expenses=expenses,
         forecasts=forecasts,
         historical_count=historical_count,
+        market_data=market_data,
+        own_nightly_rate=float(prop.nightly_rate) if prop.nightly_rate is not None else None,
     )
 
     summary = f"Se determinaron {len(recs)} recomendaciones financieras basadas en tu evidencia histórica y proyecciones:"
@@ -1151,5 +1157,198 @@ async def handle_recomendaciones(
         [r["title"], r["action"], r["severity"].upper()]
         for r in recs
     ]
+
+    return build(summary=summary, metrics=metrics, columns=columns, rows=rows)
+
+
+@question(
+    id="posicion_mercado",
+    label="¿Cómo está mi precio frente a la competencia?",
+    category="Mercado",
+    match=[["precio", "tarifa", "posicion", "como", "donde", "nivel"], ["compet", "mercad"]],
+    priority=2,
+)
+async def handle_posicion_mercado(
+    db: AsyncSession,
+    prop: Property,
+    year: int | None = None,
+    month: int | None = None,
+) -> dict:
+    from app.services.market_evidence import get_market_evidence
+
+    market = await get_market_evidence(prop.id, db, prop)
+
+    if market.get("estado") == "sin_comparacion_vigente":
+        ultima = market.get("ultima_consulta")
+        msg_ultima = (
+            f"La última consulta registrada fue el {ultima}."
+            if ultima
+            else "Aún no se ha realizado ninguna consulta de competidores."
+        )
+        summary = (
+            f"No hay una comparación de mercado reciente en caché para esta propiedad. "
+            f"{msg_ultima} "
+            f"Puedes actualizar la búsqueda de competidores desde la sección Competidores en el menú de la propiedad."
+        )
+        metrics = [
+            {"label": "Estado del mercado", "value": "Sin datos vigentes", "format": "text"},
+            {"label": "Última consulta", "value": ultima or "Ninguna", "format": "text"},
+        ]
+        columns = ["Concepto", "Detalle"]
+        rows = [
+            ["Estado", "Sin datos vigentes en caché"],
+            ["Última consulta", ultima or "Ninguna registrada"],
+            ["Acción requerida", "Visitar sección Competidores para actualizar"],
+        ]
+        return build(summary=summary, metrics=metrics, columns=columns, rows=rows)
+
+    n = market.get("n_comparables", 0)
+    med = market.get("mediana_precio")
+    rango = market.get("rango") or {}
+    pos = market.get("posicion", "indeterminado")
+    fecha = market.get("fecha_consulta", "reciente")
+    p_min = rango.get("min")
+    p_max = rango.get("max")
+    own = float(prop.nightly_rate) if prop.nightly_rate is not None else None
+
+    own_str = f"{prop.currency} {own:,.2f}" if own is not None else "No configurado"
+    med_str = f"{prop.currency} {med:,.2f}" if med is not None else "N/A"
+    rango_str = (
+        f"{prop.currency} {p_min:,.2f} - {prop.currency} {p_max:,.2f}"
+        if (p_min is not None and p_max is not None)
+        else "N/A"
+    )
+
+    summary = (
+        f"Tu precio por noche ({own_str}) se encuentra {pos} en tu zona (mediana de {med_str}). "
+        f"Rango de competidores analizados ({n} propiedades): {rango_str}. "
+        f"(Datos consultados el {fecha})."
+    )
+
+    metrics = [
+        {"label": "Tu tarifa / noche", "value": own if own is not None else 0.0, "format": "currency"},
+        {"label": "Mediana del mercado", "value": med if med is not None else 0.0, "format": "currency"},
+        {"label": "Posición relativa", "value": pos.capitalize(), "format": "text"},
+        {"label": "Listings comparables", "value": n, "format": "number"},
+    ]
+
+    columns = ["Concepto", "Valor"]
+    rows = [
+        ["Tu tarifa por noche", own_str],
+        ["Mediana del mercado", med_str],
+        ["Rango mínimo - máximo", rango_str],
+        ["Posición relativa", pos.capitalize()],
+        ["Propiedades comparadas", n],
+        ["Fecha de captura", fecha],
+    ]
+
+    return build(summary=summary, metrics=metrics, columns=columns, rows=rows)
+
+
+@question(
+    id="historial_consejos",
+    label="¿Qué me recomendaste antes?",
+    category="Estrategia",
+    match=[["consejo", "recomend", "suger"], ["anterior", "pasad", "antes", "previo", "historial", "memori"]],
+    priority=2,
+)
+async def handle_historial_consejos(
+    db: AsyncSession,
+    prop: Property,
+    year: int | None = None,
+    month: int | None = None,
+) -> dict:
+    from app.services.advice_memory import get_advice_history
+    from app.services.forecast import generate_property_forecast
+    from app.services.market_evidence import get_market_evidence
+
+    res_result = await db.execute(
+        select(Reservation).where(Reservation.property_id == prop.id)
+    )
+    reservations = [
+        {
+            "id": str(r.id),
+            "total_amount": float(r.total_amount),
+            "platform_fee": float(r.platform_fee),
+            "net_amount": float(r.net_amount),
+            "status": r.status,
+            "check_in": r.check_in,
+            "check_out": r.check_out,
+        }
+        for r in res_result.scalars().all()
+    ]
+    exp_result = await db.execute(
+        select(Expense).where(Expense.property_id == prop.id)
+    )
+    expenses = [
+        {
+            "id": str(e.id),
+            "amount": float(e.amount),
+            "is_deleted": e.is_deleted,
+            "date": e.date,
+        }
+        for e in exp_result.scalars().all()
+    ]
+
+    forecasts, _, _ = generate_property_forecast(
+        property_id=str(prop.id),
+        reservations=reservations,
+        expenses=expenses,
+        steps=1,
+        return_metadata=True,
+    )
+    market_evidence = await get_market_evidence(prop.id, db, prop)
+
+    f0 = forecasts[0] if forecasts else None
+    current_metrics = {
+        "Proyección próximo mes": round(float(f0.projected_gross_income), 2) if f0 else 0.0,
+        "Ingreso proyectado": round(float(f0.projected_gross_income), 2) if f0 else 0.0,
+        "Beneficio neto proyectado": round(float(f0.projected_net_profit), 2) if f0 else 0.0,
+        "Tu tarifa": round(float(prop.nightly_rate), 2) if prop.nightly_rate is not None else 0.0,
+        "Mediana del mercado": round(float(market_evidence["mediana_precio"]), 2) if market_evidence.get("mediana_precio") else None,
+        "Competidores analizados": market_evidence.get("n_comparables", 0),
+        "Total reservas": len([r for r in reservations if r.get("status") not in ("cancelled",)]),
+    }
+
+    history = await get_advice_history(db, prop, limit=5, current_metrics=current_metrics)
+
+    if not history:
+        summary = (
+            "Aún no hay consejos anteriores registrados en la memoria para esta propiedad. "
+            "A medida que consultes recomendaciones y registres datos en el sistema, "
+            "aquí podrás auditar cada sugerencia y la evolución de sus cifras clave."
+        )
+        metrics = [
+            {"label": "Consejos en memoria", "value": 0, "format": "number"},
+            {"label": "Estado", "value": "Sin historial previo", "format": "text"},
+        ]
+        columns = ["Concepto", "Detalle"]
+        rows = [
+            ["Historial", "Sin registros previos"],
+            ["Acción sugerida", "Consulta 'Ver recomendaciones' para registrar nuevas metas"],
+        ]
+        return build(summary=summary, metrics=metrics, columns=columns, rows=rows)
+
+    summary = (
+        f"Historial de los últimos {len(history)} consejos registrados para esta propiedad "
+        f"con la evolución de sus métricas al día de hoy:"
+    )
+    metrics = [
+        {"label": "Consejos en memoria", "value": len(history), "format": "number"},
+        {"label": "Último consejo", "value": history[0]["as_of"], "format": "text"},
+    ]
+    columns = ["Fecha", "Consejo", "Acción recomendada", "Métrica entonces", "Métrica ahora", "Variación"]
+    rows = []
+    for adv in history:
+        then_items = [f"{k}: {v}" for k, v in adv["metricas_entonces"].items()]
+        now_items = [f"{k}: {v}" for k, v in adv["metricas_ahora"].items()]
+        rows.append([
+            adv["as_of"],
+            adv["title"],
+            adv["action"],
+            "; ".join(then_items) if then_items else "N/D",
+            "; ".join(now_items) if now_items else "N/D",
+            adv["variacion_resumen"],
+        ])
 
     return build(summary=summary, metrics=metrics, columns=columns, rows=rows)

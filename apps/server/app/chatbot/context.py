@@ -12,6 +12,8 @@ from app.models.reservation import Reservation
 from app.models.expense import Expense
 from app.services.forecast import generate_property_forecast
 from app.services.predictive_recommendations import generate_predictive_recommendations
+from app.services.market_evidence import get_market_evidence
+from app.services.advice_memory import get_advice_history, record_advice_batch
 
 
 def compact_result(result: dict[str, Any]) -> dict[str, Any]:
@@ -111,13 +113,38 @@ async def build_context(db: AsyncSession, prop: Property) -> dict[str, Any]:
         return_metadata=True,
     )
 
+    market_evidence = await get_market_evidence(prop.id, db, prop)
+
     recs = generate_predictive_recommendations(
         property_id=str(prop.id),
         reservations=reservations,
         expenses=expenses,
         forecasts=forecasts,
         historical_count=historical_count,
+        market_data=market_evidence,
+        own_nightly_rate=float(prop.nightly_rate) if prop.nightly_rate is not None else None,
     )
+
+    # Construir mapa de cifras actuales para evolución de consejos
+    f0 = forecasts[0] if forecasts else None
+    current_metrics = {
+        "Proyección próximo mes": round(float(f0.projected_gross_income), 2) if f0 else 0.0,
+        "Ingreso proyectado": round(float(f0.projected_gross_income), 2) if f0 else 0.0,
+        "Beneficio neto proyectado": round(float(f0.projected_net_profit), 2) if f0 else 0.0,
+        "Tu tarifa": round(float(prop.nightly_rate), 2) if prop.nightly_rate is not None else 0.0,
+        "Mediana del mercado": round(float(market_evidence["mediana_precio"]), 2) if market_evidence.get("mediana_precio") else None,
+        "Competidores analizados": market_evidence.get("n_comparables", 0),
+        "Total reservas": len([r for r in reservations if r.get("status") not in ("cancelled",)]),
+    }
+
+    # Memoria de consejos: obtener historial con métricas recalculadas
+    consejos_anteriores = await get_advice_history(db, prop, limit=5, current_metrics=current_metrics)
+
+    # Persistir las recomendaciones deterministas en Postgres (D6)
+    try:
+        await record_advice_batch(db, prop, recs)
+    except Exception:
+        pass
 
     proyeccion = {
         "modelo": meta["model"],
@@ -152,5 +179,7 @@ async def build_context(db: AsyncSession, prop: Property) -> dict[str, Any]:
         "mes_actual": mes_actual,
         "mes_anterior": mes_anterior,
         "proyeccion": proyeccion,
+        "mercado": market_evidence,
         "recomendaciones_predictivas": recs,
+        "consejos_anteriores": consejos_anteriores,
     }

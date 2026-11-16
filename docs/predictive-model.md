@@ -97,8 +97,68 @@ Donde $K = \min(6, n - 2)$ meses de prueba.
 
 ---
 
-## 6. Backlog: Puerta de Datos para CatBoost (Decisión D4)
+## 6. Backlog: Puerta de Datos para CatBoost Cuantílico (Decisión D4)
 
-CatBoost queda diferido para cuando la base de datos recopile la telemetría diaria de disponibilidad y anticipación de reserva. Su interfaz de entrada esperará:
-- Matriz de características por propiedad: capacidad, ratio de precio respecto a la mediana de mercado, días de anticipación promedio, tasa de cancelación histórica, estacionalidad del mes y tendencia del último trimestre.
-- Salida cuantílica (p10, p50, p90) para modelar incertidumbre asimétrica en arriendos turísticos.
+De acuerdo con la Decisión de Diseño **D4**, la implementación de un modelo basado en Gradient Boosting (CatBoost) se encuentra diferida en el backlog arquitectónico y **no forma parte de las dependencias activas** en producción.
+
+### 6.1 Justificación Técnica de la Postergación
+1. **Restricción de Recursos en Hosting (Render 512 MB RAM):** Las librerías de Machine Learning tabulares (`catboost`, `scipy`, `pandas`) aumentan el consumo de memoria en reposo e inferencia por encima de los 300–400 MB, arriesgando OOM (*Out Of Memory kills*) en instancias compartidas con FastAPI y SQLAlchemy.
+2. **Ausencia de Telemetría Granular:** Entrenar un modelo no paramétrico complejo sobre datos agregados mensuales conduce a sobreajuste (*overfitting*) severo. Holt / Holt-Winters ofrecen una relación señal/ruido superior cuando solo se dispone de fechas de entrada/salida e importes.
+
+---
+
+### 6.2 Puerta de Datos Requerida (*Data Gate Checklist*)
+
+Para que la transición hacia CatBoost sea viable y aporte valor predictivo real sobre el baseline estadístico actual, deben cumplirse las siguientes precondiciones de telemetría en base de datos:
+
+| Precondición | Instrumentación Requerida | Estado Actual | Criterio de Aprobación |
+| :--- | :--- | :---: | :--- |
+| **1. Calendario de disponibilidad diaria** | Tabla `daily_calendar` con estado por noche (`available`, `booked`, `host_blocked`). | ❌ Pendiente | Mínimo 12 meses continuos de disponibilidad diaria registrada por propiedad. |
+| **2. Telemetría de Lead Time** | Marca temporal de creación de reserva (`created_at`) vs fecha de `check_in`. | ⚠️ Parcial (`created_at` existe pero no se indexa para agregaciones temporales) | Registro sistemático de días de anticipación en todas las plataformas sincronizadas. |
+| **3. Histórico de tarifas dinámicas** | Registro de cambios en `nightly_rate` cotizado a lo largo del tiempo. | ❌ Solo existe tarifa estática actual | Tabla de series temporales de precios cotizados por fecha. |
+| **4. Métricas de embudo y búsqueda** | Impresiones de anuncio, visitas a ficha y tasa de conversión de vistas a reservas. | ❌ No disponible | Conexión con métricas de búsqueda de Airbnb / Vrbo o analítica de motor directo. |
+| **5. Señales de demanda externa** | Festivos locales, puentes festivos, eventos masivos (conciertos, convenciones). | ❌ No disponible | Calendario de eventos hiperlocales parametrizado por ciudad. |
+
+---
+
+### 6.3 Especificación de Interfaz de Inferencia (Contrato Futuro)
+
+Cuando la puerta de datos se abra, CatBoost se integrará tras una interfaz desacoplada (preferiblemente un microservicio o runtime C++/ONNX ligero):
+
+#### Matriz de Características de Entrada (Features Vector):
+```json
+{
+  "property_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "target_month": "2027-01",
+  "numeric_features": {
+    "capacity_guests": 4,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "lead_time_median_days": 18.5,
+    "cancellation_rate_trailing_90d": 0.08,
+    "price_to_market_median_ratio": 1.05,
+    "competitors_count_5km": 42,
+    "occupancy_rate_trailing_30d": 0.65,
+    "occupancy_rate_trailing_90d": 0.58,
+    "external_event_intensity_score": 1.4
+  },
+  "categorical_features": {
+    "property_type": "apartment",
+    "neighborhood": "Bocagrande",
+    "primary_platform": "airbnb",
+    "seasonality_tier": "high"
+  },
+  "cyclical_features": {
+    "month_sin": 0.5,
+    "month_cos": 0.866
+  }
+}
+```
+
+#### Salida Cuantílica Asimétrica (MultiQuantile Loss):
+El modelo predecirá tres cuantiles $\alpha = [0.10, 0.50, 0.90]$ para modelar con precisión la dispersión del ingreso y beneficio:
+- **`q10` (Banda pesimista / piso comercial):** Riesgo de baja demanda o cancelaciones tardías.
+- **`q50` (Mediana esperada):** Estimador central insesgado.
+- **`q90` (Banda optimista / techo de temporada):** Ocupación plena con tarifas pico.
+
+El contrato de salida respetará exactamente el esquema actual `PropertyForecastResponse` (reemplazando `gross_income_min` con $q_{10}$ y `gross_income_max` con $q_{90}$), garantizando compatibilidad retroactiva total con el frontend y el chatbot.

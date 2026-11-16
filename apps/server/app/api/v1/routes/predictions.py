@@ -73,13 +73,26 @@ async def get_forecast(
         return_metadata=True,
     )
 
+    from app.services.market_evidence import get_market_evidence
+
+    market_data = await get_market_evidence(property_id, db, property_obj)
+
     recs = generate_predictive_recommendations(
         property_id=str(property_id),
         reservations=reservations,
         expenses=expenses,
         forecasts=forecasts,
         historical_count=historical_count,
+        market_data=market_data,
+        own_nightly_rate=float(property_obj.nightly_rate) if property_obj.nightly_rate is not None else None,
     )
+
+    # Persistir en memoria determinista (D6)
+    try:
+        from app.services.advice_memory import record_advice_batch
+        await record_advice_batch(db, property_obj, recs)
+    except Exception:
+        pass
 
     return PropertyForecastResponse(
         kind="financial_forecast",

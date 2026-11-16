@@ -216,9 +216,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/models/__init__.py": {
-    "mtime": 1791316359.4493961,
-    "seen": 1791900058.2388291,
-    "ast_hash": "aa9f5145a67e9a2ecd02e8c718a36ac3",
+    "mtime": 1794869319.4036446,
+    "seen": 1794869968.8978722,
+    "ast_hash": "5c3a047aeb0b710743395cd78d20fdd9",
     "semantic_hash": ""
   },
   "apps/server/app/models/base.py": {
@@ -474,8 +474,8 @@
     "semantic_hash": "0268dc97f32e8ef29a38a9724d5b79c9"
   },
   "apps/web/src/app/page.tsx": {
-    "mtime": 1794866346.155876,
-    "seen": 1794866624.500652,
+    "mtime": 1794867272.6116867,
+    "seen": 1794868239.845118,
     "ast_hash": "86695ecff42418bd0bad59bfa56c414d",
     "semantic_hash": ""
   },
@@ -1878,9 +1878,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/predictions.py": {
-    "mtime": 1794866215.3917582,
-    "seen": 1794866624.50042,
-    "ast_hash": "529ff91adcd008e445b635788e9cb04f",
+    "mtime": 1794869108.9183571,
+    "seen": 1794869284.639108,
+    "ast_hash": "9ba02b22d9210f13b0b38ba0a8b05abd",
     "semantic_hash": ""
   },
   "apps/server/app/core/rate_limit.py": {
@@ -1890,8 +1890,8 @@
     "semantic_hash": ""
   },
   "apps/server/app/schemas/forecast.py": {
-    "mtime": 1794866089.1341524,
-    "seen": 1794866624.500505,
+    "mtime": 1794867272.4406888,
+    "seen": 1794868239.844971,
     "ast_hash": "56440fe8c105a8bef8fa4b3cdd927514",
     "semantic_hash": ""
   },
@@ -2316,8 +2316,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {
-    "mtime": 1794866336.9667554,
-    "seen": 1794866624.500743,
+    "mtime": 1794867272.8376853,
+    "seen": 1794868239.8452094,
     "ast_hash": "8e67359e480221de5c0ec8399e77add3",
     "semantic_hash": ""
   },
@@ -2436,9 +2436,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/competitors.py": {
-    "mtime": 1793682211.157389,
-    "seen": 1793682255.2096727,
-    "ast_hash": "592fc37a1a972a6277caa99b78d4cbf8",
+    "mtime": 1794868921.0700366,
+    "seen": 1794869284.6390712,
+    "ast_hash": "ca23dafb3dd9da7eae94a262e438eca2",
     "semantic_hash": ""
   },
   "apps/server/app/schemas/competitors.py": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/service.py": {
-    "mtime": 1793682210.174979,
-    "seen": 1793682255.2097874,
-    "ast_hash": "f6f6c507a10492bfa03224eea12972fb",
+    "mtime": 1794868921.7316544,
+    "seen": 1794869284.6392589,
+    "ast_hash": "c669079258c293557b2d9fcbbe36581c",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_competitors.py": {
@@ -2490,15 +2490,15 @@
     "semantic_hash": ""
   },
   "apps/server/app/chatbot/context.py": {
-    "mtime": 1794866236.1302695,
-    "seen": 1794866624.5004334,
-    "ast_hash": "aab160bb123a93cb6469fd14c48b546f",
+    "mtime": 1794869096.965752,
+    "seen": 1794869284.6391375,
+    "ast_hash": "fb82ae92c0a483426d60c7b37222bb42",
     "semantic_hash": ""
   },
   "apps/server/app/chatbot/registry.py": {
-    "mtime": 1794866542.677297,
-    "seen": 1794866624.5004354,
-    "ast_hash": "ed425636232bddb4426974af7744c03b",
+    "mtime": 1794869137.0204456,
+    "seen": 1794869284.6391401,
+    "ast_hash": "eb034bb59ab690adcc49b9974a9ad6b2",
     "semantic_hash": ""
   },
   "apps/server/app/chatbot/routing.py": {
@@ -2508,9 +2508,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/chatbot/test_chatbot.py": {
-    "mtime": 1794866429.9488065,
-    "seen": 1794866624.5005624,
-    "ast_hash": "ab76dbf2cb8e0f3934dce0c2539327f4",
+    "mtime": 1794869178.5045457,
+    "seen": 1794869284.6392925,
+    "ast_hash": "a5d1d25f0f550b96633f0c33cbffab7f",
     "semantic_hash": ""
   },
   "apps/web/src/components/chatbot/Chatbot.tsx": {
@@ -2532,15 +2532,15 @@
     "semantic_hash": ""
   },
   "docs/predictive-model.md": {
-    "mtime": 1794864765.1776047,
-    "seen": 1794865060.2806334,
-    "ast_hash": "1b66416265271303f2848ecfaa495663",
+    "mtime": 1794869861.937608,
+    "seen": 1794869968.8987806,
+    "ast_hash": "962ff41085bfce1b648b301f4742552d",
     "semantic_hash": ""
   },
   "apps/server/app/services/predictive_recommendations.py": {
-    "mtime": 1794866119.9404118,
-    "seen": 1794866624.5005438,
-    "ast_hash": "20654ce2358c3043ca29c6a0f421654e",
+    "mtime": 1794868922.0133073,
+    "seen": 1794869284.639271,
+    "ast_hash": "6c62ec14f309eea6d0c8f008f0ed4005",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_predictive_recommendations.py": {
@@ -2565,6 +2565,78 @@
     "mtime": 1794865792.693503,
     "seen": 1794866624.5007443,
     "ast_hash": "b61535de0fff151b54febedd38099de9",
+    "semantic_hash": ""
+  },
+  "apps/server/alembic/versions/e2f3a4b5c6d7_add_market_snapshots.py": {
+    "mtime": 1794868126.1786158,
+    "seen": 1794868239.8448277,
+    "ast_hash": "623607ff991ff0be84aec5b816fa8f80",
+    "semantic_hash": ""
+  },
+  "apps/server/app/models/market_snapshot.py": {
+    "mtime": 1794867794.1662364,
+    "seen": 1794868239.8449416,
+    "ast_hash": "cf5d25b431f9497fad0d5d71b084fa8d",
+    "semantic_hash": ""
+  },
+  "apps/server/app/services/market_evidence.py": {
+    "mtime": 1794867864.704877,
+    "seen": 1794868239.8450062,
+    "ast_hash": "5a91d63e990f33148c2135b64501c659",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/services/test_market_evidence.py": {
+    "mtime": 1794868106.7079196,
+    "seen": 1794868239.8450637,
+    "ast_hash": "7cbad1d3946ba6f7205fa8f68dadd324",
+    "semantic_hash": ""
+  },
+  "apps/server/alembic/versions/f3a4b5c6d7e8_add_chatbot_advice.py": {
+    "mtime": 1794869000.0924213,
+    "seen": 1794869284.6390235,
+    "ast_hash": "d397c50bbf088aeab288c1ae32f5119a",
+    "semantic_hash": ""
+  },
+  "apps/server/app/models/chatbot_advice.py": {
+    "mtime": 1794868976.2831275,
+    "seen": 1794869284.639181,
+    "ast_hash": "616e25fa2adb94db6b9bebb5b4b98775",
+    "semantic_hash": ""
+  },
+  "apps/server/app/services/advice_memory.py": {
+    "mtime": 1794869047.0205505,
+    "seen": 1794869284.6392357,
+    "ast_hash": "4e2a6e722228b6f838f5f7fca56f65a9",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/services/test_advice_memory.py": {
+    "mtime": 1794869161.138798,
+    "seen": 1794869284.6393564,
+    "ast_hash": "b890db2455243f08164b64e26b1684ba",
+    "semantic_hash": ""
+  },
+  "apps/server/scripts/__init__.py": {
+    "mtime": 1794869878.777949,
+    "seen": 1794869968.8980014,
+    "ast_hash": "46b4e270c5951e04aa00fc56e7050554",
+    "semantic_hash": ""
+  },
+  "apps/server/scripts/seed_demo.py": {
+    "mtime": 1794869793.358658,
+    "seen": 1794869968.8980043,
+    "ast_hash": "84c7fcc22cc256e9bf9439d6e1925f53",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/services/test_seed_demo.py": {
+    "mtime": 1794869802.5569978,
+    "seen": 1794869968.8980715,
+    "ast_hash": "81af7ec0dbced0daeeb0fb6f93892eb9",
+    "semantic_hash": ""
+  },
+  "docs/chatbot-demo.md": {
+    "mtime": 1794869846.8335469,
+    "seen": 1794869968.8987765,
+    "ast_hash": "5031c93652490ace5abc67b9801e8072",
     "semantic_hash": ""
   }
 }

@@ -738,3 +738,154 @@ async def test_handler_recomendaciones(mock_property):
     assert len(result["table"]["rows"]) >= 1
     # Primera fila debe ser información insuficiente porque no hay reservas mockeadas
     assert "insuficiente" in result["table"]["rows"][0][0].lower()
+
+
+# ─────────────────────────────────────────────────────────────
+# 7. Tests Sprint 7: Comparación de Mercado como Evidencia
+# ─────────────────────────────────────────────────────────────
+
+
+def test_routing_posicion_mercado():
+    """Verifica enrutamiento de preguntas de posición de mercado a Capa 1."""
+    q1, _ = match_question("¿Cómo está mi precio frente a la competencia?")
+    assert q1 is not None
+    assert q1.id == "posicion_mercado"
+
+    q2, _ = match_question("¿Cómo estoy frente al mercado?")
+    assert q2 is not None
+    assert q2.id == "posicion_mercado"
+
+    q3, _ = match_question("Posición de mercado")
+    assert q3 is not None
+    assert q3.id == "posicion_mercado"
+
+
+@pytest.mark.asyncio
+async def test_handler_posicion_mercado_active_data(mock_property):
+    db = AsyncMock()
+    mock_property.nightly_rate = 150.0
+
+    sample_market = {
+        "fecha_consulta": "2026-11-16",
+        "n_comparables": 10,
+        "mediana_precio": 140.0,
+        "rango": {"min": 100.0, "max": 200.0},
+        "posicion": "por encima de la mediana",
+        "currency": "USD",
+    }
+
+    with patch("app.services.market_evidence.get_market_evidence", new_callable=AsyncMock) as mock_get_ev:
+        mock_get_ev.return_value = sample_market
+
+        handler = REGISTRY["posicion_mercado"].handler
+        result = await handler(db, mock_property)
+
+        assert "por encima de la mediana" in result["summary"]
+        assert "10 propiedades" in result["summary"]
+        metrics = {m["label"]: m["value"] for m in result["metrics"]}
+        assert metrics["Tu tarifa / noche"] == 150.0
+        assert metrics["Mediana del mercado"] == 140.0
+        assert metrics["Listings comparables"] == 10
+
+
+@pytest.mark.asyncio
+async def test_handler_posicion_mercado_without_data(mock_property):
+    db = AsyncMock()
+    no_data_market = {
+        "estado": "sin_comparacion_vigente",
+        "ultima_consulta": "2026-11-01",
+    }
+
+    with patch("app.services.market_evidence.get_market_evidence", new_callable=AsyncMock) as mock_get_ev:
+        mock_get_ev.return_value = no_data_market
+
+        handler = REGISTRY["posicion_mercado"].handler
+        result = await handler(db, mock_property)
+
+        assert "No hay una comparación de mercado reciente" in result["summary"]
+        assert "2026-11-01" in result["summary"]
+        metrics = {m["label"]: m["value"] for m in result["metrics"]}
+        assert metrics["Estado del mercado"] == "Sin datos vigentes"
+        assert metrics["Última consulta"] == "2026-11-01"
+
+
+# ─────────────────────────────────────────────────────────────
+# 8. Tests Sprint 8: Memoria de Consejos y Variación de Cifras
+# ─────────────────────────────────────────────────────────────
+
+
+def test_routing_historial_consejos():
+    """Verifica enrutamiento de consultas de memoria de consejos a Capa 1."""
+    q1, _ = match_question("¿Qué me recomendaste antes?")
+    assert q1 is not None
+    assert q1.id == "historial_consejos"
+
+    q2, _ = match_question("Historial de consejos")
+    assert q2 is not None
+    assert q2.id == "historial_consejos"
+
+    q3, _ = match_question("Consejos anteriores")
+    assert q3 is not None
+    assert q3.id == "historial_consejos"
+
+
+@pytest.mark.asyncio
+async def test_handler_historial_consejos_empty(mock_property):
+    db = AsyncMock()
+    mock_scalars = MagicMock()
+    mock_scalars.all.return_value = []
+    mock_res = MagicMock()
+    mock_res.scalars.return_value = mock_scalars
+    db.execute.return_value = mock_res
+
+    with patch("app.services.advice_memory.get_advice_history", new_callable=AsyncMock) as mock_get_hist:
+        mock_get_hist.return_value = []
+
+        handler = REGISTRY["historial_consejos"].handler
+        result = await handler(db, mock_property)
+
+        assert "Aún no hay consejos anteriores registrados" in result["summary"]
+        metrics = {m["label"]: m["value"] for m in result["metrics"]}
+        assert metrics["Consejos en memoria"] == 0
+        assert metrics["Estado"] == "Sin historial previo"
+
+
+@pytest.mark.asyncio
+async def test_handler_historial_consejos_with_history(mock_property):
+    db = AsyncMock()
+    mock_scalars = MagicMock()
+    mock_scalars.all.return_value = []
+    mock_res = MagicMock()
+    mock_res.scalars.return_value = mock_scalars
+    db.execute.return_value = mock_res
+
+    sample_hist = [
+        {
+            "id": str(uuid.uuid4()),
+            "rec_key": "rec-trend-positive",
+            "title": "Ingresos al alza",
+            "action": "Mantener tarifa actual",
+            "as_of": "2026-10-15",
+            "as_of_month": "2026-10",
+            "metricas_entonces": {"Proyección próximo mes": 1500.0},
+            "metricas_ahora": {"Proyección próximo mes": 1800.0},
+            "variacion_resumen": "Proyección próximo mes: +300.00 (+20.0%)",
+        }
+    ]
+
+    with patch("app.services.advice_memory.get_advice_history", new_callable=AsyncMock) as mock_get_hist:
+        mock_get_hist.return_value = sample_hist
+
+        handler = REGISTRY["historial_consejos"].handler
+        result = await handler(db, mock_property)
+
+        assert "Historial de los últimos 1 consejos" in result["summary"]
+        metrics = {m["label"]: m["value"] for m in result["metrics"]}
+        assert metrics["Consejos en memoria"] == 1
+        assert len(result["table"]["rows"]) == 1
+        row = result["table"]["rows"][0]
+        assert row[0] == "2026-10-15"
+        assert row[1] == "Ingresos al alza"
+        assert "+300.00 (+20.0%)" in row[5]
+
+

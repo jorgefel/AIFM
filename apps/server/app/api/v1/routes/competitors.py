@@ -20,7 +20,7 @@ async def read_competitors(
 ):
     property_ = await verify_property_access(property_id, current_user, db)
     try:
-        return await get_competitors(property_, fallback_to_city=fallback_to_city, force=force)
+        return await get_competitors(property_, fallback_to_city=fallback_to_city, force=force, db=db)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except ProviderUnavailableError as exc:

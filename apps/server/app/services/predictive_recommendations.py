@@ -11,10 +11,13 @@ def generate_predictive_recommendations(
     expenses: List[Dict[str, Any]],
     forecasts: Optional[List[Any]] = None,
     historical_count: Optional[int] = None,
+    market_data: Optional[Dict[str, Any]] = None,
+    own_nightly_rate: Optional[float] = None,
 ) -> List[Dict[str, Any]]:
     """Genera recomendaciones financieras determinísticas basadas estrictamente
 
-    en el histórico propio de la propiedad y sus proyecciones estadísticas (Regla 8 y 10).
+    en el histórico propio de la propiedad, sus proyecciones estadísticas y evidencia
+    de mercado de competidores (Regla 8 y 10).
     Sin porcentajes inventados ni métricas ficticias.
     """
     today = date.today()
@@ -208,5 +211,109 @@ def generate_predictive_recommendations(
                 "as_of": today_str,
             }
         )
+
+    # 6. Recomendación de Tarifa vs Competencia de Mercado
+    if (
+        market_data
+        and market_data.get("estado") != "sin_comparacion_vigente"
+        and market_data.get("mediana_precio") is not None
+        and own_nightly_rate is not None
+        and own_nightly_rate > 0
+    ):
+        med = float(market_data["mediana_precio"])
+        n_comp = market_data.get("n_comparables", 0)
+        curr = market_data.get("currency", "MXN")
+
+        if own_nightly_rate < med * 0.85:
+            # Tarifa baja respecto a mercado
+            if avg_recent > 0 and proj_gross >= avg_recent:
+                # Ocupación/ingresos positivos + precio bajo = evidencia de ambos
+                recommendations.append(
+                    {
+                        "id": "rec-price-market-low-both",
+                        "title": "Oportunidad de incremento de tarifa",
+                        "action": f"Evalúa incrementar tu tarifa base hacia la mediana del mercado ({curr} {med:,.2f}) para capturar mayor margen sin comprometer demanda.",
+                        "reason": f"Tus ingresos proyectados son estables o crecientes y tu tarifa actual ({curr} {own_nightly_rate:,.2f}) se encuentra más del 15% por debajo de los competidores locales.",
+                        "evidence": [
+                            {"label": "Tu tarifa", "value": round(own_nightly_rate, 2)},
+                            {"label": "Mediana del mercado", "value": round(med, 2)},
+                            {"label": "Competidores analizados", "value": n_comp},
+                        ],
+                        "severity": "info",
+                        "evidence_source": "both",
+                        "as_of": today_str,
+                    }
+                )
+            else:
+                recommendations.append(
+                    {
+                        "id": "rec-price-market-low",
+                        "title": "Tarifa por debajo de la mediana del mercado",
+                        "action": f"Considera ajustar tu tarifa base hacia la mediana local ({curr} {med:,.2f}).",
+                        "reason": f"Tu precio por noche se ubica significativamente por debajo de los comparables de tu zona.",
+                        "evidence": [
+                            {"label": "Tu tarifa", "value": round(own_nightly_rate, 2)},
+                            {"label": "Mediana del mercado", "value": round(med, 2)},
+                            {"label": "Competidores analizados", "value": n_comp},
+                        ],
+                        "severity": "info",
+                        "evidence_source": "market",
+                        "as_of": today_str,
+                    }
+                )
+        elif own_nightly_rate > med * 1.25:
+            # Tarifa alta respecto a mercado
+            if avg_recent > 0 and proj_gross < avg_recent * 0.95:
+                # Desaceleración + precio alto = riesgo evidenciado por ambos
+                recommendations.append(
+                    {
+                        "id": "rec-price-market-high-both",
+                        "title": "Riesgo de tarifa desalineada con el mercado",
+                        "action": "Flexibiliza tu tarifa en días de baja demanda u ofrece promociones para reactivar el ritmo de reservas.",
+                        "reason": f"Tus ingresos proyectados muestran desaceleración mientras que tu tarifa ({curr} {own_nightly_rate:,.2f}) supera en más del 25% la mediana de los competidores locales.",
+                        "evidence": [
+                            {"label": "Tu tarifa", "value": round(own_nightly_rate, 2)},
+                            {"label": "Mediana del mercado", "value": round(med, 2)},
+                            {"label": "Competidores analizados", "value": n_comp},
+                        ],
+                        "severity": "warning",
+                        "evidence_source": "both",
+                        "as_of": today_str,
+                    }
+                )
+            else:
+                recommendations.append(
+                    {
+                        "id": "rec-price-market-high",
+                        "title": "Tarifa por encima de la mediana del mercado",
+                        "action": "Asegúrate de que tus amenidades distintivas y valor agregado justifiquen la prima sobre los competidores para sostener la ocupación.",
+                        "reason": f"Tu tarifa supera en más del 25% la mediana de los comparables en tu zona.",
+                        "evidence": [
+                            {"label": "Tu tarifa", "value": round(own_nightly_rate, 2)},
+                            {"label": "Mediana del mercado", "value": round(med, 2)},
+                            {"label": "Competidores analizados", "value": n_comp},
+                        ],
+                        "severity": "info",
+                        "evidence_source": "market",
+                        "as_of": today_str,
+                    }
+                )
+        else:
+            recommendations.append(
+                {
+                    "id": "rec-price-market-aligned",
+                    "title": "Tarifa competitiva alineada con el mercado",
+                    "action": "Mantén la estrategia tarifaria actual y monitorea fluctuaciones en fechas de alta demanda.",
+                    "reason": f"Tu precio por noche está en sintonía con la mediana de los competidores de la zona ({curr} {med:,.2f}).",
+                    "evidence": [
+                        {"label": "Tu tarifa", "value": round(own_nightly_rate, 2)},
+                        {"label": "Mediana del mercado", "value": round(med, 2)},
+                        {"label": "Competidores analizados", "value": n_comp},
+                    ],
+                    "severity": "info",
+                    "evidence_source": "market",
+                    "as_of": today_str,
+                }
+            )
 
     return recommendations
