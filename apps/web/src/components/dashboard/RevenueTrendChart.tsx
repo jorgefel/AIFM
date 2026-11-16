@@ -80,8 +80,8 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
             <AreaChart data={chartPoints} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <defs>
                 <linearGradient id="portfolioRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7C5CFC" stopOpacity={0.28} />
-                  <stop offset="95%" stopColor="#7C5CFC" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#9333EA" stopOpacity={0.45} />
+                  <stop offset="95%" stopColor="#9333EA" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="projectedRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#EC4899" stopOpacity={0.25} />
@@ -119,11 +119,11 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#7C5CFC"
+                stroke="#A855F7"
                 strokeWidth={2.5}
                 fill="url(#portfolioRevenue)"
                 dot={false}
-                activeDot={{ r: 5, fill: "#7C5CFC", stroke: theme.dotStroke, strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: "#A855F7", stroke: theme.dotStroke, strokeWidth: 2 }}
               />
               <Area
                 type="monotone"

@@ -27,9 +27,9 @@ export function GlassLayout({ children }: GlassLayoutProps) {
       {/* Fondo claro de la app */}
       <div className="flex h-screen-safe overflow-hidden bg-surface relative">
 
-        {/* Manchas de color muy sutiles para dar profundidad sin perder legibilidad */}
-        <div className="absolute top-[-15%] right-[10%] w-[35%] h-[35%] rounded-full bg-violet-300/20 blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-[-15%] left-[20%] w-[30%] h-[30%] rounded-full bg-cyan-300/20 blur-[140px] pointer-events-none" />
+        {/* Resplandores violeta y fucsia detrás del contenido */}
+        <div className="app-glow-a absolute top-[-18%] right-[-6%] w-[42%] h-[48%] rounded-full blur-[110px] pointer-events-none" />
+        <div className="app-glow-b absolute bottom-[-20%] left-[18%] w-[38%] h-[42%] rounded-full blur-[120px] pointer-events-none" />
 
         {/* Sidebar oscuro flotante (desktop/tablet) */}
         <div className="hidden md:flex shrink-0 py-3 pl-3">

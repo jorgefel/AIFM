@@ -131,11 +131,12 @@ function PlansContent() {
       animate="show"
       className="mx-auto max-w-5xl space-y-12"
     >
-      <motion.header variants={itemVariants} className="space-y-3 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-          Elige cómo administrar tu alquiler
+      <motion.header variants={itemVariants} className="space-y-4 text-center">
+        <p className="text-sm font-semibold text-ink-muted">Planes Nomora</p>
+        <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-6xl">
+          Elige cómo <span className="text-gradient">administrar tu alquiler</span>
         </h1>
-        <p className="mx-auto max-w-xl text-ink-muted">
+        <p className="mx-auto max-w-xl text-lg text-ink-muted">
           Empieza gratis con el registro manual y activa Pro cuando necesites automatización e
           inteligencia.
         </p>
