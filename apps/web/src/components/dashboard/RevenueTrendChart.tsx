@@ -39,7 +39,7 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
       }
       chartPoints.push({
         key: f.month,
-        label: `${baseLabel} (IA)`,
+        label: `${baseLabel} (Pronóstico)`,
         revenue: undefined as any,
         occupancy: 0,
         projected: f.projected_gross_income,
@@ -65,7 +65,7 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
         {forecast && forecast.length > 0 && (
           <div className="inline-flex items-center gap-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-400">
             <Sparkles className="h-3 w-3" />
-            <span>+3M Proyectados IA</span>
+            <span>Pronóstico estadístico</span>
           </div>
         )}
       </header>

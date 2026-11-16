@@ -78,9 +78,9 @@
     "semantic_hash": "8599515097361be7c37ed627730f0226"
   },
   "apps/server/app/api/v1/api.py": {
-    "mtime": 1793675425.2264347,
-    "seen": 1793675739.8168864,
-    "ast_hash": "8b3c9828664c021048378b71cfc8f636",
+    "mtime": 1794818354.2879314,
+    "seen": 1794818570.2238634,
+    "ast_hash": "0684bc571acccaefb8e2203eac948284",
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/__init__.py": {
@@ -156,9 +156,9 @@
     "semantic_hash": "a870b2e3ad23f7381029a9abe9baffd2"
   },
   "apps/server/app/core/config.py": {
-    "mtime": 1793681954.3923726,
-    "seen": 1793682125.473296,
-    "ast_hash": "f968885a6b55389b23b50afc545b5cbb",
+    "mtime": 1794819292.6911068,
+    "seen": 1794819716.1398916,
+    "ast_hash": "c49d0655342d9386c598ec1d50719c26",
     "semantic_hash": ""
   },
   "apps/server/app/core/database.py": {
@@ -210,9 +210,9 @@
     "semantic_hash": "86c8d4e903d3d6bd02ecc2f489dfe49e"
   },
   "apps/server/app/engine/golden_rule.py": {
-    "mtime": 1791316496.4880755,
-    "seen": 1791900058.2388272,
-    "ast_hash": "fc5ef8e01e846d20b278caf342b9a83f",
+    "mtime": 1794819366.7899175,
+    "seen": 1794819716.1399121,
+    "ast_hash": "d54270c9958e6bed768f00b6fdfb5e00",
     "semantic_hash": ""
   },
   "apps/server/app/models/__init__.py": {
@@ -378,10 +378,10 @@
     "semantic_hash": "01c6a2ad901fb0e311ce9f5f6ec2b165"
   },
   "apps/web/eslint.config.mjs": {
-    "mtime": 1783536806.1934917,
-    "seen": 1790986749.3485014,
-    "ast_hash": "af66157abb5a9567d9b1fde5566b6f4d",
-    "semantic_hash": "af66157abb5a9567d9b1fde5566b6f4d"
+    "mtime": 1794862717.3817422,
+    "seen": 1794862793.2362752,
+    "ast_hash": "cd9042b25769dae2408c82f49ad4fe36",
+    "semantic_hash": ""
   },
   "apps/web/next.config.ts": {
     "mtime": 1791316485.3354697,
@@ -720,9 +720,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/GlassLayout.tsx": {
-    "mtime": 1791317715.1743016,
-    "seen": 1791900058.2391412,
-    "ast_hash": "59b22d275a8aa900ee0cf4ffbf511a3d",
+    "mtime": 1794863016.0878642,
+    "seen": 1794863315.7695222,
+    "ast_hash": "f6fe63c353966d97cc29b9fb363516cf",
     "semantic_hash": ""
   },
   "apps/web/src/components/layout/glass/GlassSidebar.tsx": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/types/models.ts": {
-    "mtime": 1793675454.2824712,
-    "seen": 1793675739.8175452,
-    "ast_hash": "eb325d7c3a00f241fd9bd17f3f486c04",
+    "mtime": 1794864931.4812415,
+    "seen": 1794865060.2804022,
+    "ast_hash": "04bdaa4680a30764a5a776ee5ca5dd05",
     "semantic_hash": ""
   },
   "apps/web/tsconfig.json": {
@@ -1878,9 +1878,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/predictions.py": {
-    "mtime": 1791763019.6339493,
-    "seen": 1791900058.238793,
-    "ast_hash": "ad9523172aa54d2fd7a797c31d6b32c1",
+    "mtime": 1794864838.4127862,
+    "seen": 1794865060.2798812,
+    "ast_hash": "3ba26b2132cced84140115524d353901",
     "semantic_hash": ""
   },
   "apps/server/app/core/rate_limit.py": {
@@ -1890,21 +1890,21 @@
     "semantic_hash": ""
   },
   "apps/server/app/schemas/forecast.py": {
-    "mtime": 1791762983.5382507,
-    "seen": 1791900058.2388682,
-    "ast_hash": "384fc6cb2b380277dcc5fbcdb8b4859c",
+    "mtime": 1794864777.4539957,
+    "seen": 1794865060.279966,
+    "ast_hash": "55cce09559a3617da8dbaee47a2bb195",
     "semantic_hash": ""
   },
   "apps/server/app/services/forecast.py": {
-    "mtime": 1792052473.2798152,
-    "seen": 1792052718.2626336,
-    "ast_hash": "7b45a1ed4543ebe60ebecd0528b32628",
+    "mtime": 1794864889.3261178,
+    "seen": 1794865060.2799983,
+    "ast_hash": "b2db00cb3b7a5a6495859eb3b9590df5",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_forecast.py": {
-    "mtime": 1791763109.2607465,
-    "seen": 1791900058.2389677,
-    "ast_hash": "67e907c14ce13eadbc6154974dec3f99",
+    "mtime": 1794864894.8696685,
+    "seen": 1794865060.2800553,
+    "ast_hash": "54e17a469848f2a0532163f18c2cd94a",
     "semantic_hash": ""
   },
   "apps/web/src/app/analytics/layout.tsx": {
@@ -1914,9 +1914,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/analytics/page.tsx": {
-    "mtime": 1792052639.7439618,
-    "seen": 1792052718.2626982,
-    "ast_hash": "4e0b1a2743c24bc3c18784d2ba90a25f",
+    "mtime": 1794864999.770905,
+    "seen": 1794865060.280072,
+    "ast_hash": "30455d1830eadaf575ecc9ce063a98f0",
     "semantic_hash": ""
   },
   "apps/web/src/app/plans/layout.tsx": {
@@ -1950,9 +1950,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/analytics/AnalyticsCharts.tsx": {
-    "mtime": 1791898396.698799,
-    "seen": 1791900058.2390559,
-    "ast_hash": "47f5291cfd154d56bef75700d5930f8b",
+    "mtime": 1794864940.8208349,
+    "seen": 1794865060.280155,
+    "ast_hash": "2f2d809dbca5fe157f1c8eec97d484e7",
     "semantic_hash": ""
   },
   "apps/web/src/components/analytics/ChannelDonut.tsx": {
@@ -2022,9 +2022,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/RevenueTrendChart.tsx": {
-    "mtime": 1792052473.2838154,
-    "seen": 1792052718.2628248,
-    "ast_hash": "9be5b85fc1b9759b82cb9c83b6a82ea4",
+    "mtime": 1794864963.437101,
+    "seen": 1794865060.2802036,
+    "ast_hash": "29c97d24d8d6c88df379846b5b3cacb3",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/TrendBadge.tsx": {
@@ -2316,9 +2316,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {
-    "mtime": 1792051935.9676366,
-    "seen": 1792052037.0995882,
-    "ast_hash": "2618e62cb60751dcec0827cb39cf47fc",
+    "mtime": 1794864949.9430232,
+    "seen": 1794865060.2801976,
+    "ast_hash": "861e7e20260db0df66883c0465681466",
     "semantic_hash": ""
   },
   "AIFM-Brain/propuestas/comparacion_alojamientos_cercanos.md": {
@@ -2475,6 +2475,66 @@
     "mtime": 1793682184.9305682,
     "seen": 1793682255.2098417,
     "ast_hash": "3ca63bccfcbe70651b37e39629c45f2b",
+    "semantic_hash": ""
+  },
+  "apps/server/app/api/v1/chatbot.py": {
+    "mtime": 1794818343.0409012,
+    "seen": 1794818570.2238674,
+    "ast_hash": "bfccfb1dd28b60ecd0de304a7de1a1df",
+    "semantic_hash": ""
+  },
+  "apps/server/app/chatbot/__init__.py": {
+    "mtime": 1794818302.0245318,
+    "seen": 1794818570.223906,
+    "ast_hash": "983bc2cf51c6c4b939518250b04c899f",
+    "semantic_hash": ""
+  },
+  "apps/server/app/chatbot/context.py": {
+    "mtime": 1794819509.0877383,
+    "seen": 1794819716.1398828,
+    "ast_hash": "3b58bd6e08c027d9eef1e367f1ae7005",
+    "semantic_hash": ""
+  },
+  "apps/server/app/chatbot/registry.py": {
+    "mtime": 1794820130.1819394,
+    "seen": 1794862793.2361038,
+    "ast_hash": "054880ae2116cda41da54c3d0b1a2445",
+    "semantic_hash": ""
+  },
+  "apps/server/app/chatbot/routing.py": {
+    "mtime": 1794820130.2319431,
+    "seen": 1794862793.236106,
+    "ast_hash": "cdeaffae4042678a2f89231b09954c58",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/chatbot/test_chatbot.py": {
+    "mtime": 1794820130.7330694,
+    "seen": 1794862793.2362306,
+    "ast_hash": "58b967abd67438a200cff77fd75e5c8f",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/chatbot/Chatbot.tsx": {
+    "mtime": 1794864639.5190284,
+    "seen": 1794865060.2801816,
+    "ast_hash": "e6ad72c35e299237e355ffa0d51b7e8e",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/chatbot/ConfigModal.tsx": {
+    "mtime": 1794863275.9782612,
+    "seen": 1794863315.769448,
+    "ast_hash": "1ac6a0c636335a72757838d80e8192ab",
+    "semantic_hash": ""
+  },
+  "apps/web/src/lib/ollama.ts": {
+    "mtime": 1794863133.6831143,
+    "seen": 1794863315.7696714,
+    "ast_hash": "3c7de7e7192b70968dec078cc879cb77",
+    "semantic_hash": ""
+  },
+  "docs/predictive-model.md": {
+    "mtime": 1794864765.1776047,
+    "seen": 1794865060.2806334,
+    "ast_hash": "1b66416265271303f2848ecfaa495663",
     "semantic_hash": ""
   }
 }

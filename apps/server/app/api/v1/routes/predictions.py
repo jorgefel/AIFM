@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -63,17 +64,28 @@ async def get_forecast(
         for e in exp_result.scalars().all()
     ]
 
-    forecasts, historical_count = generate_property_forecast(
+    forecasts, historical_count, meta = generate_property_forecast(
         property_id=str(property_id),
         reservations=reservations,
         expenses=expenses,
         steps=months,
+        return_metadata=True,
     )
 
     return PropertyForecastResponse(
+        kind="financial_forecast",
+        period="month",
         property_id=property_id,
         property_name=property_obj.name,
         currency=property_obj.currency,
         historical_months_count=historical_count,
+        months_of_history=meta["months_of_history"],
+        confidence_level=meta["confidence_level"],
+        model=meta["model"],
+        central=meta["central"],
+        min=meta["min"],
+        max=meta["max"],
+        backtest_mape=meta["backtest_mape"],
+        as_of=date.today(),
         forecasts=forecasts,
     )

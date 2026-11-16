@@ -109,7 +109,7 @@ export function PredictiveRecommendations({
             </div>
           </div>
           <span className="inline-flex items-center rounded-full bg-teal-500/10 px-2 py-0.5 text-[10px] font-medium text-teal-400 border border-teal-500/20">
-            Modelo IA
+            Pronóstico estadístico
           </span>
         </div>
 

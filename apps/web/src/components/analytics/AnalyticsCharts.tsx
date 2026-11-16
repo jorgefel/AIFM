@@ -266,7 +266,7 @@ export function ForecastChart({
   });
 
   return (
-    <ChartCard title={`Proyección financiera (IA) — ${propertyName}`}>
+    <ChartCard title={`Pronóstico estadístico — ${propertyName}`}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 10, right: 0, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />

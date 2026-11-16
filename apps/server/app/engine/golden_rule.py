@@ -30,20 +30,17 @@ def calculate_net_amount(total_amount: Any, platform_fee: Any) -> Decimal:
     return to_decimal(total - fee)
 
 
-def calculate_occupancy_rate(
+def calculate_occupancy_breakdown(
     reservations: list[dict],
     year: int,
     month: int,
-) -> float:
+) -> dict:
     """
-    Calcula la tasa de ocupación de una propiedad para un mes dado.
+    Calcula el desglose de ocupación para un mes dado.
 
     Sólo se cuentan reservaciones con status 'confirmed' o 'completed'.
     Se cuentan los días únicos ocupados (check_in <= día < check_out)
     dentro del mes solicitado.
-
-    Returns:
-        float entre 0.0 y 1.0
     """
     days_in_month = calendar.monthrange(year, month)[1]
     month_start = date(year, month, 1)
@@ -69,10 +66,80 @@ def calculate_occupancy_rate(
                 occupied_days.add(current)
             current += timedelta(days=1)
 
-    if days_in_month == 0:
-        return 0.0
+    occupied_count = len(occupied_days)
+    free_count = max(0, days_in_month - occupied_count)
+    rate = round(occupied_count / days_in_month, 4) if days_in_month > 0 else 0.0
 
-    return round(len(occupied_days) / days_in_month, 4)
+    return {
+        "year": year,
+        "month": month,
+        "days_in_month": days_in_month,
+        "occupied_days": occupied_count,
+        "free_days": free_count,
+        "occupancy_rate": rate,
+    }
+
+
+def calculate_occupancy_rate(
+    reservations: list[dict],
+    year: int,
+    month: int,
+) -> float:
+    """
+    Calcula la tasa de ocupación de una propiedad para un mes dado.
+
+    Sólo se cuentan reservaciones con status 'confirmed' o 'completed'.
+    Se cuentan los días únicos ocupados (check_in <= día < check_out)
+    dentro del mes solicitado.
+
+    Returns:
+        float entre 0.0 y 1.0
+    """
+    return calculate_occupancy_breakdown(reservations, year, month)["occupancy_rate"]
+
+
+def calculate_remaining_free_days(
+    reservations: list[dict],
+    year: int,
+    month: int,
+    from_date: date | None = None,
+) -> list[date]:
+    """
+    Calcula los días calendario libres desde from_date (default hoy) hasta fin de mes.
+    Regla de oro: reservas 'confirmed' o 'completed', en intervalo [check_in, check_out).
+    """
+    days_in_month = calendar.monthrange(year, month)[1]
+    month_start = date(year, month, 1)
+    month_end = date(year, month, days_in_month)
+
+    start_date = from_date if from_date and from_date.year == year and from_date.month == month else month_start
+
+    occupied_days: set[date] = set()
+    for res in reservations:
+        status = res.get("status", "")
+        if status not in ("confirmed", "completed"):
+            continue
+
+        check_in = res["check_in"] if isinstance(res["check_in"], date) else date.fromisoformat(str(res["check_in"]))
+        check_out = res["check_out"] if isinstance(res["check_out"], date) else date.fromisoformat(str(res["check_out"]))
+
+        eff_start = max(check_in, month_start)
+        eff_end = min(check_out, month_end + timedelta(days=1))
+
+        current = eff_start
+        while current < eff_end:
+            if month_start <= current <= month_end:
+                occupied_days.add(current)
+            current += timedelta(days=1)
+
+    free_dates: list[date] = []
+    curr = start_date
+    while curr <= month_end:
+        if curr not in occupied_days:
+            free_dates.append(curr)
+        curr += timedelta(days=1)
+
+    return free_dates
 
 
 def calculate_monthly_summary(

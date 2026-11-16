@@ -81,16 +81,23 @@ export interface MonthForecast {
   projected_net_profit: number;
   net_profit_min: number;
   net_profit_max: number;
-  confidence_level: number;
+  confidence_level: string | number;
+  confidence_score?: number;
   model_used: string;
   is_forecast: boolean;
 }
 
 export interface PropertyForecastResponse {
+  kind?: string;
+  period?: string;
   property_id: string;
   property_name: string;
   currency: string;
   historical_months_count: number;
+  confidence_level?: "limited" | "medium" | "high";
+  model?: "moving_average" | "holt" | "holt_winters";
+  backtest_mape?: number | null;
+  as_of?: string;
   forecasts: MonthForecast[];
   disclaimer: string;
 }

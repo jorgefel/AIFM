@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 import { AIChatCopilot } from "../../chat/AIChatCopilot";
+import { Chatbot } from "../../chatbot/Chatbot";
 
 interface GlassLayoutProps {
   children: React.ReactNode;
@@ -77,8 +78,12 @@ export function GlassLayout({ children }: GlassLayoutProps) {
             </AnimatePresence>
           </main>
 
-          {/* Widget flotante de Copiloto IA */}
-          <AIChatCopilot />
+          {/* Chatbot principal de dos capas (o chatbot legado de NVIDIA bajo flag) */}
+          {process.env.NEXT_PUBLIC_ENABLE_NVIDIA_CHAT === "true" ? (
+            <AIChatCopilot />
+          ) : (
+            <Chatbot />
+          )}
         </div>
 
         <MobileBottomNav onMore={() => setIsMobileMenuOpen(true)} />

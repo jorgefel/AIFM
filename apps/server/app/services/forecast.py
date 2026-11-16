@@ -1,7 +1,7 @@
 import math
 import os
 from datetime import date
-from typing import List, Tuple
+from typing import List, Tuple, Optional, Any, Union
 
 from app.engine.golden_rule import calculate_monthly_summary
 from app.schemas.forecast import MonthForecast
@@ -51,7 +51,7 @@ def _fit_and_forecast(
     # 2. Constant series
     if len(set(values)) <= 1:
         val = float(values[-1])
-        return [round(val, 2)] * steps, [round(val, 2)] * steps, [round(val, 2)] * steps, "constant_baseline"
+        return [round(val, 2)] * steps, [round(val, 2)] * steps, [round(val, 2)] * steps, "moving_average"
 
     # 3. Holt-Winters with additive seasonality (if at least 2 full years of data)
     if n >= 24:
@@ -129,7 +129,35 @@ def _fit_and_forecast(
         lowers.append(round(low_val, 2))
         uppers.append(round(up_val, 2))
 
-    return preds, lowers, uppers, "holt_linear"
+    return preds, lowers, uppers, "holt"
+
+
+def compute_backtest_mape(values: List[float]) -> Optional[float]:
+    """Calcula el Error Porcentual Absoluto Medio (MAPE) mediante backtest
+
+    unipaso rodante sobre los últimos K meses históricos conocidos.
+    Requiere al menos 4 meses de historial.
+    """
+    n = len(values)
+    if n < 4:
+        return None
+
+    k = min(6, n - 2)
+    apes = []
+    for t in range(n - k, n):
+        train = values[:t]
+        actual = values[t]
+        if actual <= 0:
+            continue
+        preds, _, _, _ = _fit_and_forecast(train, steps=1, property_id="backtest", metric_name="backtest")
+        pred = preds[0]
+        ape = abs(actual - pred) / actual
+        apes.append(ape)
+
+    if not apes:
+        return None
+
+    return round(float(sum(apes) / len(apes) * 100.0), 1)
 
 
 def generate_property_forecast(
@@ -137,7 +165,8 @@ def generate_property_forecast(
     reservations: list[dict],
     expenses: list[dict],
     steps: int = 3,
-) -> Tuple[List[MonthForecast], int]:
+    return_metadata: bool = False,
+) -> Union[Tuple[List[MonthForecast], int], Tuple[List[MonthForecast], int, dict]]:
     """Extracts continuous monthly history, runs Holt-Winters / Holt Linear models,
 
     and returns forecast estimates for next `steps` months.
@@ -156,29 +185,38 @@ def generate_property_forecast(
             d = e["date"] if isinstance(e["date"], date) else date.fromisoformat(str(e["date"]))
             dates.append(d)
 
-    if not dates:
-        earliest = date(today.year - 1, today.month, 1)
-    else:
-        earliest = min(dates)
-
-    # Build sequential monthly timeline from earliest to current month
-    cur_y, cur_m = earliest.year, earliest.month
-    end_y, end_m = today.year, today.month
-
     gross_history = []
     net_history = []
 
-    while (cur_y < end_y) or (cur_y == end_y and cur_m <= end_m):
-        summary = calculate_monthly_summary(reservations, expenses, cur_y, cur_m)
-        gross_history.append(float(summary["gross_income"]))
-        net_history.append(float(summary["net_profit"]))
+    if dates:
+        earliest = min(dates)
+        cur_y, cur_m = earliest.year, earliest.month
+        end_y, end_m = today.year, today.month
 
-        cur_m += 1
-        if cur_m > 12:
-            cur_m = 1
-            cur_y += 1
+        while (cur_y < end_y) or (cur_y == end_y and cur_m <= end_m):
+            summary = calculate_monthly_summary(reservations, expenses, cur_y, cur_m)
+            gross_history.append(float(summary["gross_income"]))
+            net_history.append(float(summary["net_profit"]))
+
+            cur_m += 1
+            if cur_m > 12:
+                cur_m = 1
+                cur_y += 1
 
     historical_count = len(gross_history)
+
+    # Determinación de modelo y nivel de confianza según meses de historia
+    if historical_count < 4:
+        global_model = "moving_average"
+        global_confidence = "limited"
+    elif historical_count < 24:
+        global_model = "holt"
+        global_confidence = "medium" if historical_count < 12 else "high"
+    else:
+        global_model = "holt_winters"
+        global_confidence = "high"
+
+    backtest_mape = compute_backtest_mape(gross_history)
 
     # Train and forecast
     g_preds, g_lowers, g_uppers, g_model = _fit_and_forecast(
@@ -200,6 +238,12 @@ def generate_property_forecast(
         low_gross = max(g_lowers[idx], booked_gross)
         up_gross = max(g_uppers[idx], booked_gross)
 
+        # Regresión corregida: net_profit_max usa el límite superior del beneficio neto (n_uppers), NO del ingreso bruto
+        low_net = n_lowers[idx]
+        up_net = max(n_uppers[idx], booked_net)
+        if low_net > up_net:
+            low_net = up_net
+
         forecasts.append(
             MonthForecast(
                 month=f"{fy:04d}-{fm:02d}",
@@ -207,12 +251,25 @@ def generate_property_forecast(
                 gross_income_min=round(low_gross, 2),
                 gross_income_max=round(up_gross, 2),
                 projected_net_profit=round(proj_net, 2),
-                net_profit_min=round(n_lowers[idx], 2),
-                net_profit_max=round(up_gross, 2),
-                confidence_level=0.80,
-                model_used=f"{g_model}+{n_model}",
+                net_profit_min=round(low_net, 2),
+                net_profit_max=round(up_net, 2),
+                confidence_level=global_confidence,
+                confidence_score=0.80,
+                model_used=global_model,
                 is_forecast=True,
             )
         )
 
+    metadata = {
+        "confidence_level": global_confidence,
+        "model": global_model,
+        "months_of_history": historical_count,
+        "backtest_mape": backtest_mape,
+        "central": forecasts[0].projected_gross_income if forecasts else None,
+        "min": forecasts[0].gross_income_min if forecasts else None,
+        "max": forecasts[0].gross_income_max if forecasts else None,
+    }
+
+    if return_metadata:
+        return forecasts, historical_count, metadata
     return forecasts, historical_count
