@@ -92,8 +92,7 @@ export default function Home() {
           />
         </div>
         <PredictiveRecommendations
-          forecast={forecastData?.forecasts}
-          currentRevenue={current.revenue}
+          recommendations={forecastData?.recommendations}
           isLoading={isLoading}
         />
       </div>

@@ -12,6 +12,7 @@ from app.models.reservation import Reservation
 from app.models.expense import Expense
 from app.schemas.forecast import PropertyForecastResponse
 from app.services.forecast import generate_property_forecast
+from app.services.predictive_recommendations import generate_predictive_recommendations
 
 router = APIRouter(prefix="/predictions", tags=["predictions"])
 
@@ -72,6 +73,14 @@ async def get_forecast(
         return_metadata=True,
     )
 
+    recs = generate_predictive_recommendations(
+        property_id=str(property_id),
+        reservations=reservations,
+        expenses=expenses,
+        forecasts=forecasts,
+        historical_count=historical_count,
+    )
+
     return PropertyForecastResponse(
         kind="financial_forecast",
         period="month",
@@ -88,4 +97,5 @@ async def get_forecast(
         backtest_mape=meta["backtest_mape"],
         as_of=date.today(),
         forecasts=forecasts,
+        recommendations=recs,
     )

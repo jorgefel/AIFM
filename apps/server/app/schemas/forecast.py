@@ -1,7 +1,23 @@
 from datetime import date
-from typing import Literal, Optional, List
+from typing import Literal, Optional, List, Union
 import uuid
 from pydantic import BaseModel, Field
+
+
+class RecommendationEvidence(BaseModel):
+    label: str
+    value: Union[str, float, int]
+
+
+class PredictiveRecommendation(BaseModel):
+    id: str
+    title: str
+    action: str
+    reason: str
+    evidence: List[RecommendationEvidence]
+    severity: Literal["info", "warning", "critical"]
+    evidence_source: Literal["own_history", "market", "both"]
+    as_of: str
 
 
 class MonthForecast(BaseModel):
@@ -46,6 +62,10 @@ class PropertyForecastResponse(BaseModel):
     backtest_mape: Optional[float] = Field(default=None, description="Error porcentual absoluto medio histórico en backtest")
     as_of: date = Field(default_factory=date.today, description="Fecha de corte del cálculo")
     forecasts: List[MonthForecast]
+    recommendations: List[PredictiveRecommendation] = Field(
+        default_factory=list,
+        description="Recomendaciones determinísticas basadas en la evidencia histórica y proyectada"
+    )
     disclaimer: str = (
         "Pronóstico estadístico preventivo basado en series temporales históricas. "
         "No modifica registros contables reales."

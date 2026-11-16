@@ -1,96 +1,67 @@
 "use client";
 
 import { useMemo } from "react";
-import { Sparkles, TrendingUp, TrendingDown, ArrowUpRight, ShieldCheck, Lightbulb, AlertTriangle } from "lucide-react";
-import type { MonthForecast } from "@/types/models";
+import {
+  Sparkles,
+  TrendingUp,
+  ShieldCheck,
+  Lightbulb,
+  AlertTriangle,
+  ArrowUpRight,
+} from "lucide-react";
+import type { PredictiveRecommendation } from "@/types/models";
 
 interface PredictiveRecommendationsProps {
-  forecast?: MonthForecast[];
-  currentRevenue?: number;
+  recommendations?: PredictiveRecommendation[];
   isLoading?: boolean;
 }
 
 export function PredictiveRecommendations({
-  forecast = [],
-  currentRevenue = 0,
+  recommendations = [],
   isLoading = false,
 }: PredictiveRecommendationsProps) {
-  const recommendations = useMemo(() => {
-    if (!forecast || forecast.length === 0) {
+  const displayItems = useMemo(() => {
+    if (!recommendations || recommendations.length === 0) {
       return [
         {
-          id: "rec-default-1",
-          type: "growth",
+          id: "rec-empty",
           icon: Lightbulb,
           color: "text-teal-400 bg-teal-500/10 border-teal-500/20",
-          title: "Optimización de tarifas",
-          text: "Configura tarifas dinámicas los fines de semana para capturar hasta un 18% más de ingreso.",
-        },
-        {
-          id: "rec-default-2",
-          type: "strategy",
-          icon: ShieldCheck,
-          color: "text-violet-400 bg-violet-500/10 border-violet-500/20",
-          title: "Estancias mínimas",
-          text: "Establece mínimo de 2 noches en días festivos para reducir costos de limpieza por rotación.",
+          title: "Sincroniza tus registros",
+          text: "Registra tus reservas y gastos recientes para recibir recomendaciones financieras basadas en evidencia.",
+          evidence: [],
         },
       ];
     }
 
-    const nextMonth = forecast[0];
-    const avgProjected =
-      forecast.reduce((acc, f) => acc + (f.projected_gross_income || 0), 0) / forecast.length;
-    const isIncreasing = currentRevenue > 0 ? avgProjected >= currentRevenue * 0.95 : true;
+    return recommendations.map((rec) => {
+      let icon = Lightbulb;
+      let color = "text-teal-400 bg-teal-500/10 border-teal-500/20";
 
-    const list = [];
+      if (rec.severity === "critical") {
+        icon = AlertTriangle;
+        color = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+      } else if (rec.severity === "warning") {
+        icon = AlertTriangle;
+        color = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+      } else if (rec.id.includes("positive") || rec.id.includes("trend")) {
+        icon = TrendingUp;
+        color = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+      } else if (rec.id.includes("channel")) {
+        icon = ShieldCheck;
+        color = "text-violet-400 bg-violet-500/10 border-violet-500/20";
+      }
 
-    if (isIncreasing) {
-      list.push({
-        id: "rec-high",
-        type: "growth",
-        icon: TrendingUp,
-        color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-        title: "Demanda proyectada al alza",
-        text: `Proyección media de $${Math.round(avgProjected).toLocaleString()} para próximos meses. Considera subir 8-12% el precio base por noche.`,
-      });
-    } else {
-      list.push({
-        id: "rec-cautious",
-        type: "warning",
-        icon: AlertTriangle,
-        color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-        title: "Temporada de menor demanda",
-        text: "Se prevé una ligera desaceleración. Activa descuentos por reserva anticipada (>14 días) para asegurar ocupación.",
-      });
-    }
-
-    if (nextMonth && nextMonth.projected_net_profit) {
-      const profitMargin =
-        nextMonth.projected_gross_income > 0
-          ? Math.round((nextMonth.projected_net_profit / nextMonth.projected_gross_income) * 100)
-          : 70;
-
-      list.push({
-        id: "rec-margin",
-        type: "strategy",
-        icon: Lightbulb,
-        color: "text-teal-400 bg-teal-500/10 border-teal-500/20",
-        title: `Margen neto estimado: ${profitMargin}%`,
-        text: "Revisa gastos recurrentes de mantenimiento para mantener el beneficio neto por encima del objetivo.",
-      });
-    } else {
-      list.push({
-        id: "rec-channels",
-        type: "strategy",
-        icon: ShieldCheck,
-        color: "text-violet-400 bg-violet-500/10 border-violet-500/20",
-        title: "Diversificación de canales",
-        text: "Mantén sincronizados Airbnb y Booking vía Beds24 para evitar sobreventas en fechas críticas.",
-      });
-    }
-
-    return list;
-  }, [forecast, currentRevenue]);
+      return {
+        id: rec.id,
+        icon,
+        color,
+        title: rec.title,
+        text: `${rec.reason} ${rec.action}`,
+        evidence: rec.evidence || [],
+      };
+    });
+  }, [recommendations]);
 
   return (
     <div className="card-surface flex h-full flex-col justify-between p-5 relative overflow-hidden">
@@ -120,7 +91,7 @@ export function PredictiveRecommendations({
               <div className="h-14 w-full animate-pulse rounded-xl bg-surface" />
             </div>
           ) : (
-            recommendations.map((rec) => {
+            displayItems.map((rec) => {
               const Icon = rec.icon;
               return (
                 <div
@@ -132,12 +103,29 @@ export function PredictiveRecommendations({
                       <Icon className="h-3.5 w-3.5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-ink flex items-center justify-between">
+                      <p className="text-xs font-semibold text-ink">
                         <span>{rec.title}</span>
                       </p>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-ink-muted">
                         {rec.text}
                       </p>
+                      {rec.evidence && rec.evidence.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {rec.evidence.map((ev, evIdx) => (
+                            <span
+                              key={evIdx}
+                              className="rounded bg-white/5 border border-line-soft px-1.5 py-0.5 text-[9px] text-ink-muted"
+                            >
+                              {ev.label}:{" "}
+                              <strong className="text-ink">
+                                {typeof ev.value === "number"
+                                  ? ev.value.toLocaleString("es-CO")
+                                  : ev.value}
+                              </strong>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -148,7 +136,7 @@ export function PredictiveRecommendations({
       </div>
 
       <div className="mt-4 pt-3 border-t border-line-soft flex items-center justify-between text-[11px] text-ink-muted">
-        <span>Confianza estadística: 80-85%</span>
+        <span>Fuente: Histórico de la propiedad</span>
         <a
           href="/analytics"
           className="inline-flex items-center font-medium text-violet-500 hover:text-violet-600 transition-colors"

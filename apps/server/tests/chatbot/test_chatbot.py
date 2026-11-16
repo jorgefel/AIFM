@@ -677,3 +677,64 @@ async def test_chatbot_never_writes_to_redis(auth_user, mock_property):
                 assert not key_arg.startswith("chatbot:"), f"Se detectó escritura en Redis con clave prohibida: {key_arg}"
 
     app.dependency_overrides.clear()
+
+
+# ─────────────────────────────────────────────────────────────
+# 6. Tests Sprint 6: Pronóstico y Recomendaciones en Capa 1
+# ─────────────────────────────────────────────────────────────
+
+
+def test_routing_sprint_6_phrases():
+    """Verifica enrutamiento específico de Sprint 6:
+
+    - '¿cuánto ganaré el próximo mes?' -> pronostico_ingresos (Capa 1)
+    - '¿qué me recomiendas para subir mis ingresos?' -> Capa 2 (IA)
+    - 'ver recomendaciones' -> recomendaciones (Capa 1)
+    """
+    q_fore, _ = match_question("¿cuánto ganaré el próximo mes?")
+    assert q_fore is not None
+    assert q_fore.id == "pronostico_ingresos"
+
+    q_ai, _ = match_question("¿qué me recomiendas para subir mis ingresos?")
+    assert q_ai is None  # Forzado a Capa 2
+
+    q_rec, _ = match_question("ver recomendaciones")
+    assert q_rec is not None
+    assert q_rec.id == "recomendaciones"
+
+
+@pytest.mark.asyncio
+async def test_handler_pronostico_ingresos(mock_property):
+    db = AsyncMock()
+    mock_scalars = MagicMock()
+    mock_scalars.all.return_value = []
+    mock_result = MagicMock()
+    mock_result.scalars.return_value = mock_scalars
+    db.execute.return_value = mock_result
+
+    handler = REGISTRY["pronostico_ingresos"].handler
+    result = await handler(db, mock_property)
+
+    assert "Pronóstico estadístico" in result["summary"]
+    assert "Entre más datos registres, más preciso será el pronóstico" in result["summary"]
+    assert any(m["label"].startswith("Ingreso bruto") for m in result["metrics"])
+    assert any(m["label"] == "Nivel de confianza" for m in result["metrics"])
+    assert len(result["table"]["rows"]) == 3
+
+
+@pytest.mark.asyncio
+async def test_handler_recomendaciones(mock_property):
+    db = AsyncMock()
+    mock_scalars = MagicMock()
+    mock_scalars.all.return_value = []
+    mock_result = MagicMock()
+    mock_result.scalars.return_value = mock_scalars
+    db.execute.return_value = mock_result
+
+    handler = REGISTRY["recomendaciones"].handler
+    result = await handler(db, mock_property)
+
+    assert "recomendaciones financieras" in result["summary"]
+    assert len(result["table"]["rows"]) >= 1
+    # Primera fila debe ser información insuficiente porque no hay reservas mockeadas
+    assert "insuficiente" in result["table"]["rows"][0][0].lower()

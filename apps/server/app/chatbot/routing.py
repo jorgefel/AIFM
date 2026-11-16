@@ -111,6 +111,10 @@ def match_question(text: str) -> tuple[Question | None, dict]:
     if has_consecutive_words(words, "por", "que"):
         return None, {}
 
+    # Caso especial Sprint 6: comando determinista "ver/mostrar recomendaciones"
+    if ("ver" in words or "mostrar" in words) and any(w.startswith("recomend") or w.startswith("sugerenc") for w in words):
+        return REGISTRY.get("recomendaciones"), {}
+
     # 3. Raíces de forzado a IA
     for w in words:
         for stem in FORCE_AI_STEMS:

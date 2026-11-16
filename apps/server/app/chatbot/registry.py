@@ -259,7 +259,7 @@ async def handle_ingresos_plataforma(
     res = await db.execute(stmt)
     records = res.all()
 
-    if not records:
+    if not records or not isinstance(records, (list, tuple)) or len(records) == 0:
         return build(
             summary="No registraste ingresos por plataforma en este período.",
             metrics=[{"label": "Ingreso neto", "value": 0.0, "format": "currency"}],
@@ -463,7 +463,7 @@ async def handle_resumen_mes(
 
     net_money = money(net_val)
     exp_money = money(exp_val)
-    profit_money = money(Decimal(str(net_val)) - Decimal(str(exp_val)))
+    profit_money = money(to_decimal(net_val) - to_decimal(exp_val))
     occ_pct = round(details["occupancy_rate"] * 100, 1)
     res_count_int = int(res_count)
 
@@ -969,4 +969,187 @@ async def handle_mejores_meses(
         [f"#{idx+1}", f"{y}-{m:02d}", money(d["net"]), d["count"]]
         for idx, ((y, m), d) in enumerate(ranked[:8])
     ]
+    return build(summary=summary, metrics=metrics, columns=columns, rows=rows)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Catálogo Sprint 6 (Pronóstico y Recomendaciones en Capa 1)
+# ─────────────────────────────────────────────────────────────────────────
+
+
+@question(
+    id="pronostico_ingresos",
+    label="¿Cuánto ganaré el próximo mes?",
+    category="Pronóstico",
+    match=[["gan", "proyec", "pronost"], ["proxim", "siguient", "futur"]],
+    priority=2,
+)
+async def handle_pronostico_ingresos(
+    db: AsyncSession,
+    prop: Property,
+    year: int | None = None,
+    month: int | None = None,
+) -> dict:
+    from app.services.forecast import generate_property_forecast
+
+    res_result = await db.execute(
+        select(Reservation).where(Reservation.property_id == prop.id)
+    )
+    reservations = [
+        {
+            "id": str(r.id),
+            "total_amount": float(r.total_amount),
+            "platform_fee": float(r.platform_fee),
+            "net_amount": float(r.net_amount),
+            "status": r.status,
+            "check_in": r.check_in,
+            "check_out": r.check_out,
+            "platform": r.platform,
+        }
+        for r in res_result.scalars().all()
+    ]
+
+    exp_result = await db.execute(
+        select(Expense).where(Expense.property_id == prop.id)
+    )
+    expenses = [
+        {
+            "id": str(e.id),
+            "amount": float(e.amount),
+            "is_deleted": e.is_deleted,
+            "date": e.date,
+        }
+        for e in exp_result.scalars().all()
+    ]
+
+    forecasts, historical_count, meta = generate_property_forecast(
+        property_id=str(prop.id),
+        reservations=reservations,
+        expenses=expenses,
+        steps=3,
+        return_metadata=True,
+    )
+
+    f0 = forecasts[0]
+    conf_map = {
+        "limited": "Limitada (< 4 meses)",
+        "medium": "Media (4-11 meses)",
+        "high": "Alta (≥ 12 meses)",
+    }
+    conf_label = conf_map.get(meta["confidence_level"], meta["confidence_level"])
+
+    gross_val = money(f0.projected_gross_income)
+    net_val = money(f0.projected_net_profit)
+    min_gross = money(f0.gross_income_min)
+    max_gross = money(f0.gross_income_max)
+
+    summary = (
+        f"Pronóstico estadístico para {f0.month}: ingreso bruto estimado de {prop.currency} {gross_val:,.2f} "
+        f"(rango: {prop.currency} {min_gross:,.2f} - {prop.currency} {max_gross:,.2f}) "
+        f"y beneficio neto estimado de {prop.currency} {net_val:,.2f}. "
+        f"Modelo: {meta['model']} (Confianza: {conf_label}). "
+        f"Entre más datos registres, más preciso será el pronóstico."
+    )
+
+    metrics = [
+        {"label": f"Ingreso bruto ({f0.month})", "value": gross_val, "format": "currency"},
+        {"label": f"Beneficio neto ({f0.month})", "value": net_val, "format": "currency"},
+        {"label": "Nivel de confianza", "value": conf_label, "format": "text"},
+        {"label": "Meses analizados", "value": meta["months_of_history"], "format": "number"},
+    ]
+
+    columns = ["Mes", "Ingreso bruto est.", "Mínimo", "Máximo", "Beneficio neto est."]
+    rows = [
+        [
+            f.month,
+            money(f.projected_gross_income),
+            money(f.gross_income_min),
+            money(f.gross_income_max),
+            money(f.projected_net_profit),
+        ]
+        for f in forecasts
+    ]
+
+    return build(summary=summary, metrics=metrics, columns=columns, rows=rows)
+
+
+@question(
+    id="recomendaciones",
+    label="Ver recomendaciones",
+    category="Estrategia",
+    match=[["ver", "mostrar"], ["recomend", "sugerenc"]],
+    priority=2,
+)
+async def handle_recomendaciones(
+    db: AsyncSession,
+    prop: Property,
+    year: int | None = None,
+    month: int | None = None,
+) -> dict:
+    from app.services.predictive_recommendations import generate_predictive_recommendations
+    from app.services.forecast import generate_property_forecast
+
+    res_result = await db.execute(
+        select(Reservation).where(Reservation.property_id == prop.id)
+    )
+    reservations = [
+        {
+            "id": str(r.id),
+            "total_amount": float(r.total_amount),
+            "platform_fee": float(r.platform_fee),
+            "net_amount": float(r.net_amount),
+            "status": r.status,
+            "check_in": r.check_in,
+            "check_out": r.check_out,
+            "platform": r.platform,
+        }
+        for r in res_result.scalars().all()
+    ]
+
+    exp_result = await db.execute(
+        select(Expense).where(Expense.property_id == prop.id)
+    )
+    expenses = [
+        {
+            "id": str(e.id),
+            "amount": float(e.amount),
+            "is_deleted": e.is_deleted,
+            "date": e.date,
+        }
+        for e in exp_result.scalars().all()
+    ]
+
+    forecasts, historical_count, meta = generate_property_forecast(
+        property_id=str(prop.id),
+        reservations=reservations,
+        expenses=expenses,
+        steps=3,
+        return_metadata=True,
+    )
+
+    recs = generate_predictive_recommendations(
+        property_id=str(prop.id),
+        reservations=reservations,
+        expenses=expenses,
+        forecasts=forecasts,
+        historical_count=historical_count,
+    )
+
+    summary = f"Se determinaron {len(recs)} recomendaciones financieras basadas en tu evidencia histórica y proyecciones:"
+
+    metrics = [
+        {"label": "Recomendaciones activas", "value": len(recs), "format": "number"},
+        {
+            "label": "Alertas / Advertencias",
+            "value": sum(1 for r in recs if r.get("severity") in ("critical", "warning")),
+            "format": "number",
+        },
+    ]
+
+    columns = ["Título", "Acción recomendada", "Severidad"]
+    rows = [
+        [r["title"], r["action"], r["severity"].upper()]
+        for r in recs
+    ]
+
     return build(summary=summary, metrics=metrics, columns=columns, rows=rows)

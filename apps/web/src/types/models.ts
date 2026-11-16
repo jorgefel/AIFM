@@ -73,6 +73,22 @@ export interface CalendarDay {
 
 export interface CalendarSnapshot { days: CalendarDay[]; generated_at: string; }
 
+export interface RecommendationEvidence {
+  label: string;
+  value: string | number;
+}
+
+export interface PredictiveRecommendation {
+  id: string;
+  title: string;
+  action: string;
+  reason: string;
+  evidence: RecommendationEvidence[];
+  severity: "info" | "warning" | "critical";
+  evidence_source: "own_history" | "market" | "both";
+  as_of: string;
+}
+
 export interface MonthForecast {
   month: string;
   projected_gross_income: number;
@@ -99,6 +115,7 @@ export interface PropertyForecastResponse {
   backtest_mape?: number | null;
   as_of?: string;
   forecasts: MonthForecast[];
+  recommendations?: PredictiveRecommendation[];
   disclaimer: string;
 }
 

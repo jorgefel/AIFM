@@ -3,10 +3,15 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.chatbot.registry import REGISTRY
 from app.models.property import Property
+from app.models.reservation import Reservation
+from app.models.expense import Expense
+from app.services.forecast import generate_property_forecast
+from app.services.predictive_recommendations import generate_predictive_recommendations
 
 
 def compact_result(result: dict[str, Any]) -> dict[str, Any]:
@@ -35,7 +40,8 @@ async def build_context(db: AsyncSession, prop: Property) -> dict[str, Any]:
     - propiedad, moneda, fecha_hoy
     - mes_actual: resultados compactos del catálogo
     - mes_anterior: ingresos_mes, gastos_categoria, ocupacion_mes compactos del mes previo
-    Estructura preparada para Sprints 6-8 (proyeccion, recomendaciones, mercado, consejos).
+    - proyeccion: modelo, nivel de confianza, métricas de los próximos meses
+    - recomendaciones_predictivas: recomendaciones determinísticas generadas por el mismo servicio del dashboard
     """
     today = date.today()
     cur_y, cur_m = today.year, today.month
@@ -66,6 +72,70 @@ async def build_context(db: AsyncSession, prop: Property) -> dict[str, Any]:
             raw = await handler(db, prop, prev_y, prev_m)
             mes_anterior[q_id] = compact_result(raw)
 
+    # Consultar reservas y gastos para pronóstico y recomendaciones unificadas
+    res_result = await db.execute(
+        select(Reservation).where(Reservation.property_id == prop.id)
+    )
+    reservations = [
+        {
+            "id": str(r.id),
+            "total_amount": float(r.total_amount),
+            "platform_fee": float(r.platform_fee),
+            "net_amount": float(r.net_amount),
+            "status": r.status,
+            "check_in": r.check_in,
+            "check_out": r.check_out,
+            "platform": r.platform,
+        }
+        for r in res_result.scalars().all()
+    ]
+
+    exp_result = await db.execute(
+        select(Expense).where(Expense.property_id == prop.id)
+    )
+    expenses = [
+        {
+            "id": str(e.id),
+            "amount": float(e.amount),
+            "is_deleted": e.is_deleted,
+            "date": e.date,
+        }
+        for e in exp_result.scalars().all()
+    ]
+
+    forecasts, historical_count, meta = generate_property_forecast(
+        property_id=str(prop.id),
+        reservations=reservations,
+        expenses=expenses,
+        steps=3,
+        return_metadata=True,
+    )
+
+    recs = generate_predictive_recommendations(
+        property_id=str(prop.id),
+        reservations=reservations,
+        expenses=expenses,
+        forecasts=forecasts,
+        historical_count=historical_count,
+    )
+
+    proyeccion = {
+        "modelo": meta["model"],
+        "nivel_confianza": meta["confidence_level"],
+        "meses_historial": meta["months_of_history"],
+        "backtest_mape": meta["backtest_mape"],
+        "meses": [
+            {
+                "mes": f.month,
+                "ingreso_bruto_estimado": f.projected_gross_income,
+                "rango_bruto": [f.gross_income_min, f.gross_income_max],
+                "beneficio_neto_estimado": f.projected_net_profit,
+                "rango_neto": [f.net_profit_min, f.net_profit_max],
+            }
+            for f in forecasts
+        ],
+    }
+
     return {
         "propiedad": {
             "id": str(prop.id),
@@ -81,4 +151,6 @@ async def build_context(db: AsyncSession, prop: Property) -> dict[str, Any]:
         "fecha_hoy": today.isoformat(),
         "mes_actual": mes_actual,
         "mes_anterior": mes_anterior,
+        "proyeccion": proyeccion,
+        "recomendaciones_predictivas": recs,
     }
