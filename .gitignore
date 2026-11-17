@@ -23,6 +23,7 @@ apps/server/*.pyc
 apps/server/.pytest_cache/
 apps/server/.mypy_cache/
 apps/server/**/storage/
+apps/server/uploads/
 *.joblib
 # (Removido: alembic/versions/*.py para que Git sí lo detecte)
 # OS
