@@ -24,9 +24,11 @@ function PhotoThumb({ url, alt }: { url: string; alt: string }) {
     );
   }
 
+  const displaySrc = url.startsWith("/uploads/") ? `/api/v1${url}` : url;
+
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={alt} onError={() => setFailed(true)} className="aspect-[4/3] w-full object-cover" />
+    <img src={displaySrc} alt={alt} onError={() => setFailed(true)} className="aspect-[4/3] w-full object-cover" />
   );
 }
 

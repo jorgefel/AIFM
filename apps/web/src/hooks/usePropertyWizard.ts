@@ -130,11 +130,17 @@ export function usePropertyWizard(property?: Property) {
       const url = raw.trim();
       let message = "";
 
-      try {
-        const parsed = new URL(url);
-        if (parsed.protocol !== "https:") message = "La dirección debe empezar por https://";
-      } catch {
-        message = "Escribe una dirección de imagen válida";
+      if (url.startsWith("/")) {
+        // Rutas relativas del servidor (ej: subida local /uploads/...) son válidas
+      } else {
+        try {
+          const parsed = new URL(url);
+          if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+            message = "La dirección debe empezar por https:// o http://";
+          }
+        } catch {
+          message = "Escribe una dirección de imagen válida";
+        }
       }
       if (!message && draft.photo_urls.includes(url)) message = "Esa foto ya está en la lista";
       if (!message && draft.photo_urls.length >= MAX_PHOTOS) message = `Solo puedes agregar hasta ${MAX_PHOTOS} fotos`;

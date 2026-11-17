@@ -48,6 +48,7 @@ app.add_middleware(CORSMiddleware, **cors_kwargs)
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+app.mount("/api/v1/uploads", StaticFiles(directory=UPLOAD_DIR), name="api_uploads")
 
 @app.get("/api/health", tags=["Health"])
 async def health_check():

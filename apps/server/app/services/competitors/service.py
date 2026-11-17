@@ -13,6 +13,9 @@ from app.services.competitors.omkar import OmkarProvider
 from app.services.competitors.provider import (
     CompetitorProvider,
     ProviderConfigurationError,
+    ProviderRateLimitError,
+    ProviderTimeoutError,
+    ProviderUnavailableError,
 )
 
 
@@ -168,15 +171,38 @@ async def get_competitors(
         city_query = ", ".join(filter(None, [city_clean, country_clean]))
 
         checkin, checkout = date.today() + timedelta(days=7), date.today() + timedelta(days=8)
-        results, level = await (provider or get_default_provider()).search(
-            query=neighborhood_query or city_query,
-            domain=country_domain(property_.country),
-            checkin=checkin,
-            checkout=checkout,
-            adults=property_.max_guests,
-            fallback_to_city=fallback_to_city,
-            city_query=city_query,
-        )
+        active_provider = provider or get_default_provider()
+        try:
+            results, level = await active_provider.search(
+                query=neighborhood_query or city_query,
+                domain=country_domain(property_.country),
+                checkin=checkin,
+                checkout=checkout,
+                adults=property_.max_guests,
+                fallback_to_city=fallback_to_city,
+                city_query=city_query,
+            )
+        except (ProviderUnavailableError, ProviderRateLimitError, ProviderTimeoutError) as exc:
+            # Fallback automático: si Apify falla o se queda sin créditos y Omkar está configurado, intentar Omkar
+            has_omkar = bool(settings.OMKAR_API_KEY)
+            is_apify = getattr(active_provider, "__class__", None).__name__ == "ApifyProvider"
+            if is_apify and has_omkar:
+                logger.warning("Apify falló (%s). Intentando con OmkarProvider como respaldo...", exc)
+                try:
+                    results, level = await OmkarProvider().search(
+                        query=neighborhood_query or city_query,
+                        domain=country_domain(property_.country),
+                        checkin=checkin,
+                        checkout=checkout,
+                        adults=property_.max_guests,
+                        fallback_to_city=fallback_to_city,
+                        city_query=city_query,
+                    )
+                except Exception as omkar_exc:
+                    logger.exception("OmkarProvider también falló tras fallo de Apify: %s", omkar_exc)
+                    raise exc
+            else:
+                raise
         snapshot = build_competitor_snapshot(results, stay_nights=(checkout - checkin).days, currency=property_.currency, resolved_level=level)
         snapshot.checkin, snapshot.checkout = checkin, checkout
         await redis_client.setex(key, CACHE_TTL_SECONDS, snapshot.model_dump_json())

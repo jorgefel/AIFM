@@ -51,9 +51,10 @@ async def read_competitors(
         ) from exc
     except ProviderRateLimitError as exc:
         logger.exception("Competitor provider rate limited for property %s: %s", property_id, exc)
+        detail_msg = str(exc) if "crédito" in str(exc).lower() else "Se ha alcanzado el límite de consultas de competidores. Intenta más tarde."
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Se ha alcanzado el límite de consultas de competidores. Intenta más tarde.",
+            detail=detail_msg,
         ) from exc
     except ProviderTimeoutError as exc:
         logger.exception("Competitor provider timed out for property %s: %s", property_id, exc)

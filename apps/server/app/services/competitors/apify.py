@@ -7,6 +7,7 @@ import httpx
 from app.core.config import settings
 from app.services.competitors.provider import (
     ProviderConfigurationError,
+    ProviderRateLimitError,
     ProviderTimeoutError,
     ProviderUnavailableError,
 )
@@ -71,6 +72,12 @@ class ApifyProvider:
             )
             if exc.response.status_code in (401, 403):
                 raise ProviderConfigurationError("El token de Apify es inválido o no tiene permisos.") from exc
+            if exc.response.status_code == 402:
+                logger.warning("Apify account has insufficient credits (HTTP 402): %s", exc.response.text[:200])
+                raise ProviderRateLimitError("La cuenta de Apify ha agotado sus créditos de uso disponibles.") from exc
+            if exc.response.status_code == 429:
+                logger.warning("Apify rate limit exceeded (HTTP 429)")
+                raise ProviderRateLimitError("Límite de peticiones alcanzado en Apify.") from exc
             raise ProviderUnavailableError("No fue posible consultar Airbnb en este momento.") from exc
         except (httpx.HTTPError, ValueError) as exc:
             logger.exception("Apify provider error for query %s: %s", query, exc)
