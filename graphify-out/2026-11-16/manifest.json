@@ -216,8 +216,8 @@
     "semantic_hash": ""
   },
   "apps/server/app/models/__init__.py": {
-    "mtime": 1794868986.6231425,
-    "seen": 1794869284.6391716,
+    "mtime": 1794869319.4036446,
+    "seen": 1794869968.8978722,
     "ast_hash": "5c3a047aeb0b710743395cd78d20fdd9",
     "semantic_hash": ""
   },
@@ -2532,9 +2532,9 @@
     "semantic_hash": ""
   },
   "docs/predictive-model.md": {
-    "mtime": 1794864765.1776047,
-    "seen": 1794865060.2806334,
-    "ast_hash": "1b66416265271303f2848ecfaa495663",
+    "mtime": 1794869861.937608,
+    "seen": 1794869968.8987806,
+    "ast_hash": "962ff41085bfce1b648b301f4742552d",
     "semantic_hash": ""
   },
   "apps/server/app/services/predictive_recommendations.py": {
@@ -2613,6 +2613,30 @@
     "mtime": 1794869161.138798,
     "seen": 1794869284.6393564,
     "ast_hash": "b890db2455243f08164b64e26b1684ba",
+    "semantic_hash": ""
+  },
+  "apps/server/scripts/__init__.py": {
+    "mtime": 1794869878.777949,
+    "seen": 1794869968.8980014,
+    "ast_hash": "46b4e270c5951e04aa00fc56e7050554",
+    "semantic_hash": ""
+  },
+  "apps/server/scripts/seed_demo.py": {
+    "mtime": 1794869793.358658,
+    "seen": 1794869968.8980043,
+    "ast_hash": "84c7fcc22cc256e9bf9439d6e1925f53",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/services/test_seed_demo.py": {
+    "mtime": 1794869802.5569978,
+    "seen": 1794869968.8980715,
+    "ast_hash": "81af7ec0dbced0daeeb0fb6f93892eb9",
+    "semantic_hash": ""
+  },
+  "docs/chatbot-demo.md": {
+    "mtime": 1794869846.8335469,
+    "seen": 1794869968.8987765,
+    "ast_hash": "5031c93652490ace5abc67b9801e8072",
     "semantic_hash": ""
   }
 }
