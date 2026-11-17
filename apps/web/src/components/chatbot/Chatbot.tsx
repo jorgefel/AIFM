@@ -426,7 +426,7 @@ export function Chatbot({ propertyId }: ChatbotProps) {
 
       {/* Ventana flotante de Chatbot */}
       {isOpen && (
-        <div className="flex h-[620px] max-h-[85vh] w-[420px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-xl transition-all">
+        <div className="flex h-[min(620px,90dvh)] max-h-[90dvh] w-[420px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-xl transition-all">
           {/* Cabecera */}
           <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-3">
             <div className="flex items-center gap-2.5">
@@ -523,20 +523,45 @@ export function Chatbot({ propertyId }: ChatbotProps) {
             </div>
           </div>
 
-          {/* Historial de Mensajes */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Historial de Mensajes / Catálogo interactivo de preguntas */}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-4 space-y-4">
             {history.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-center px-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 mb-3">
-                  <MessageSquare className="h-6 w-6" />
+              <div className="flex flex-col space-y-4">
+                <div className="flex flex-col items-center justify-center text-center px-2 pt-1">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm font-semibold text-white">
+                    Asistente financiero Nomora
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-400">
+                    Selecciona una pregunta preprogramada o escribe tu consulta libre abajo.
+                  </p>
                 </div>
-                <p className="text-sm font-semibold text-white">
-                  Asistente financiero Nomora
-                </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  Haz clic en las opciones rápidas superiores para cálculo
-                  directo, o escribe tus preguntas y dudas analíticas.
-                </p>
+
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-1">
+                    Preguntas disponibles ({filteredQuestions.length})
+                  </p>
+                  <div className="grid grid-cols-1 gap-1.5 pb-2">
+                    {filteredQuestions.map((q) => (
+                      <button
+                        key={q.id}
+                        onClick={() => handleChipClick(q)}
+                        disabled={isProcessing}
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-left text-xs text-slate-200 transition-all hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-white disabled:opacity-50"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] text-emerald-400 font-medium">
+                            {q.category}
+                          </span>
+                          <span>{q.label}</span>
+                        </div>
+                        <ChevronRight className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : (
               history.map((msg) => (
