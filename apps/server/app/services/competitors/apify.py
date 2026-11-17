@@ -32,6 +32,7 @@ class ApifyProvider:
         checkout: date,
         adults: int,
         fallback_to_city: bool,
+        **kwargs: Any,
     ) -> tuple[list[dict], str]:
         if not self.token:
             logger.error("ApifyProvider requested but neither APIFY_TOKEN nor APIFY_API_KEY is configured.")

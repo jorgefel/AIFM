@@ -148,11 +148,23 @@ async def get_competitors(
     if not await redis_client.set(lock_key, "1", ex=30, nx=True):
         raise ValueError("La comparación se está actualizando. Intenta de nuevo en unos segundos.")
     try:
-        query = ", ".join([property_.neighborhood, property_.city, property_.country])
+        # Construct location query strictly from neighborhood, city and country (never property name or street address)
+        neighborhood_clean = property_.neighborhood.strip() if getattr(property_, "neighborhood", None) else ""
+        city_clean = property_.city.strip() if getattr(property_, "city", None) else ""
+        country_clean = property_.country.strip() if getattr(property_, "country", None) else ""
+
+        neighborhood_query = ", ".join(filter(None, [neighborhood_clean, city_clean, country_clean]))
+        city_query = ", ".join(filter(None, [city_clean, country_clean]))
+
         checkin, checkout = date.today() + timedelta(days=7), date.today() + timedelta(days=8)
         results, level = await (provider or get_default_provider()).search(
-            query=query, domain=country_domain(property_.country), checkin=checkin, checkout=checkout,
-            adults=property_.max_guests, fallback_to_city=fallback_to_city,
+            query=neighborhood_query or city_query,
+            domain=country_domain(property_.country),
+            checkin=checkin,
+            checkout=checkout,
+            adults=property_.max_guests,
+            fallback_to_city=fallback_to_city,
+            city_query=city_query,
         )
         snapshot = build_competitor_snapshot(results, stay_nights=(checkout - checkin).days, currency=property_.currency, resolved_level=level)
         snapshot.checkin, snapshot.checkout = checkin, checkout

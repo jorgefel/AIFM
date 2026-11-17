@@ -11,6 +11,8 @@ from app.models.user import User
 from app.schemas.competitors import CompetitorSnapshot
 from app.services.competitors.provider import (
     ProviderConfigurationError,
+    ProviderQueryError,
+    ProviderRateLimitError,
     ProviderTimeoutError,
     ProviderUnavailableError,
 )
@@ -40,6 +42,18 @@ async def read_competitors(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="La comparación de competidores no está configurada en el servidor.",
+        ) from exc
+    except ProviderQueryError as exc:
+        logger.exception("Competitor search query rejected (HTTP 400) for property %s: %s", property_id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="No fue posible obtener competidores para la ubicación especificada.",
+        ) from exc
+    except ProviderRateLimitError as exc:
+        logger.exception("Competitor provider rate limited for property %s: %s", property_id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Se ha alcanzado el límite de consultas de competidores. Intenta más tarde.",
         ) from exc
     except ProviderTimeoutError as exc:
         logger.exception("Competitor provider timed out for property %s: %s", property_id, exc)
