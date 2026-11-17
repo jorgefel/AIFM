@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Link from "next/link";
 import { Search, Loader2 } from "lucide-react";
 import { useHeaderSearch } from "@/hooks/useHeaderSearch";
 
@@ -54,10 +55,15 @@ export function HeaderSearch() {
             <div className="mb-2">
               <h4 className="px-2 text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">Propiedades</h4>
               {results.properties.map((p: any) => (
-                <div key={p.id} className="p-2 hover:bg-surface rounded-lg cursor-pointer transition-colors">
+                <Link
+                  key={p.id}
+                  href={`/properties/${p.id}`}
+                  onClick={() => setShowResults(false)}
+                  className="block p-2 hover:bg-surface rounded-lg cursor-pointer transition-colors"
+                >
                   <p className="text-sm font-medium text-violet-600">{p.name}</p>
                   <p className="text-xs text-ink-muted">{p.subtitle}</p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -66,10 +72,15 @@ export function HeaderSearch() {
             <div className="mb-2">
               <h4 className="px-2 text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">Reservas</h4>
               {results.reservations.map((r: any) => (
-                <div key={r.id} className="p-2 hover:bg-surface rounded-lg cursor-pointer transition-colors">
+                <Link
+                  key={r.id}
+                  href="/income"
+                  onClick={() => setShowResults(false)}
+                  className="block p-2 hover:bg-surface rounded-lg cursor-pointer transition-colors"
+                >
                   <p className="text-sm font-medium text-blue-600">{r.name}</p>
                   <p className="text-xs text-ink-muted">{r.subtitle}</p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -78,10 +89,15 @@ export function HeaderSearch() {
             <div>
               <h4 className="px-2 text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">Gastos</h4>
               {results.expenses.map((e: any) => (
-                <div key={e.id} className="p-2 hover:bg-surface rounded-lg cursor-pointer transition-colors">
+                <Link
+                  key={e.id}
+                  href="/expenses"
+                  onClick={() => setShowResults(false)}
+                  className="block p-2 hover:bg-surface rounded-lg cursor-pointer transition-colors"
+                >
                   <p className="text-sm font-medium text-coral-accent">{e.name}</p>
                   <p className="text-xs text-ink-muted">{e.subtitle}</p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
