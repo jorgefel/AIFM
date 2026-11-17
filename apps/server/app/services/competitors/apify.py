@@ -1,5 +1,6 @@
 from datetime import date
 import logging
+import re
 from typing import Any
 
 import httpx
@@ -16,6 +17,53 @@ logger = logging.getLogger(__name__)
 
 APIFY_API_BASE = "https://api.apify.com/v2"
 ACTOR_NAME = "tri_angle~airbnb-scraper"
+
+
+def _extract_capacity(item: dict[str, Any]) -> tuple[int | None, int | None, float | None]:
+    bedrooms = item.get("bedrooms") or item.get("bedroomCount")
+    beds = item.get("beds") or item.get("bedCount")
+    bathrooms = item.get("bathrooms") or item.get("bathroomCount")
+
+    sub = item.get("subDescription")
+    items = sub.get("items", []) if isinstance(sub, dict) else []
+    for entry in items:
+        if not isinstance(entry, str):
+            continue
+        lower = entry.lower()
+        if bedrooms is None:
+            if any(w in lower for w in ["bedroom", "habita", "dormitorio", "alcoba", "cuarto"]):
+                m = re.search(r"(\d+)", lower)
+                if m:
+                    bedrooms = int(m.group(1))
+            elif "studio" in lower or "estudio" in lower:
+                bedrooms = 0
+        if beds is None:
+            if any(w in lower for w in ["bed", "cama"]):
+                m = re.search(r"(\d+)", lower)
+                if m:
+                    beds = int(m.group(1))
+            elif any(k in lower for k in ["queen", "king", "double", "single", "matrimonial"]):
+                beds = 1
+        if bathrooms is None:
+            if any(w in lower for w in ["bath", "baño"]):
+                m = re.search(r"(\d+(?:\.\d+)?)", lower)
+                if m:
+                    bathrooms = float(m.group(1))
+                elif "half" in lower or "medio" in lower:
+                    bathrooms = 0.5
+                else:
+                    bathrooms = 1.0
+
+    room_type = str(item.get("roomType", "")).lower()
+    title = str(item.get("name") or item.get("title") or "").lower()
+    if bedrooms is None:
+        if "private room" in room_type or "habitación privada" in room_type or "room in" in title:
+            bedrooms = 1
+        elif "studio" in room_type or "estudio" in title or "loft" in title:
+            bedrooms = 0
+    if beds is None and bedrooms == 1:
+        beds = 1
+    return bedrooms, beds, bathrooms
 
 
 class ApifyProvider:
@@ -39,7 +87,7 @@ class ApifyProvider:
         return data if isinstance(data, list) else []
 
     async def _run_actor(
-        self, client: httpx.AsyncClient, query: str, checkin: date, checkout: date, adults: int
+        self, client: httpx.AsyncClient, query: str, checkin: date, checkout: date, adults: int, currency: str = "COP"
     ) -> list[dict[str, Any]]:
         payload = {
             "locationQueries": [query],
@@ -47,6 +95,7 @@ class ApifyProvider:
             "checkIn": checkin.isoformat(),
             "checkOut": checkout.isoformat(),
             "adults": adults,
+            "currency": currency,
             "includeReviews": False,
         }
         url = f"{APIFY_API_BASE}/acts/{ACTOR_NAME}/runs"
@@ -92,6 +141,7 @@ class ApifyProvider:
         checkout: date,
         adults: int,
         fallback_to_city: bool,
+        currency: str = "COP",
         **kwargs: Any,
     ) -> tuple[list[dict], str]:
         if not self.token:
@@ -99,7 +149,7 @@ class ApifyProvider:
             raise ProviderConfigurationError("La comparación de competidores no está configurada (falta APIFY_TOKEN).")
 
         async with httpx.AsyncClient(timeout=65) as client:
-            raw_items = await self._run_actor(client, query, checkin, checkout, adults)
+            raw_items = await self._run_actor(client, query, checkin, checkout, adults, currency=currency)
 
             resolved_level = "neighborhood"
             if not raw_items and fallback_to_city:
@@ -108,7 +158,7 @@ class ApifyProvider:
                     city_query = ", ".join(parts[-2:])
                     logger.info("Apify: sin resultados en barrio, reintentando con ciudad: %s", city_query)
                     try:
-                        city_items = await self._run_actor(client, city_query, checkin, checkout, adults)
+                        city_items = await self._run_actor(client, city_query, checkin, checkout, adults, currency=currency)
                         if city_items:
                             raw_items = city_items
                             resolved_level = "city"
@@ -125,7 +175,7 @@ class ApifyProvider:
 
             # Extracción flexible de precio (soporta estructura simple y estructura anidada de tri_angle)
             price_val = None
-            price_curr = "USD"
+            price_curr = currency
             pricing = item.get("pricing") or item.get("price")
             if isinstance(pricing, dict):
                 breakdown = pricing.get("breakDown") if isinstance(pricing.get("breakDown"), dict) else {}
@@ -137,7 +187,7 @@ class ApifyProvider:
                     or pricing.get("price")
                     or pricing.get("total")
                 )
-                price_curr = pricing.get("currency") or total_dict.get("currency") or price_curr
+                price_curr = pricing.get("currency") or total_dict.get("currency") or currency
             elif isinstance(pricing, (int, float, str)):
                 price_val = pricing
 
@@ -161,6 +211,8 @@ class ApifyProvider:
                 if single_img:
                     images = [single_img]
 
+            b_rooms, b_beds, b_baths = _extract_capacity(item)
+
             normalized_listings.append({
                 "id": str(item_id),
                 "name": item.get("name") or item.get("title"),
@@ -169,9 +221,9 @@ class ApifyProvider:
                 "price": {"amount": price_val, "currency": price_curr},
                 "rating": rating_val,
                 "reviews_count": reviews_count,
-                "bedrooms": item.get("bedrooms") or item.get("bedroomCount"),
-                "beds": item.get("beds") or item.get("bedCount"),
-                "bathrooms": item.get("bathrooms") or item.get("bathroomCount"),
+                "bedrooms": b_rooms,
+                "beds": b_beds,
+                "bathrooms": b_baths,
                 "is_superhost": item.get("isSuperhost") is True or item.get("is_superhost") is True,
                 "is_guest_favorite": item.get("isGuestFavorite") is True or item.get("is_guest_favorite") is True,
             })

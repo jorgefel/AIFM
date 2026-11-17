@@ -80,7 +80,7 @@ async def upload_property_photo(file: UploadFile, owner_id: uuid.UUID) -> str:
     dev_path = os.path.join(dev_dir, f"{file_id}{ext}")
     async with aiofiles.open(dev_path, "wb") as out_file:
         await out_file.write(content)
-    return f"/uploads/properties/{owner_id}/{file_id}{ext}"
+    return f"/api/v1/uploads/properties/{owner_id}/{file_id}{ext}"
 
 async def save_receipt(file: UploadFile) -> str:
     """

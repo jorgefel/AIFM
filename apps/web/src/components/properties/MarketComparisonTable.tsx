@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, ExternalLink, Minus } from "lucide-react";
+import { resolvePhotoUrl } from "@/lib/resolvePhotoUrl";
 import type { Property } from "@/types/models";
 import type { MarketComparison, MarketListing } from "@/types/marketComparison";
 
@@ -51,7 +52,7 @@ function ListingImage({ src, alt }: { src?: string | null; alt: string }) {
 function PropertyCard({ property }: { property: Property }) {
   const nightlyRate = asNumber(property.nightly_rate);
   return <article className="h-full w-72 shrink-0 overflow-hidden rounded-xl border border-violet-500/40 bg-surface sm:w-80" aria-label={`Tu propiedad ${property.name}`}>
-    <ListingImage src={property.photo_urls?.[0]} alt={`Foto de ${property.name}`} />
+    <ListingImage src={resolvePhotoUrl(property.photo_urls?.[0])} alt={`Foto de ${property.name}`} />
     <div className="p-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">Tu alojamiento</p>
       <h2 className="mt-1 min-h-12 line-clamp-2 text-base font-semibold text-ink">{property.name}</h2>

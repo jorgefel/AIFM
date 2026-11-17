@@ -181,6 +181,7 @@ async def get_competitors(
                 adults=property_.max_guests,
                 fallback_to_city=fallback_to_city,
                 city_query=city_query,
+                currency=property_.currency,
             )
         except (ProviderUnavailableError, ProviderRateLimitError, ProviderTimeoutError) as exc:
             # Fallback automático: si Apify falla o se queda sin créditos y Omkar está configurado, intentar Omkar
@@ -197,6 +198,7 @@ async def get_competitors(
                         adults=property_.max_guests,
                         fallback_to_city=fallback_to_city,
                         city_query=city_query,
+                        currency=property_.currency,
                     )
                 except Exception as omkar_exc:
                     logger.exception("OmkarProvider también falló tras fallo de Apify: %s", omkar_exc)

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DataTable } from "@/components/ui/DataTable";
 import { Edit2, Trash2, Building2, Eye, Users } from "lucide-react";
 import { formatNightlyPrice, getPropertyTypeLabel } from "@/lib/propertyOptions";
+import { resolvePhotoUrl } from "@/lib/resolvePhotoUrl";
 import { Property } from "@/types/models";
 
 interface PropertyListProps {
@@ -27,7 +28,7 @@ export function PropertyList({ properties, isLoading, onDelete }: PropertyListPr
             <span className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface">
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt="" className="h-full w-full object-cover" />
+                <img src={resolvePhotoUrl(cover)} alt="" className="h-full w-full object-cover" />
               ) : (
                 <Building2 className="h-5 w-5 text-ink-muted" />
               )}

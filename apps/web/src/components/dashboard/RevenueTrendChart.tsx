@@ -91,7 +91,7 @@ export function RevenueTrendChart({ data, total, change, isLoading, forecast }: 
         )}
       </header>
 
-      <div className="min-h-[240px] flex-1">
+      <div className="h-64 sm:h-72 w-full mt-2">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />

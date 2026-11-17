@@ -324,9 +324,9 @@
     "semantic_hash": "2104923f561814b4a6f7c2ec543a55f7"
   },
   "apps/server/app/services/storage.py": {
-    "mtime": 1794884349.6737912,
-    "seen": 1794886484.4559941,
-    "ast_hash": "01cc9610a00f0dd2f062c6a547888594",
+    "mtime": 1794890981.5412626,
+    "seen": 1794891296.2112496,
+    "ast_hash": "18b63ac5627946c778d807580356c86d",
     "semantic_hash": ""
   },
   "apps/server/main.py": {
@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/PropertyList.tsx": {
-    "mtime": 1791317935.8488898,
-    "seen": 1791900058.239166,
-    "ast_hash": "b00b755e1908806cb4ad66981111de5a",
+    "mtime": 1794890982.0732627,
+    "seen": 1794891296.2115529,
+    "ast_hash": "f76ed9311b7c26d1b4a745efbb7aa460",
     "semantic_hash": ""
   },
   "apps/web/src/components/reports/ReportCards.tsx": {
@@ -2016,15 +2016,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PropertySummaryGrid.tsx": {
-    "mtime": 1791317479.3612797,
-    "seen": 1791900058.239087,
-    "ast_hash": "e87e19968ba85232013f5788671af431",
+    "mtime": 1794890981.6032634,
+    "seen": 1794891296.2114835,
+    "ast_hash": "f60159398ca297896a59310be476e438",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/RevenueTrendChart.tsx": {
-    "mtime": 1794882978.6973147,
-    "seen": 1794884177.1245325,
-    "ast_hash": "16e57f25bdccfd7741c4beda91cc4391",
+    "mtime": 1794890981.7952614,
+    "seen": 1794891296.2114873,
+    "ast_hash": "e1ab7bdfe8182a66cff210cda3e024e5",
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/TrendBadge.tsx": {
@@ -2046,9 +2046,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/PropertyGallery.tsx": {
-    "mtime": 1791317479.3652794,
-    "seen": 1791900058.2391481,
-    "ast_hash": "721d071d3f4c757509df89dd67bac6f1",
+    "mtime": 1794891039.7143161,
+    "seen": 1794891296.211551,
+    "ast_hash": "fd753c2ecceb5a9b7d16aced6d6f288b",
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/amenityIcons.ts": {
@@ -2082,8 +2082,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/wizard/PhotosStep.tsx": {
-    "mtime": 1794889679.044595,
-    "seen": 1794889836.9924746,
+    "mtime": 1794889918.484576,
+    "seen": 1794891296.2115648,
     "ast_hash": "8adf3e0a541bba02754c5da6de00b1b0",
     "semantic_hash": ""
   },
@@ -2196,8 +2196,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/hooks/usePropertyWizard.ts": {
-    "mtime": 1794889667.9444032,
-    "seen": 1794889836.9925604,
+    "mtime": 1794889918.570575,
+    "seen": 1794891296.2116532,
     "ast_hash": "08f33acc7c3188e08f9a99d11cf63060",
     "semantic_hash": ""
   },
@@ -2376,9 +2376,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/MarketComparisonTable.tsx": {
-    "mtime": 1793682273.6123023,
-    "seen": 1793682296.7391737,
-    "ast_hash": "a368844493ebd75599e3f98dcf853119",
+    "mtime": 1794891062.0449326,
+    "seen": 1794891296.2115471,
+    "ast_hash": "408dc3d3dc7583d72994088464a64c89",
     "semantic_hash": ""
   },
   "apps/web/src/hooks/useMarketComparison.ts": {
@@ -2436,8 +2436,8 @@
     "semantic_hash": ""
   },
   "apps/server/app/api/v1/routes/competitors.py": {
-    "mtime": 1794889738.7667446,
-    "seen": 1794889836.9920104,
+    "mtime": 1794889917.8313985,
+    "seen": 1794891296.2110984,
     "ast_hash": "8ae6fb32390ccdc0fdb9ebb8aa3ae666",
     "semantic_hash": ""
   },
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/service.py": {
-    "mtime": 1794889726.3675382,
-    "seen": 1794889836.9921498,
-    "ast_hash": "b06135c70a1b9cefaad447d858833631",
+    "mtime": 1794891093.4699533,
+    "seen": 1794891296.2112372,
+    "ast_hash": "f490a7ea556dc7b00c09ab8e3e5e77ff",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_competitors.py": {
@@ -2664,9 +2664,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/apify.py": {
-    "mtime": 1794889707.0127318,
-    "seen": 1794889836.9921432,
-    "ast_hash": "b3a5d36c4d52013635e3786019d88ffe",
+    "mtime": 1794891250.161148,
+    "seen": 1794891296.2112308,
+    "ast_hash": "43255a36f0b590147cea0553f697bb9f",
     "semantic_hash": ""
   },
   "apps/server/tests/api/test_automations.py": {
@@ -2700,9 +2700,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_apify_provider.py": {
-    "mtime": 1794889076.0433698,
-    "seen": 1794889836.992221,
-    "ast_hash": "8b46af10679842f53e36d926573daffc",
+    "mtime": 1794891221.2814271,
+    "seen": 1794891296.2113132,
+    "ast_hash": "609ae597ec9fbdfdb2ef79c603ce9869",
     "semantic_hash": ""
   },
   "apps/web/src/app/guests/page.tsx": {
@@ -2733,6 +2733,12 @@
     "mtime": 1794884251.163657,
     "seen": 1794886484.4566743,
     "ast_hash": "4ba11437a9c4d245b176dc3f6f41d054",
+    "semantic_hash": ""
+  },
+  "apps/web/src/lib/resolvePhotoUrl.ts": {
+    "mtime": 1794890751.5090816,
+    "seen": 1794891296.211684,
+    "ast_hash": "f609382d263e85486383fce747ee9a00",
     "semantic_hash": ""
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Camera } from "lucide-react";
+import { resolvePhotoUrl } from "@/lib/resolvePhotoUrl";
 
 interface PropertyGalleryProps {
   photos: string[];
@@ -31,7 +32,7 @@ export function PropertyGallery({ photos, name }: PropertyGalleryProps) {
       <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-surface">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={current}
+          src={resolvePhotoUrl(current)}
           alt={`${name}, foto principal`}
           onError={() => markFailed(current)}
           className="h-full w-full object-cover"
@@ -51,7 +52,7 @@ export function PropertyGallery({ photos, name }: PropertyGalleryProps) {
                 }`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" onError={() => markFailed(url)} className="aspect-[4/3] w-full object-cover" />
+                <img src={resolvePhotoUrl(url)} alt="" onError={() => markFailed(url)} className="aspect-[4/3] w-full object-cover" />
               </button>
             </li>
           ))}

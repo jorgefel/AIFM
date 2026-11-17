@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, Building2, MapPin } from "lucide-react";
+import { resolvePhotoUrl } from "@/lib/resolvePhotoUrl";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import type { PropertyStat } from "@/lib/metrics";
 import type { Property } from "@/types/models";
@@ -45,7 +46,7 @@ export function PropertySummaryGrid({ properties, stats }: PropertySummaryGridPr
                   <div className="aspect-[16/10] bg-gradient-to-br from-violet-100 to-cyan-100">
                     {cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={cover} alt="" className="h-full w-full object-cover" />
+                      <img src={resolvePhotoUrl(cover)} alt="" className="h-full w-full object-cover" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-violet-600/60">
                         <Building2 className="h-9 w-9" />
