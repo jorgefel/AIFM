@@ -16,7 +16,12 @@ from app.services.competitors.provider import (
 
 
 def get_default_provider() -> CompetitorProvider:
-    token = settings.APIFY_TOKEN or settings.APIFY_API_KEY
+    token = (
+        settings.APIFY_TOKEN
+        or settings.APIFY_API_KEY
+        or settings.APIFY_KEY
+        or settings.APIFY_AUTH_TOKEN
+    )
     if token:
         from app.services.competitors.apify import ApifyProvider
         return ApifyProvider(token=token)

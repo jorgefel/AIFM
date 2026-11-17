@@ -65,6 +65,8 @@ class Settings(BaseSettings):
     OMKAR_API_KEY: str = ""
     APIFY_TOKEN: str = ""
     APIFY_API_KEY: str = ""
+    APIFY_KEY: str = ""
+    APIFY_AUTH_TOKEN: str = ""
 
     # ── Supabase Storage ─────────────────────────────────────
     SUPABASE_URL: str = ""

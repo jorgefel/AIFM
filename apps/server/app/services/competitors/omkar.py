@@ -115,10 +115,10 @@ class OmkarProvider:
                             "adults": adults,
                         },
                     )
-                except ProviderQueryError as exc:
+                except (ProviderQueryError, ProviderUnavailableError) as exc:
                     neighborhood_query_error = exc
                     logger.warning(
-                        "Omkar: Neighborhood level /search returned HTTP 400 for query=%s (full_name=%s, place_id=%s). Error: %s",
+                        "Omkar: Neighborhood level /search failed for query=%s (full_name=%s, place_id=%s). Error: %s",
                         query, full_name, place_id, exc,
                     )
                     search_data = None
@@ -160,14 +160,14 @@ class OmkarProvider:
                         )
                         if city_results:
                             return city_results, "city"
-                    except ProviderQueryError as exc:
+                    except (ProviderQueryError, ProviderUnavailableError) as exc:
                         logger.exception(
-                            "Omkar: City level fallback also failed with HTTP 400 for city_query=%s (full_name=%s, place_id=%s): %s",
+                            "Omkar: City level fallback also failed for city_query=%s (full_name=%s, place_id=%s): %s",
                             city_query, c_full_name, c_place_id, exc,
                         )
                         raise
 
-            # If neighborhood threw a 400 and city fallback was either disabled or yielded nothing, re-raise the 400
+            # If neighborhood threw an error and city fallback was either disabled or yielded nothing, re-raise the error
             if not results and neighborhood_query_error is not None:
                 raise neighborhood_query_error
 
@@ -195,6 +195,10 @@ class OmkarProvider:
                     "Omkar provider HTTP 400 Bad Request on %s (params=%s): %s",
                     path, safe_params, text_preview,
                 )
+                if "airbnb rejected the request" in text_preview.lower():
+                    raise ProviderUnavailableError(
+                        "El proveedor no pudo conectar con Airbnb en este momento."
+                    ) from exc
                 raise ProviderQueryError(
                     f"Consulta rechazada por el proveedor (400 Bad Request): {text_preview}"
                 ) from exc

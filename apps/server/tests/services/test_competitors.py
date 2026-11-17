@@ -6,7 +6,7 @@ import pytest
 
 from app.services.competitors.service import build_competitor_snapshot, country_domain, get_competitors
 from app.services.competitors.omkar import OmkarProvider
-from app.services.competitors.provider import ProviderQueryError
+from app.services.competitors.provider import ProviderQueryError, ProviderUnavailableError
 
 
 class FakeOmkarProvider(OmkarProvider):
@@ -200,3 +200,22 @@ async def test_force_refresh_ignores_a_cached_snapshot(monkeypatch):
     snapshot = await get_competitors(property_, force=True, provider=Provider())
 
     assert snapshot.aggregates.listing_count == 1
+
+
+@pytest.mark.asyncio
+async def test_omkar_400_with_airbnb_rejection_raises_provider_unavailable():
+    import httpx
+
+    provider = OmkarProvider()
+    req = httpx.Request("GET", "https://airbnb-scraper-api.omkar.cloud/airbnb/rooms/search")
+    resp = httpx.Response(400, request=req, text='{"message": "airbnb rejected the request: 400 Bad Request - Airbnb"}')
+
+    class MockClient:
+        async def get(self, *args, **kwargs):
+            return resp
+
+    with pytest.raises(ProviderUnavailableError) as exc_info:
+        await provider._get(MockClient(), "/search", {}, {})
+
+    assert "Airbnb" in str(exc_info.value)
+
