@@ -16,21 +16,33 @@ from app.core.redis import redis_client
 SUMMARY_CACHE_TTL = 60
 
 
-def _summary_key(property_id: uuid.UUID, year: int, month: int) -> str:
-    """Build a Redis key for a monthly summary cache entry."""
+def _summary_key(
+    property_id: uuid.UUID | str | None,
+    year: int,
+    month: int,
+    owner_id: uuid.UUID | str | None = None,
+) -> str:
+    """Build a Redis key for a monthly summary cache entry (per-property or consolidated)."""
+    if property_id is None or str(property_id) == "all":
+        return f"summary:all:{owner_id}:{year}:{month}"
     return f"summary:{property_id}:{year}:{month}"
 
 
-def _summary_pattern(property_id: uuid.UUID) -> str:
-    """Build a Redis glob pattern matching all cached summaries for a property."""
+def _summary_pattern(property_id: uuid.UUID | str | None, owner_id: uuid.UUID | str | None = None) -> str:
+    """Build a Redis glob pattern matching cached summaries."""
+    if property_id is None or str(property_id) == "all":
+        return f"summary:all:{owner_id}:*"
     return f"summary:{property_id}:*"
 
 
 async def get_cached_summary(
-    property_id: uuid.UUID, year: int, month: int
+    property_id: uuid.UUID | str | None,
+    year: int,
+    month: int,
+    owner_id: uuid.UUID | str | None = None,
 ) -> dict | None:
     """Return cached summary dict, or None if miss."""
-    key = _summary_key(property_id, year, month)
+    key = _summary_key(property_id, year, month, owner_id)
     raw = await redis_client.get(key)
     if raw is None:
         return None
@@ -38,24 +50,34 @@ async def get_cached_summary(
 
 
 async def set_cached_summary(
-    property_id: uuid.UUID, year: int, month: int, data: dict
+    property_id: uuid.UUID | str | None,
+    year: int,
+    month: int,
+    data: dict,
+    owner_id: uuid.UUID | str | None = None,
 ) -> None:
     """Store summary dict in Redis with TTL."""
-    key = _summary_key(property_id, year, month)
+    key = _summary_key(property_id, year, month, owner_id)
     await redis_client.setex(key, SUMMARY_CACHE_TTL, json.dumps(data))
 
 
-async def invalidate_summary_cache(property_id: uuid.UUID) -> int:
+async def invalidate_summary_cache(
+    property_id: uuid.UUID | str | None = None,
+    owner_id: uuid.UUID | str | None = None,
+) -> int:
     """
-    Delete all cached summaries for a given property.
+    Delete cached summaries for a given property and/or the owner's consolidated summary.
     Called after creating/updating/deleting reservations or expenses.
-
-    Returns the number of keys deleted.
     """
-    pattern = _summary_pattern(property_id)
     keys = []
-    async for key in redis_client.scan_iter(match=pattern, count=100):
-        keys.append(key)
+    if property_id is not None and str(property_id) != "all":
+        async for key in redis_client.scan_iter(match=f"summary:{property_id}:*", count=100):
+            keys.append(key)
+    if owner_id is not None:
+        async for key in redis_client.scan_iter(match=f"summary:all:{owner_id}:*", count=100):
+            keys.append(key)
+
     if keys:
-        return await redis_client.delete(*keys)
+        unique_keys = list(set(keys))
+        return await redis_client.delete(*unique_keys)
     return 0

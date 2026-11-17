@@ -23,12 +23,18 @@ const categoryLabels: Record<string, string> = {
   platform_fees: "Comisiones", taxes: "Impuestos", insurance: "Seguros", marketing: "Marketing", other: "Otros",
 };
 
-export function FinanceOverview({ propertyId, year, month }: { propertyId: string; year: number; month: number }) {
+export function FinanceOverview({ propertyId, year, month }: { propertyId?: string; year: number; month: number }) {
   const { formatCurrency } = useCurrency();
+  const isAll = !propertyId || propertyId === "all";
   const { data, isLoading } = useQuery<Overview>({
-    queryKey: ["finance-overview", propertyId, year, month],
-    queryFn: () => fetcher(`/analysis/finance-overview?property_id=${propertyId}&year=${year}&month=${month}`),
-    enabled: Boolean(propertyId),
+    queryKey: ["finance-overview", isAll ? "all" : propertyId, year, month],
+    queryFn: () => {
+      const url = isAll
+        ? `/analysis/finance-overview?year=${year}&month=${month}`
+        : `/analysis/finance-overview?property_id=${propertyId}&year=${year}&month=${month}`;
+      return fetcher(url);
+    },
+    enabled: true,
   });
   if (isLoading) return <div className="glass-panel p-5 text-sm text-slate-500">Calculando resumen financiero…</div>;
   if (!data) return null;

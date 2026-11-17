@@ -129,9 +129,9 @@ from app.services.cache import get_cached_summary, set_cached_summary
 
 @router.get("/summary", response_model=MonthlySummary)
 async def get_financial_summary(
-    property_id: uuid.UUID,
-    year: int,
-    month: int,
+    property_id: uuid.UUID | None = None,
+    year: int = Query(...),
+    month: int = Query(...),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -139,36 +139,56 @@ async def get_financial_summary(
     Resumen financiero mensual (Motor Determinístico, sin IA).
     Cached in Redis for 60s to avoid redundant computation.
     """
-    await verify_property_access(property_id, current_user, db)
+    if property_id is not None:
+        await verify_property_access(property_id, current_user, db)
 
-    # ── Redis cache check ──
-    cached = await get_cached_summary(property_id, year, month)
-    if cached is not None:
-        return cached
+        # ── Redis cache check ──
+        cached = await get_cached_summary(property_id, year, month)
+        if cached is not None:
+            return cached
 
-    # ── Cache miss: compute and store ──
-    reservations, expenses, _ = await _get_property_data(property_id, db)
-    summary = calculate_monthly_summary(reservations, expenses, year, month)
+        # ── Cache miss: compute and store ──
+        reservations, expenses, _ = await _get_property_data(property_id, db)
+        summary = calculate_monthly_summary(reservations, expenses, year, month)
 
-    await set_cached_summary(property_id, year, month, summary)
-    return summary
+        await set_cached_summary(property_id, year, month, summary)
+        return summary
+    else:
+        # ── Consolidado de todas las propiedades del owner ──
+        cached = await get_cached_summary(None, year, month, owner_id=current_user.id)
+        if cached is not None:
+            return cached
+
+        properties, reservations, expenses = await _get_portfolio_data(current_user, db)
+        summary, _ = _portfolio_summary(properties, reservations, expenses, year, month)
+
+        await set_cached_summary(None, year, month, summary, owner_id=current_user.id)
+        return summary
 
 
 @router.get("/finance-overview", response_model=FinanceOverview)
 async def get_finance_overview(
-    property_id: uuid.UUID,
-    year: int,
-    month: int,
+    property_id: uuid.UUID | None = None,
+    year: int = Query(...),
+    month: int = Query(...),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Monthly profit and expense composition for the finance workspace."""
-    await verify_property_access(property_id, current_user, db)
-    reservations, expenses, _ = await _get_property_data(property_id, db)
-    return {
-        "summary": calculate_monthly_summary(reservations, expenses, year, month),
-        "expense_breakdown": calculate_expense_breakdown(expenses, year, month),
-    }
+    """Monthly profit and expense composition for the finance workspace (per property or all)."""
+    if property_id is not None:
+        await verify_property_access(property_id, current_user, db)
+        reservations, expenses, _ = await _get_property_data(property_id, db)
+        return {
+            "summary": calculate_monthly_summary(reservations, expenses, year, month),
+            "expense_breakdown": calculate_expense_breakdown(expenses, year, month),
+        }
+    else:
+        properties, reservations, expenses = await _get_portfolio_data(current_user, db)
+        summary, _ = _portfolio_summary(properties, reservations, expenses, year, month)
+        return {
+            "summary": summary,
+            "expense_breakdown": calculate_expense_breakdown(expenses, year, month),
+        }
 
 
 @router.get("/alerts", response_model=list[OperationalAlert])

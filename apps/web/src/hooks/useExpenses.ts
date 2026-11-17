@@ -22,6 +22,7 @@ export function useExpenses() {
   const { currency } = useCurrency();
 
   const [formData, setFormData] = useState({
+    property_id: "",
     description: "",
     amount: "" as any,
     category: "maintenance",
@@ -39,12 +40,16 @@ export function useExpenses() {
   }, [properties, selectedPropertyId]);
 
   // ── Expenses via React Query ──
-  const expensesKey = ["expenses", selectedPropertyId];
+  const isAll = !selectedPropertyId || selectedPropertyId === "all";
+  const expensesKey = ["expenses", isAll ? "all" : selectedPropertyId];
 
   const { data: expenses = [], isLoading } = useQuery<Expense[]>({
     queryKey: expensesKey,
-    queryFn: () => fetcher(`/expenses/?property_id=${selectedPropertyId}`),
-    enabled: !!selectedPropertyId,
+    queryFn: () => {
+      const url = isAll ? "/expenses" : `/expenses?property_id=${selectedPropertyId}`;
+      return fetcher(url);
+    },
+    enabled: true,
     staleTime: 0, // No cache for agent action dependencies
   });
 
@@ -57,11 +62,16 @@ export function useExpenses() {
   };
 
   const submitExpense = async (editingId: string | null) => {
+    const targetPropertyId = formData.property_id || (selectedPropertyId !== "all" ? selectedPropertyId : "");
+    if (!targetPropertyId) {
+      toast.warning("Selecciona una propiedad", "Debes indicar a qué propiedad corresponde el gasto.");
+      return false;
+    }
     setIsSubmitting(true);
     try {
       const payload = {
         ...formData,
-        property_id: selectedPropertyId,
+        property_id: targetPropertyId,
         amount: Number(formData.amount)
       };
 
@@ -106,6 +116,7 @@ export function useExpenses() {
 
   const resetForm = () => {
     setFormData({
+      property_id: "",
       description: "",
       amount: "" as any,
       category: "maintenance",
@@ -117,6 +128,7 @@ export function useExpenses() {
 
   const loadForm = (exp: Expense) => {
     setFormData({
+      property_id: exp.property_id || "",
       description: exp.description,
       amount: exp.amount,
       category: exp.category,

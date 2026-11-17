@@ -20,16 +20,27 @@ router = APIRouter(prefix="/expenses", tags=["expenses"])
 @router.get("", response_model=List[ExpenseRead], include_in_schema=False)
 @router.get("/", response_model=List[ExpenseRead])
 async def get_expenses(
-    property_id: uuid.UUID,
+    property_id: uuid.UUID | None = None,
     start: date | None = None,
     end: date | None = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    await verify_property_access(property_id, current_user, db)
+    if property_id is not None:
+        await verify_property_access(property_id, current_user, db)
+        query = select(Expense).where(Expense.property_id == property_id, Expense.is_deleted.is_(False))
+    else:
+        query = (
+            select(Expense)
+            .join(Property, Expense.property_id == Property.id)
+            .where(
+                Property.owner_id == current_user.id,
+                Property.is_active.is_(True),
+                Expense.is_deleted.is_(False),
+            )
+        )
     if start and end and end < start:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="end must not be before start")
-    query = select(Expense).where(Expense.property_id == property_id, Expense.is_deleted.is_(False))
     if start:
         query = query.where(Expense.date >= start)
     if end:
@@ -47,7 +58,7 @@ async def create_expense(expense_in: ExpenseCreate, db: AsyncSession = Depends(g
     await db.commit()
     await db.refresh(db_expense)
     
-    await invalidate_summary_cache(db_expense.property_id)
+    await invalidate_summary_cache(db_expense.property_id, owner_id=current_user.id)
     
     return db_expense
 
@@ -92,7 +103,7 @@ async def update_expense(expense_id: uuid.UUID, expense_in: ExpenseUpdate, db: A
     await db.commit()
     await db.refresh(db_expense)
     
-    await invalidate_summary_cache(db_expense.property_id)
+    await invalidate_summary_cache(db_expense.property_id, owner_id=current_user.id)
     
     return db_expense
 
@@ -112,6 +123,6 @@ async def delete_expense(expense_id: uuid.UUID, db: AsyncSession = Depends(get_d
     db_expense.is_deleted = True # Soft delete
     await db.commit()
     
-    await invalidate_summary_cache(db_expense.property_id)
+    await invalidate_summary_cache(db_expense.property_id, owner_id=current_user.id)
     
     return None

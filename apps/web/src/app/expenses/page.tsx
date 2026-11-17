@@ -99,13 +99,14 @@ export default function ExpensesPage() {
                   value={selectedPropertyId}
                   onChange={(e) => setSelectedPropertyId(e.target.value)}
                 >
+                  <option value="all" className="bg-card text-ink font-semibold">Todas las propiedades</option>
                   {properties.map(p => (
                     <option key={p.id} value={p.id} className="bg-card text-ink">{p.name}</option>
                   ))}
                 </select>
               </div>
             )}
-            <Button onClick={openNewModal} disabled={!selectedPropertyId}>
+            <Button onClick={openNewModal} disabled={properties.length === 0}>
               <Plus className="w-4 h-4 mr-2" />
               Nuevo Gasto
             </Button>
