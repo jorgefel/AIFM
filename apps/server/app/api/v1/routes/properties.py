@@ -1,6 +1,7 @@
+import logging
 import uuid
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -10,6 +11,9 @@ from app.models.user import User
 from app.models.property import Property
 from app.schemas.property import PropertyRead, PropertyCreate, PropertyUpdate
 from app.services.competitors.service import invalidate_competitors
+from app.services.storage import upload_property_photo
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/properties", tags=["properties"])
 
@@ -29,6 +33,24 @@ async def create_property(property_in: PropertyCreate, db: AsyncSession = Depend
     await db.commit()
     await db.refresh(db_property)
     return db_property
+
+@router.post("/upload-photo")
+async def upload_photo(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        url = await upload_property_photo(file, current_user.id)
+        return {"url": url}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Error al subir foto de propiedad para usuario %s: %s", current_user.id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno al procesar la foto.",
+        )
+
 
 @router.get("/{property_id}", response_model=PropertyRead)
 async def get_property(property_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):

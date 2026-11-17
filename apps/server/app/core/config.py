@@ -63,6 +63,14 @@ class Settings(BaseSettings):
 
     # ── Competitors ─────────────────────────────────────────
     OMKAR_API_KEY: str = ""
+    APIFY_TOKEN: str = ""
+    APIFY_API_KEY: str = ""
+
+    # ── Supabase Storage ─────────────────────────────────────
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_STORAGE_BUCKET: str = "property-photos"
 
     # ── Beds24 ───────────────────────────────────────────────
     BEDS24_REFRESH_TOKEN: str = ""
