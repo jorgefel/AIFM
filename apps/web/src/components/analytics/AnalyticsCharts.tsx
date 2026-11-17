@@ -261,14 +261,19 @@ export function ForecastChart({
     return {
       label: `${label} ${parts[0]}`,
       gross: f.projected_gross_income,
+      grossMin: f.gross_income_min,
+      grossMax: f.gross_income_max,
       net: f.projected_net_profit,
+      netMin: f.net_profit_min,
+      netMax: f.net_profit_max,
+      model: f.model_used,
     };
   });
 
   return (
     <ChartCard title={`Pronóstico estadístico — ${propertyName}`}>
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 10, right: 0, left: -10, bottom: 0 }}>
+        <BarChart data={data} margin={{ top: 10, right: 0, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />
           <XAxis dataKey="label" stroke={theme.axis} fontSize={12} tickLine={false} axisLine={false} />
           <YAxis
@@ -279,22 +284,42 @@ export function ForecastChart({
             tickFormatter={(v) => formatCurrencyCompact(v)}
           />
           <Tooltip
-            content={
-              <ChartTooltip
-                format={(_name, value) => formatCurrency(value)}
-              />
-            }
+            cursor={{ fill: "rgba(165, 140, 244, 0.08)" }}
+            content={({ active, payload, label }) => {
+              if (!active || !payload?.length) return null;
+              const item = payload[0]?.payload;
+              if (!item) return null;
+              return (
+                <div className="rounded-xl border border-line-soft bg-card px-4 py-3 shadow-xl space-y-1.5">
+                  <p className="text-xs font-semibold text-ink-muted">{label}</p>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-4 text-xs">
+                      <span className="flex items-center gap-1.5 text-ink-muted">
+                        <span className="inline-block h-2 w-2 rounded-sm bg-[#433075]" />
+                        Ingreso bruto:
+                      </span>
+                      <strong className="text-ink">{formatCurrency(item.gross)}</strong>
+                    </div>
+                    {item.grossMin !== undefined && item.grossMax !== undefined && (
+                      <p className="text-[10px] text-ink-muted pl-3.5">
+                        Banda: {formatCurrencyCompact(item.grossMin)} – {formatCurrencyCompact(item.grossMax)}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between gap-4 text-xs pt-1 border-t border-line-soft">
+                      <span className="flex items-center gap-1.5 text-ink-muted">
+                        <span className="inline-block h-2 w-2 rounded-sm bg-[#A58CF4]" />
+                        Beneficio neto:
+                      </span>
+                      <strong className="text-[#A58CF4]">{formatCurrency(item.net)}</strong>
+                    </div>
+                  </div>
+                </div>
+              );
+            }}
           />
-          <Bar dataKey="gross" name="Ingreso bruto estimado" fill="#EC4899" radius={[6, 6, 0, 0]} maxBarSize={36} />
-          <Line
-            type="monotone"
-            dataKey="net"
-            name="Beneficio neto estimado"
-            stroke="#10B981"
-            strokeWidth={2.5}
-            dot={{ r: 4, fill: "#10B981", strokeWidth: 0 }}
-          />
-        </ComposedChart>
+          <Bar dataKey="gross" name="Ingreso bruto estimado" fill="#433075" radius={[6, 6, 0, 0]} maxBarSize={32} />
+          <Bar dataKey="net" name="Beneficio neto estimado" fill="#A58CF4" radius={[6, 6, 0, 0]} maxBarSize={32} />
+        </BarChart>
       </ResponsiveContainer>
     </ChartCard>
   );
