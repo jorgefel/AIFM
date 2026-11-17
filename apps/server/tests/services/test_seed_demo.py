@@ -1,4 +1,4 @@
-"""Pruebas unitarias para el script de sembrado de datos demo (seed_demo.py)."""
+"""Prueba unitarias para el script de sembrado de datos demo (seed_demo.py)."""
 
 from datetime import date
 from decimal import Decimal
