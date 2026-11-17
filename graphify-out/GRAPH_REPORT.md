@@ -1,47 +1,46 @@
 # Graph Report - AIFM  (2026-11-16)
 
 ## Corpus Check
-- 440 files · ~271,172 words
+- 440 files · ~271,307 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 5, .css 4, .mdc 1)
 
 ## Summary
-- 3781 nodes · 7626 edges · 205 communities (171 shown, 34 thin omitted)
+- 3784 nodes · 7637 edges · 216 communities (177 shown, 39 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 410 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ce600b8d`
+- Built from commit: `4d78118d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- ReservationDetail.tsx
+- useCalendar.ts
 - routes/auth.py
 - integrations.py
 - routes/billing.py
 - metadata.ts
 - guests.py
 - Hardening Patterns
-- datetime
+- Base
 - scripts
 - models.ts
-- CompetitorProvider
 - compilerOptions
 - worker/package.json
 - web/package.json
-- useCurrency
+- react
 - Property
 - dependencies
 - AuthContext.tsx
 - database/package.json
 - tasks
 - metrics.ts
-- normalize_beds24_booking
+- beds24_sync.py
 - cache.py
-- Reservation
+- reservations.py
 - shared/package.json
-- Expense
+- datetime
 - devDependencies
 - Worked example: Agent Teams for competing-hypothesis debugging
 - shared/src/index.ts
@@ -49,10 +48,10 @@
 - lucide-react
 - compilerOptions
 - compilerOptions
-- User
+- AutomationAction
 - main.py
 - match_question
-- ThemeContext.tsx
+- User
 - @aifm/database
 - scripts
 - Hardening Controls
@@ -64,10 +63,10 @@
 - Code Review and Quality
 - web/README.md
 - Security and Hardening
-- registry.py
+- Reservation
 - next
 - MarketComparisonTable.tsx
-- test_competitors.py
+- test_force_refresh_ignores_a_cached_snapshot
 - postcss.config.mjs
 - service.py
 - Auth & Users (Backend)
@@ -79,7 +78,7 @@
 - rules/graphify.md
 - workflows/graphify.md
 - Chatbot.tsx
-- dependencies.py
+- routes/chat.py
 - Test-Driven Development
 - route.ts
 - Propuesta de Arquitectura: Sistema de Comparación con Alojamientos Cercanos
@@ -92,10 +91,10 @@
 - Funciones del sistema
 - Optimization Patterns
 - _get_property_data
-- opengraph-image.tsx
-- golden_rule.py
+- Beds24Client
+- calculate_monthly_summary
 - plans/page.tsx
-- schemas/__init__.py
+- pytest
 - routes/analysis.py
 - migrate-theme-tokens.mjs
 - Performance Checklist
@@ -161,8 +160,8 @@
 - Contrato y Arquitectura del Modelo Predictivo Financiero
 - OWASP Top 10 Prevention Patterns
 - OWASP Top 10 Prevention Patterns
-- redis.py
-- generate_predictive_recommendations
+- RateLimiter
+- generate_property_forecast
 - deterministic_analyzer.py
 - app/page.tsx
 - Hardening Controls
@@ -177,30 +176,40 @@
 - ponytail-review/SKILL.md
 - Ponytail
 - run_financial_analysis
-- react
-- analytics/page.tsx
+- GlassHeader.tsx
+- AnalyticsCharts.tsx
 - Ponytail, lazy senior dev mode
 - ponytail-debt/SKILL.md
 - Local Development Infrastructure
 - test_market_evidence.py
 - a1b2c3d4e5f6_add_guests_table_and_reservation_guest_id.py
 - Guía de Demostración del Chatbot de Dos Capas y Pronóstico Financiero
-- RevenueTrendChart.tsx
+- useCurrency
 - Spec: market-snapshot
 - app/layout.tsx
-- request_ai_insights
+- Skeleton.tsx
 - ChannelDonut.tsx
 - QueryProvider.tsx
-- Button
+- useAuth
 - Settings
 - run_copilot
-- context.py
+- register/page.tsx
 - calculate_remaining_free_days
 - schemas/automation.py
-- pytest
+- export_csv
 - do_run_migrations
-- test_apify_provider.py
-- routes/competitors.py
+- analytics/page.tsx
+- ProviderConfigurationError
+- golden_rule.py
+- ProviderQueryError
+- to_decimal
+- ReservationsTable.tsx
+- db_session
+- PixelBlast.jsx
+- DashboardLayoutRead
+- calculate_occupancy_breakdown
+- health_check
+- OmkarProvider
 
 ## God Nodes (most connected - your core abstractions)
 1. `User` - 142 edges
@@ -221,31 +230,31 @@
   AIFM-Brain/11-Informe-Tecnico.md → apps/server/app/models/automation.py
 - `Principios técnicos que definen el producto` --references--> `AuditLog`  [INFERRED]
   AIFM-Brain/11-Informe-Tecnico.md → apps/server/app/models/automation.py
-- `7. Facturación, suscripciones y monetización (Stripe)` --references--> `BillingEvent`  [INFERRED]
-  AIFM-Brain/11-Informe-Tecnico.md → apps/server/app/models/subscription.py
 - `8. Integración y sincronización de canales externos (Beds24)` --references--> `Beds24SyncPanel()`  [INFERRED]
   AIFM-Brain/11-Informe-Tecnico.md → apps/web/src/components/integrations/Beds24SyncPanel.tsx
+- `Experiencia de Usuario (UI/UX)` --references--> `PropertyWizard()`  [INFERRED]
+  AIFM-Brain/propuestas/comparacion_alojamientos_cercanos.md → apps/web/src/components/properties/wizard/PropertyWizard.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (205 total, 34 thin omitted)
+## Communities (216 total, 39 thin omitted)
 
-### Community 0 - "ReservationDetail.tsx"
-Cohesion: 0.09
-Nodes (30): CalendarPage(), MiniCalendar(), MiniCalendarProps, WEEKDAYS, localizer, messages, ReservationCalendar(), ReservationCalendarProps (+22 more)
+### Community 0 - "useCalendar.ts"
+Cohesion: 0.16
+Nodes (16): CalendarPage(), MiniCalendar(), MiniCalendarProps, WEEKDAYS, localizer, messages, ReservationCalendar(), ReservationCalendarProps (+8 more)
 
 ### Community 1 - "routes/auth.py"
-Cohesion: 0.05
-Nodes (42): apple_callback(), apple_login(), _complete_oauth_callback(), _frontend_callback_url(), _get_or_create_oauth_user(), google_callback(), google_login(), login() (+34 more)
+Cohesion: 0.06
+Nodes (40): apple_callback(), apple_login(), _complete_oauth_callback(), _frontend_callback_url(), _get_or_create_oauth_user(), google_callback(), google_login(), login() (+32 more)
 
 ### Community 3 - "integrations.py"
-Cohesion: 0.07
-Nodes (37): _acquire_inventory_sync_slot(), _acquire_sync_lock(), check_beds24_channel_status(), check_beds24_connection(), confirm_beds24_channel(), create_beds24_connection(), create_ota_connection(), get_beds24_sync_history() (+29 more)
+Cohesion: 0.12
+Nodes (31): _acquire_inventory_sync_slot(), _acquire_sync_lock(), check_beds24_channel_status(), confirm_beds24_channel(), create_beds24_connection(), create_ota_connection(), get_beds24_sync_history(), get_calendar_snapshot() (+23 more)
 
 ### Community 4 - "routes/billing.py"
 Cohesion: 0.11
-Nodes (24): create_checkout_session(), create_portal_session(), _find_user_for_subscription(), _frontend_url(), get_billing_history(), get_billing_status(), _handle_stripe_event(), _latest_subscription() (+16 more)
+Nodes (25): create_checkout_session(), create_portal_session(), _find_user_for_subscription(), _frontend_url(), get_billing_history(), get_billing_status(), _handle_stripe_event(), _latest_subscription() (+17 more)
 
 ### Community 5 - "metadata.ts"
 Cohesion: 0.08
@@ -259,9 +268,9 @@ Nodes (18): create_guest(), delete_guest(), _enrich_guest_read(), get_guest(), g
 Cohesion: 0.17
 Nodes (10): Data Classification, Dependency Audit Triage, Destructive Operations on Derived Paths, File Upload Safety, Hardening Patterns, Input Validation Patterns, LLM Output Handling, Rate Limiting (+2 more)
 
-### Community 8 - "datetime"
-Cohesion: 0.18
-Nodes (14): 5. Asesor financiero y Copiloto IA conversacional, run_migrations_offline(), Base, TimestampMixin, UUIDMixin, AIChatMessage, AIChatSession, Beds24PropertyLink (+6 more)
+### Community 8 - "Base"
+Cohesion: 0.17
+Nodes (16): 5. Asesor financiero y Copiloto IA conversacional, 7. Facturación, suscripciones y monetización (Stripe), Base, AuditLog, TimestampMixin, UUIDMixin, AIChatMessage, AIChatSession (+8 more)
 
 ### Community 9 - "scripts"
 Cohesion: 0.10
@@ -269,7 +278,7 @@ Nodes (20): devDependencies, concurrently, turbo, engines, node, pnpm, name, pac
 
 ### Community 10 - "models.ts"
 Cohesion: 0.07
-Nodes (47): ExpensesPage(), ChatMessage, GlassPropertiesProps, ExpenseList(), ExpenseListProps, categoryLabels, FinanceOverview(), Overview (+39 more)
+Nodes (50): IncomePage(), AIChatCopilot(), ChatMessage, GlassPropertiesProps, PredictiveRecommendationsProps, categoryLabels, FinanceOverview(), Overview (+42 more)
 
 ### Community 12 - "compilerOptions"
 Cohesion: 0.10
@@ -283,13 +292,13 @@ Nodes (15): dependencies, jose, devDependencies, @cloudflare/workers-types, type
 Cohesion: 0.10
 Nodes (19): eslintConfig, typescript, name, private, version, eslint, eslint-config-next, react-dom (+11 more)
 
-### Community 15 - "useCurrency"
+### Community 15 - "react"
 Cohesion: 0.15
-Nodes (21): GlassIncome(), GlassIncomeProps, GlassKeyMetrics(), GlassKeyMetricsProps, GlassStatCards(), GlassStatCardsProps, WidgetBase(), WidgetBaseProps (+13 more)
+Nodes (22): money(), navigation, PropertyCard(), propertyInitials(), propertyPalettes, rangeOptions, ReferenceDashboard(), WidgetBase() (+14 more)
 
 ### Community 16 - "Property"
 Cohesion: 0.08
-Nodes (17): get_forecast(), _normalize_text(), search_all(), _sql_unaccent(), ChatbotAdvice, Property, compute_metric_evolution(), extract_metrics_dict() (+9 more)
+Nodes (20): build_context(), compact_result(), main(), seed(), Expense, Property, compute_metric_evolution(), extract_metrics_dict() (+12 more)
 
 ### Community 17 - "dependencies"
 Cohesion: 0.11
@@ -308,28 +317,28 @@ Cohesion: 0.12
 Nodes (15): dependsOn, inputs, outputs, cache, persistent, globalEnv, dependsOn, $schema (+7 more)
 
 ### Community 22 - "metrics.ts"
-Cohesion: 0.12
-Nodes (31): dateFormatter, formatRange(), initials(), ReservationsTable(), StatusBadge(), PeriodSelectProps, usePortfolioMetrics(), computeMetrics() (+23 more)
+Cohesion: 0.14
+Nodes (26): PortfolioStatCards(), PortfolioStatCardsProps, usePortfolioMetrics(), computeMetrics(), DateRangeMode, dayFormatter, dayIndex(), DayRange (+18 more)
 
-### Community 23 - "normalize_beds24_booking"
-Cohesion: 0.21
-Nodes (10): _as_date(), _as_decimal(), _first(), normalize_beds24_booking(), normalize_beds24_inventory(), test_invalid_remote_dates_are_rejected(), test_inventory_requires_a_property_identifier(), test_normalizes_daily_inventory_without_retaining_remote_extras() (+2 more)
+### Community 23 - "beds24_sync.py"
+Cohesion: 0.15
+Nodes (14): _as_date(), _as_decimal(), BookingSyncSummary, _first(), InventorySyncSummary, normalize_beds24_booking(), normalize_beds24_inventory(), sync_beds24_bookings() (+6 more)
 
 ### Community 24 - "cache.py"
 Cohesion: 0.33
 Nodes (4): get_cached_summary(), set_cached_summary(), _summary_key(), _summary_pattern()
 
-### Community 25 - "Reservation"
-Cohesion: 0.12
-Nodes (17): create_reservation(), delete_reservation(), _ensure_no_overlap(), get_calendar_reservations(), get_reservations(), update_reservation(), Reservation, ReservationBase (+9 more)
+### Community 25 - "reservations.py"
+Cohesion: 0.09
+Nodes (21): create_expense(), delete_expense(), get_expenses(), update_expense(), upload_expense_receipt(), create_reservation(), delete_reservation(), _ensure_no_overlap() (+13 more)
 
 ### Community 26 - "shared/package.json"
 Cohesion: 0.17
 Nodes (11): devDependencies, typescript, exports, typescript, main, name, private, scripts (+3 more)
 
-### Community 27 - "Expense"
-Cohesion: 0.12
-Nodes (13): create_expense(), delete_expense(), get_expenses(), update_expense(), upload_expense_receipt(), main(), seed(), Expense (+5 more)
+### Community 27 - "datetime"
+Cohesion: 0.18
+Nodes (5): run_migrations_offline(), get_db(), get_current_user(), verify_property_access(), verify_refresh_token()
 
 ### Community 28 - "devDependencies"
 Cohesion: 0.17
@@ -344,12 +353,12 @@ Cohesion: 0.20
 Nodes (10): ApiResponse, Currency, Expense, ExpenseCategory, MonthlyReport, PaginatedResponse, Property, Reservation (+2 more)
 
 ### Community 31 - "IncomeForm.tsx"
-Cohesion: 0.13
-Nodes (24): ExpenseForm(), ExpenseFormProps, getNights(), IncomeForm(), IncomeFormProps, ChoiceGroup(), PropertyForm(), PropertyFormProps (+16 more)
+Cohesion: 0.12
+Nodes (29): Fact(), formatDay(), ReservationDetail(), ReservationDetailProps, STATUS_COLORS, STATUS_LABELS, ExpenseForm(), ExpenseFormProps (+21 more)
 
 ### Community 32 - "lucide-react"
-Cohesion: 0.08
-Nodes (48): Fact(), PropertyDetailPage(), GlassAiDecisionsProps, AMENITY_ICONS, getAmenityIcon(), PropertyGallery(), PropertyGalleryProps, PropertyList() (+40 more)
+Cohesion: 0.07
+Nodes (50): EditPropertyPage(), Fact(), PropertyDetailPage(), NewPropertyPage(), GlassAiDecisionsProps, AMENITY_ICONS, getAmenityIcon(), PropertyGallery() (+42 more)
 
 ### Community 33 - "compilerOptions"
 Cohesion: 0.20
@@ -359,21 +368,21 @@ Nodes (9): compilerOptions, esModuleInterop, lib, module, moduleResolution, skip
 Cohesion: 0.20
 Nodes (9): compilerOptions, declaration, declarationMap, module, moduleResolution, skipLibCheck, sourceMap, strict (+1 more)
 
-### Community 35 - "User"
-Cohesion: 0.13
-Nodes (19): approve_and_execute_automation(), cancel_automation(), create_automation(), list_automations(), scan_automations(), scan_operational_rules(), create_property(), delete_property() (+11 more)
+### Community 35 - "AutomationAction"
+Cohesion: 0.22
+Nodes (10): approve_and_execute_automation(), cancel_automation(), create_automation(), list_automations(), scan_automations(), scan_operational_rules(), AutomationAction, test_approve_automation_executes_and_logs() (+2 more)
 
 ### Community 36 - "main.py"
-Cohesion: 0.08
-Nodes (10): create_demo_workspace(), delete_expired_demo_workspaces(), run_demo_cleanup_forever(), save_receipt(), upload_property_photo(), health_check(), lifespan(), test_upload_property_photo_invalid_type() (+2 more)
+Cohesion: 0.06
+Nodes (11): create_demo_workspace(), delete_expired_demo_workspaces(), run_demo_cleanup_forever(), save_receipt(), upload_property_photo(), lifespan(), test_upload_property_photo_invalid_type(), test_upload_property_photo_too_large() (+3 more)
 
 ### Community 37 - "match_question"
 Cohesion: 0.12
 Nodes (11): get_fallback_question_id(), has_consecutive_words(), match_question(), normalize_words(), stem_matches_word(), test_fallback_question_id(), test_match_question_layer1(), test_match_question_layer2() (+3 more)
 
-### Community 38 - "ThemeContext.tsx"
-Cohesion: 0.18
-Nodes (14): AppearanceSection(), OPTIONS, ThemeSelector(), subscribeNoop(), ThemeToggle(), readStoredTheme(), ResolvedTheme, subscribeToSystemTheme() (+6 more)
+### Community 38 - "User"
+Cohesion: 0.11
+Nodes (14): create_property(), delete_property(), get_properties(), get_property(), update_property(), upload_photo(), _normalize_text(), search_all() (+6 more)
 
 ### Community 39 - "@aifm/database"
 Cohesion: 0.40
@@ -415,25 +424,25 @@ Nodes (3): Deploy on Vercel, Getting Started, Learn More
 Cohesion: 0.17
 Nodes (12): Always Do (No Exceptions), Ask First (Requires Human Approval), Common Rationalizations, Never Do, Overview, Process: Threat Model First, Red Flags, Review Checklist (+4 more)
 
-### Community 50 - "registry.py"
-Cohesion: 0.17
-Nodes (26): build(), handle_cancelaciones_mes(), handle_comparar_mes_anterior(), get_financials(), handle_dias_libres_proximos(), handle_estancia_promedio(), handle_gastos_categoria(), handle_historial_consejos() (+18 more)
+### Community 50 - "Reservation"
+Cohesion: 0.22
+Nodes (24): build(), handle_cancelaciones_mes(), handle_comparar_mes_anterior(), handle_dias_libres_proximos(), handle_estancia_promedio(), handle_gastos_categoria(), handle_historial_consejos(), handle_ingresos_mes() (+16 more)
 
 ### Community 51 - "next"
-Cohesion: 0.04
-Nodes (55): nextConfig, containerVariants, itemVariants, LoginPage(), NewPropertyPage(), containerVariants, itemVariants, RegisterPage() (+47 more)
+Cohesion: 0.07
+Nodes (26): nextConfig, alt, contentType, size, ProtectedRoute(), PUBLIC_PATHS, ADSENSE_CLIENT_ID, DisplayAd (+18 more)
 
 ### Community 52 - "MarketComparisonTable.tsx"
-Cohesion: 0.29
-Nodes (12): asNumber(), ComparisonHint(), CompetitorCard(), ListingImage(), Metric(), number(), NumericValue, price() (+4 more)
+Cohesion: 0.28
+Nodes (13): asNumber(), ComparisonHint(), CompetitorCard(), ListingImage(), MarketComparisonTable(), Metric(), number(), NumericValue (+5 more)
 
-### Community 54 - "test_competitors.py"
-Cohesion: 0.08
-Nodes (13): country_domain(), FakeOmkarProvider, test_country_domain_uses_colombian_domain_and_default(), test_force_refresh_ignores_a_cached_snapshot(), delete(), test_omkar_400_with_airbnb_rejection_raises_provider_unavailable(), test_omkar_falls_back_to_city_only_when_enabled(), test_omkar_search_400_at_both_levels_raises_query_error() (+5 more)
+### Community 54 - "test_force_refresh_ignores_a_cached_snapshot"
+Cohesion: 0.11
+Nodes (5): FakeOmkarProvider, test_force_refresh_ignores_a_cached_snapshot(), test_omkar_400_with_airbnb_rejection_raises_provider_unavailable(), test_omkar_falls_back_to_city_only_when_enabled(), test_omkar_search_reuses_cached_place_id()
 
 ### Community 58 - "service.py"
 Cohesion: 0.19
-Nodes (12): CompetitorAggregates, CompetitorListing, CompetitorSnapshot, build_competitor_snapshot(), _cache_key(), get_competitors(), _image_url(), _lock_key() (+4 more)
+Nodes (12): CompetitorProvider, build_competitor_snapshot(), _cache_key(), country_domain(), get_competitors(), _image_url(), invalidate_competitors(), _lock_key() (+4 more)
 
 ### Community 59 - "Auth & Users (Backend)"
 Cohesion: 0.25
@@ -455,9 +464,9 @@ Nodes (29): 1. Correctness, 2. Readability & Simplicity, 3. Architecture, 4. Sec
 Cohesion: 0.17
 Nodes (19): Chatbot(), ChatbotMetric, ChatbotProps, ChatbotResult, ChatbotTable, ChatEntry, formatMetricValue(), formatResultAsPlainText() (+11 more)
 
-### Community 79 - "dependencies.py"
-Cohesion: 0.10
-Nodes (18): check_global_ai_limit(), check_user_ai_limit(), increment_ai_usage(), get_chat_session(), list_chat_sessions(), send_chat_message(), get_me(), get_db() (+10 more)
+### Community 79 - "routes/chat.py"
+Cohesion: 0.16
+Nodes (13): check_global_ai_limit(), check_user_ai_limit(), increment_ai_usage(), get_chat_session(), list_chat_sessions(), send_chat_message(), AIChatMessageBase, AIChatMessageCreate (+5 more)
 
 ### Community 80 - "Test-Driven Development"
 Cohesion: 0.07
@@ -472,8 +481,8 @@ Cohesion: 0.22
 Nodes (8): 1. Objetivo, 2. Requerimientos de Datos: Dirección Específica y Geolocalización, 3. Conexión de APIs para Alojamientos Cercanos, 4. Métricas de Comparación a Mostrar en el Dashboard, Campos en Base de Datos (`properties`), Experiencia de Usuario (UI/UX), Propuesta de Arquitectura: Sistema de Comparación con Alojamientos Cercanos, Recomendación de Implementación Fásica (Fase 1 y Fase 2)
 
 ### Community 83 - "test_dashboard_returns_daily_series_for_one_month"
-Cohesion: 0.15
-Nodes (9): calculate_daily_chart_data(), test_daily_chart_data_includes_every_day_and_aggregates_transactions(), test_dashboard_accepts_range_query_without_shadowing_builtin(), cache_summary(), cached_summary(), monthly_summary(), property_data(), verify_access() (+1 more)
+Cohesion: 0.20
+Nodes (7): test_dashboard_accepts_range_query_without_shadowing_builtin(), cache_summary(), cached_summary(), monthly_summary(), property_data(), verify_access(), test_dashboard_returns_daily_series_for_one_month()
 
 ### Community 84 - "Context Engineering"
 Cohesion: 0.07
@@ -492,12 +501,12 @@ Cohesion: 0.07
 Nodes (26): 1. Commit Early, Commit Often, 2. Atomic Commits, 3. Descriptive Messages, 4. Keep Concerns Separate, 5. Size Your Changes, Branch Naming, Branching Strategy, Change Summaries (+18 more)
 
 ### Community 88 - "DashboardLayout"
-Cohesion: 0.18
-Nodes (5): get_dashboard_layout(), update_dashboard_layout(), DashboardLayout, DashboardLayoutRead, DashboardLayoutUpdate
+Cohesion: 0.29
+Nodes (3): get_dashboard_layout(), update_dashboard_layout(), DashboardLayout
 
 ### Community 89 - "Funciones del sistema"
-Cohesion: 0.14
-Nodes (13): 10. Rendimiento y Caché de Borde (Edge Worker), 1. Gestión de usuarios, sesiones y control de acceso (RBAC / Tiers), 2. Gestión de entidades operativas (Propiedades, Reservas y Gastos), 3. Motor financiero determinístico (Golden Rule), 6. Automatizaciones operativas con aprobación humana (Human-in-the-Loop), 7. Facturación, suscripciones y monetización (Stripe), 8. Integración y sincronización de canales externos (Beds24), Arquitectura del sistema (+5 more)
+Cohesion: 0.15
+Nodes (12): 10. Rendimiento y Caché de Borde (Edge Worker), 1. Gestión de usuarios, sesiones y control de acceso (RBAC / Tiers), 2. Gestión de entidades operativas (Propiedades, Reservas y Gastos), 3. Motor financiero determinístico (Golden Rule), 6. Automatizaciones operativas con aprobación humana (Human-in-the-Loop), 8. Integración y sincronización de canales externos (Beds24), Arquitectura del sistema, Flujo funcional completo (+4 more)
 
 ### Community 90 - "Optimization Patterns"
 Cohesion: 0.07
@@ -507,25 +516,25 @@ Nodes (25): Connection Pool Exhaustion, Large Bundle Size, Missing Caching (Back
 Cohesion: 0.19
 Nodes (9): get_dashboard_data(), get_finance_overview(), get_financial_summary(), get_operational_alerts(), get_portfolio_dashboard(), _get_portfolio_data(), _get_property_data(), _run_ai_analysis_task() (+1 more)
 
-### Community 92 - "opengraph-image.tsx"
-Cohesion: 0.40
-Nodes (3): alt, contentType, size
+### Community 92 - "Beds24Client"
+Cohesion: 0.13
+Nodes (4): check_beds24_connection(), Beds24Client, test_create_property_extracts_id(), test_get_airbnb_users_returns_list()
 
-### Community 93 - "golden_rule.py"
-Cohesion: 0.14
-Nodes (13): 9. Dashboard consolidado, Analíticas y Reportes, calculate_expense_breakdown(), calculate_monthly_summary(), calculate_net_amount(), calculate_occupancy_rate(), detect_discrepancies(), to_decimal(), test_consolidated_totals_match_sum_of_individual_properties() (+5 more)
+### Community 93 - "calculate_monthly_summary"
+Cohesion: 0.22
+Nodes (7): request_deterministic_insights(), calculate_monthly_summary(), calculate_occupancy_rate(), detect_discrepancies(), test_calculate_monthly_summary(), test_calculate_occupancy_rate(), test_detect_discrepancies()
 
 ### Community 94 - "plans/page.tsx"
 Cohesion: 0.15
 Nodes (17): Banner(), BillingStatus, longDate, PlansContent(), PlansPage(), shortDate, Subscription, PlanCard() (+9 more)
 
-### Community 95 - "schemas/__init__.py"
-Cohesion: 0.10
+### Community 95 - "pytest"
+Cohesion: 0.09
 Nodes (25): _missing_onboarding_fields(), update_me(), update_onboarding(), ExpenseBase, ExpenseCreate, ExpenseRead, ExpenseUpdate, PropertyBase (+17 more)
 
 ### Community 96 - "routes/analysis.py"
-Cohesion: 0.35
-Nodes (10): AIInsightRequest, DailyChartPoint, DashboardData, ExpenseBreakdownItem, FinanceOverview, JobStatus, MonthlySummary, OperationalAlert (+2 more)
+Cohesion: 0.13
+Nodes (15): request_ai_insights(), get_job_status(), AIInsightRequest, DailyChartPoint, DashboardData, ExpenseBreakdownItem, FinanceOverview, JobStatus (+7 more)
 
 ### Community 97 - "migrate-theme-tokens.mjs"
 Cohesion: 0.13
@@ -783,17 +792,17 @@ Nodes (7): Broken Access Control, Broken Authentication, Cross-Site Scripting (X
 Cohesion: 0.15
 Nodes (12): Broken Access Control, Broken Authentication, Cross-Site Scripting (XSS), Injection, OWASP Top 10 Prevention Patterns, Security Misconfiguration, Sensitive Data Exposure, Server-Side Request Forgery (SSRF) (+4 more)
 
-### Community 162 - "generate_predictive_recommendations"
-Cohesion: 0.15
-Nodes (10): MonthForecast, PredictiveRecommendation, PropertyForecastResponse, RecommendationEvidence, generate_predictive_recommendations(), test_dashboard_and_context_same_recommendations(), test_recommendations_insufficient_data(), test_recommendations_margin_negative() (+2 more)
+### Community 162 - "generate_property_forecast"
+Cohesion: 0.07
+Nodes (20): get_forecast(), MonthForecast, PredictiveRecommendation, PropertyForecastResponse, RecommendationEvidence, compute_backtest_mape(), _fit_and_forecast(), generate_property_forecast() (+12 more)
 
 ### Community 163 - "deterministic_analyzer.py"
 Cohesion: 0.22
 Nodes (6): AnalysisInput, calculate_health_score(), generate_alerts(), generate_deterministic_analysis(), generate_insights(), generate_recommendations()
 
 ### Community 164 - "app/page.tsx"
-Cohesion: 0.15
-Nodes (20): 4. Modelo predictivo y proyecciones de series temporales (Forecasting), Home(), ChannelBars(), AIReportModal(), AIReportModalProps, DashboardHero(), DashboardHeroProps, PortfolioStatCards() (+12 more)
+Cohesion: 0.20
+Nodes (12): Home(), PropertyTableProps, AIReportModal(), AIReportModalProps, DashboardHero(), DashboardHeroProps, PredictiveRecommendations(), PromoBanner() (+4 more)
 
 ### Community 165 - "Hardening Controls"
 Cohesion: 0.17
@@ -828,16 +837,16 @@ Cohesion: 0.40
 Nodes (4): Before you write, Levels, Ponytail, The smallest complete change
 
 ### Community 176 - "run_financial_analysis"
-Cohesion: 0.20
-Nodes (6): Detalles Técnicos, Enlaces, Motor Engine & IA Agents, AnalysisInput, run_financial_analysis(), update_job()
+Cohesion: 0.25
+Nodes (5): Detalles Técnicos, Enlaces, Motor Engine & IA Agents, AnalysisInput, run_financial_analysis()
 
-### Community 177 - "react"
+### Community 177 - "GlassHeader.tsx"
 Cohesion: 0.15
-Nodes (13): PredictiveRecommendationsProps, GlassHeaderProps, Header(), HeaderProps, HeaderNotifications(), HeaderSearch(), STATUS, StatusBadgeProps (+5 more)
+Nodes (16): GlassHeader(), GlassHeaderProps, Header(), HeaderProps, HeaderNotifications(), HeaderSearch(), AppearanceSection(), OPTIONS (+8 more)
 
-### Community 178 - "analytics/page.tsx"
-Cohesion: 0.26
-Nodes (16): AnalyticsPage(), TabId, TABS, ChannelTable(), ChartCard(), ChartTooltip(), ForecastChart(), OccupancyLineChart() (+8 more)
+### Community 178 - "AnalyticsCharts.tsx"
+Cohesion: 0.25
+Nodes (14): 4. Modelo predictivo y proyecciones de series temporales (Forecasting), ChartCard(), ChartTooltip(), ForecastChart(), OccupancyLineChart(), RevenueBarsChart(), RevenueOccupancyChart(), RevenueTrendChart() (+6 more)
 
 ### Community 179 - "Ponytail, lazy senior dev mode"
 Cohesion: 0.50
@@ -852,82 +861,106 @@ Cohesion: 0.67
 Nodes (3): Local Development Infrastructure, PostgreSQL Service, Redis Service
 
 ### Community 184 - "test_market_evidence.py"
-Cohesion: 0.10
-Nodes (10): calculate_market_position(), match_equivalent_amenities(), normalize_amenity_name(), normalize_comparable(), test_comparables_differing_capacity(), test_equivalent_amenities(), test_market_position_calculation(), test_missing_data_handling() (+2 more)
+Cohesion: 0.11
+Nodes (14): CompetitorAggregates, CompetitorListing, CompetitorSnapshot, calculate_market_position(), match_equivalent_amenities(), normalize_amenity_name(), normalize_comparable(), record_market_snapshot() (+6 more)
 
 ### Community 186 - "Guía de Demostración del Chatbot de Dos Capas y Pronóstico Financiero"
 Cohesion: 0.13
 Nodes (14): 1.1 Iniciar Servidores, 1.2 Sembrar Datos de Prueba (24 Meses de Historial), 1. Preparación del Entorno y Datos de Prueba, 2.1 Cómo Interactuar, 2.2 Catálogo de Preguntas y Ejemplos de Prueba, 2. Capa 1: Motor Determinístico ("Cálculo directo"), 3.1 Arquitectura y Privacidad, 3.2 Pasos para Activar la Capa 2 (+6 more)
 
-### Community 187 - "RevenueTrendChart.tsx"
-Cohesion: 0.17
-Nodes (12): DashboardCharts(), DashboardChartsProps, CustomTooltip(), GlassPerformanceChart(), GlassPerformanceChartProps, RevenueTrendChartProps, SkeletonChart(), DARK (+4 more)
+### Community 187 - "useCurrency"
+Cohesion: 0.15
+Nodes (14): DashboardCharts(), DashboardChartsProps, GlassIncome(), GlassIncomeProps, GlassKeyMetrics(), GlassKeyMetricsProps, CustomTooltip(), GlassPerformanceChart() (+6 more)
 
 ### Community 188 - "Spec: market-snapshot"
 Cohesion: 0.05
 Nodes (39): GET(), Assumptions under review, Capability Map: inteligencia competitiva Airbnb, Key product decisions to approve, Sources checked, Boundaries, Code style, Commands (+31 more)
 
 ### Community 189 - "app/layout.tsx"
-Cohesion: 0.31
-Nodes (7): inter, manrope, metadata, RootLayout(), CurrencyProvider(), QueryProvider(), ToastProvider()
+Cohesion: 0.17
+Nodes (14): inter, manrope, metadata, RootLayout(), CurrencyProvider(), QueryProvider(), readStoredTheme(), ResolvedTheme (+6 more)
 
-### Community 190 - "request_ai_insights"
-Cohesion: 0.14
-Nodes (5): request_ai_insights(), request_deterministic_insights(), get_job_status(), create_job(), get_job()
+### Community 190 - "Skeleton.tsx"
+Cohesion: 0.12
+Nodes (17): PropertyComparisonPage(), ActivityList(), ActivityListProps, DashboardMetrics(), DashboardMetricsProps, ExpenseListProps, Column, DataTable() (+9 more)
 
 ### Community 191 - "ChannelDonut.tsx"
 Cohesion: 0.39
-Nodes (6): ChannelBarsProps, ChannelDonut(), ChannelDonutProps, CHANNELS, getChannel(), ChannelStat
+Nodes (6): ChannelBars(), ChannelBarsProps, ChannelDonutProps, CHANNELS, getChannel(), ChannelStat
 
 ### Community 192 - "QueryProvider.tsx"
 Cohesion: 0.47
 Nodes (4): persister, queryClient, @tanstack/query-sync-storage-persister, @tanstack/react-query-persist-client
 
-### Community 193 - "Button"
-Cohesion: 0.07
-Nodes (57): AutomationAction, AutomationPayload, AutomationsPage(), ComparisonPage(), GuestsPage(), IncomePage(), Field(), OnboardingPage() (+49 more)
+### Community 193 - "useAuth"
+Cohesion: 0.09
+Nodes (50): AutomationAction, AutomationPayload, AutomationsPage(), ComparisonPage(), ExpensesPage(), GuestsPage(), Field(), OnboardingPage() (+42 more)
 
 ### Community 194 - "Settings"
 Cohesion: 0.32
 Nodes (3): Settings, test_production_accepts_overridden_secret_key(), test_production_rejects_default_secret_key()
 
 ### Community 195 - "run_copilot"
-Cohesion: 0.16
-Nodes (8): CopilotContext, run_copilot(), _build_operational_alerts(), _portfolio_summary(), aggregate_monthly_summaries(), test_operational_alerts_include_loss_and_upcoming_checkin(), test_aggregate_monthly_summaries_keeps_occupancy_as_a_property_average(), test_portfolio_summary_returns_a_row_for_each_property()
+Cohesion: 0.22
+Nodes (4): CopilotContext, run_copilot(), _build_operational_alerts(), test_operational_alerts_include_loss_and_upcoming_checkin()
 
-### Community 196 - "context.py"
-Cohesion: 0.11
-Nodes (12): build_context(), compact_result(), get_advice_history(), compute_backtest_mape(), _fit_and_forecast(), generate_property_forecast(), _next_months(), test_forecast_long_history_holt_winters() (+4 more)
+### Community 196 - "register/page.tsx"
+Cohesion: 0.18
+Nodes (14): containerVariants, itemVariants, LoginPage(), containerVariants, itemVariants, RegisterPage(), AuthShowcasePanel(), BAR_PATTERN (+6 more)
 
 ### Community 198 - "schemas/automation.py"
 Cohesion: 0.43
 Nodes (6): AuditLogBase, AuditLogRead, AutomationActionBase, AutomationActionCreate, AutomationActionRead, AutomationActionUpdate
 
-### Community 199 - "pytest"
-Cohesion: 0.10
-Nodes (5): export_csv(), test_csv_export_rejects_an_inverted_date_range(), db_session(), event_loop(), test_engine()
+### Community 201 - "analytics/page.tsx"
+Cohesion: 0.20
+Nodes (13): AnalyticsPage(), TabId, TABS, ChannelTable(), PropertyTable(), ChannelDonut(), TrendBadge(), TrendBadgeProps (+5 more)
 
-### Community 202 - "test_apify_provider.py"
-Cohesion: 0.19
+### Community 202 - "ProviderConfigurationError"
+Cohesion: 0.20
 Nodes (7): ApifyProvider, ProviderConfigurationError, get_default_provider(), test_apify_provider_search_success(), test_get_default_provider_falls_back_to_omkar(), test_get_default_provider_picks_apify_when_token_present(), test_get_default_provider_raises_when_no_credentials()
 
-### Community 228 - "routes/competitors.py"
-Cohesion: 0.16
-Nodes (7): read_competitors(), OmkarProvider, ProviderError, ProviderQueryError, ProviderRateLimitError, ProviderTimeoutError, ProviderUnavailableError
+### Community 203 - "golden_rule.py"
+Cohesion: 0.20
+Nodes (8): 9. Dashboard consolidado, Analíticas y Reportes, _portfolio_summary(), aggregate_monthly_summaries(), calculate_expense_breakdown(), test_consolidated_totals_match_sum_of_individual_properties(), test_expense_breakdown_groups_only_the_requested_month(), test_aggregate_monthly_summaries_keeps_occupancy_as_a_property_average(), test_portfolio_summary_returns_a_row_for_each_property()
+
+### Community 204 - "ProviderQueryError"
+Cohesion: 0.18
+Nodes (6): read_competitors(), ProviderQueryError, test_omkar_search_400_at_both_levels_raises_query_error(), get(), test_omkar_search_400_at_neighborhood_falls_back_to_city(), get()
+
+### Community 205 - "to_decimal"
+Cohesion: 0.24
+Nodes (5): calculate_daily_chart_data(), calculate_net_amount(), to_decimal(), test_daily_chart_data_includes_every_day_and_aggregates_transactions(), test_calculate_net_amount()
+
+### Community 207 - "ReservationsTable.tsx"
+Cohesion: 0.33
+Nodes (8): dateFormatter, formatRange(), initials(), ReservationsTable(), StatusBadge(), nightsOf(), overlapNights(), parseDay()
+
+### Community 208 - "db_session"
+Cohesion: 0.25
+Nodes (3): db_session(), event_loop(), test_engine()
+
+### Community 210 - "PixelBlast.jsx"
+Cohesion: 0.38
+Nodes (6): createLiquidEffect(), createTouchTexture(), PixelBlast(), SHAPE_MAP, postprocessing, three
+
+### Community 228 - "OmkarProvider"
+Cohesion: 0.18
+Nodes (5): OmkarProvider, ProviderError, ProviderRateLimitError, ProviderTimeoutError, ProviderUnavailableError
 
 ## Knowledge Gaps
 - **1608 isolated node(s):** `idea-refine.sh script`, `idea-refine.sh script`, `eslintConfig`, `nextConfig`, `name` (+1603 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2110 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **34 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2108 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **39 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Funciones del sistema` connect `Funciones del sistema` to `datetime`, `app/page.tsx`, `golden_rule.py`?**
+- **Why does `Funciones del sistema` connect `Funciones del sistema` to `Base`, `AnalyticsCharts.tsx`, `golden_rule.py`?**
   _High betweenness centrality (0.136) - this node is a cross-community bridge._
-- **Why does `verify_property_access()` connect `dependencies.py` to `routes/analysis.py`, `User`, `routes/competitors.py`, `integrations.py`, `Expense`, `send_message`, `Property`, `Reservation`, `Funciones del sistema`, `_get_property_data`, `request_ai_insights`?**
+- **Why does `verify_property_access()` connect `datetime` to `routes/analysis.py`, `generate_property_forecast`, `AutomationAction`, `integrations.py`, `User`, `send_message`, `ProviderQueryError`, `routes/chat.py`, `Property`, `Funciones del sistema`, `_get_property_data`, `calculate_monthly_summary`, `reservations.py`?**
   _High betweenness centrality (0.096) - this node is a cross-community bridge._
-- **Why does `2. Gestión de entidades operativas (Propiedades, Reservas y Gastos)` connect `Funciones del sistema` to `dependencies.py`?**
+- **Why does `2. Gestión de entidades operativas (Propiedades, Reservas y Gastos)` connect `Funciones del sistema` to `datetime`?**
   _High betweenness centrality (0.094) - this node is a cross-community bridge._
 - **Are the 99 inferred relationships involving `User` (e.g. with `run_copilot()` and `ask_question()`) actually correct?**
   _`User` has 99 INFERRED edges - model-reasoned connections that need verification._
@@ -935,5 +968,5 @@ _Questions this graph is uniquely positioned to answer:_
   _`Property` has 70 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `idea-refine.sh script`, `idea-refine.sh script`, `eslintConfig` to the rest of the system?**
   _1608 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `ReservationDetail.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.09446693657219973 - nodes in this community are weakly interconnected._
+- **Should `routes/auth.py` be split into smaller, more focused modules?**
+  _Cohesion score 0.05622489959839357 - nodes in this community are weakly interconnected._

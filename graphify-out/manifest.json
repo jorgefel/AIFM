@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/service.py": {
-    "mtime": 1794887554.920889,
-    "seen": 1794887569.0573587,
-    "ast_hash": "d500fa3ed9c1168e0e2e6e41ee6eae1f",
+    "mtime": 1794888895.5298035,
+    "seen": 1794889024.5870867,
+    "ast_hash": "92cbfea90e34e7142f3c300864ec8c85",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_competitors.py": {
@@ -2664,9 +2664,9 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/apify.py": {
-    "mtime": 1794886339.2442553,
-    "seen": 1794886484.4559758,
-    "ast_hash": "e5a142b9d0085ff4ee854467535cfa6c",
+    "mtime": 1794888919.4606707,
+    "seen": 1794889024.5870795,
+    "ast_hash": "231ec40fc434e966dae68b021bcfe4de",
     "semantic_hash": ""
   },
   "apps/server/tests/api/test_automations.py": {
@@ -2700,9 +2700,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_apify_provider.py": {
-    "mtime": 1794882526.6505587,
-    "seen": 1794884177.1243575,
-    "ast_hash": "5b5bf96b7de3d3ae8dc473459e70fa74",
+    "mtime": 1794888935.163677,
+    "seen": 1794889024.5871582,
+    "ast_hash": "8b46af10679842f53e36d926573daffc",
     "semantic_hash": ""
   },
   "apps/web/src/app/guests/page.tsx": {
