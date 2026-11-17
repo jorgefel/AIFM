@@ -7,8 +7,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.redis import redis_client
 from app.models.property import Property
 from app.schemas.competitors import CompetitorAggregates, CompetitorListing, CompetitorSnapshot
+from app.core.config import settings
 from app.services.competitors.omkar import OmkarProvider
-from app.services.competitors.provider import CompetitorProvider
+from app.services.competitors.provider import (
+    CompetitorProvider,
+    ProviderConfigurationError,
+)
+
+
+def get_default_provider() -> CompetitorProvider:
+    token = settings.APIFY_TOKEN or settings.APIFY_API_KEY
+    if token:
+        from app.services.competitors.apify import ApifyProvider
+        return ApifyProvider(token=token)
+    if settings.OMKAR_API_KEY:
+        return OmkarProvider()
+    raise ProviderConfigurationError(
+        "La comparación de competidores no está configurada en el servidor (falta APIFY_TOKEN u OMKAR_API_KEY)."
+    )
 
 CACHE_TTL_SECONDS = 24 * 60 * 60
 COUNTRY_DOMAINS = {
@@ -66,7 +82,7 @@ def build_competitor_snapshot(
         if not isinstance(raw, dict) or not isinstance(raw.get("id"), (str, int)):
             continue
         price = raw.get("price") if isinstance(raw.get("price"), dict) else {}
-        total = _number(price.get("amount"))
+        total = _number(price.get("amount") or price.get("rate") or price.get("total") or raw.get("price"))
         listings.append(CompetitorListing(
             id=str(raw["id"]),
             title=raw.get("name") if isinstance(raw.get("name"), str) else raw.get("title") if isinstance(raw.get("title"), str) else None,
@@ -134,7 +150,7 @@ async def get_competitors(
     try:
         query = ", ".join([property_.neighborhood, property_.city, property_.country])
         checkin, checkout = date.today() + timedelta(days=7), date.today() + timedelta(days=8)
-        results, level = await (provider or OmkarProvider()).search(
+        results, level = await (provider or get_default_provider()).search(
             query=query, domain=country_domain(property_.country), checkin=checkin, checkout=checkout,
             adults=property_.max_guests, fallback_to_city=fallback_to_city,
         )
