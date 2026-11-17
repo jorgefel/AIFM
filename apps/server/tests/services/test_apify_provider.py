@@ -58,13 +58,20 @@ async def test_apify_provider_search_success():
         }
     ]
 
-    mock_resp = MagicMock()
-    mock_resp.status_code = 200
-    mock_resp.json.return_value = mock_data
-    mock_resp.raise_for_status.return_value = None
+    mock_run_resp = MagicMock()
+    mock_run_resp.status_code = 201
+    mock_run_resp.json.return_value = {"data": {"defaultDatasetId": "ds_123"}}
+    mock_run_resp.raise_for_status.return_value = None
 
-    with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
-        mock_post.return_value = mock_resp
+    mock_ds_resp = MagicMock()
+    mock_ds_resp.status_code = 200
+    mock_ds_resp.json.return_value = mock_data
+    mock_ds_resp.raise_for_status.return_value = None
+
+    with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post, \
+         patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_post.return_value = mock_run_resp
+        mock_get.return_value = mock_ds_resp
         listings, level = await provider.search(
             query="Bocagrande, Cartagena, Colombia",
             domain="airbnb.com.co",

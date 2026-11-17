@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
 import math
+import re
 import statistics
 from typing import Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,13 +48,18 @@ def country_domain(country: str) -> str:
 
 
 def _number(value: Any) -> float | None:
-    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+    if isinstance(value, bool):
         return None
-    try:
-        number = float(value)
-    except ValueError:
-        return None
-    return number if math.isfinite(number) else None
+    if isinstance(value, (int, float)):
+        return float(value) if math.isfinite(value) else None
+    if isinstance(value, str):
+        cleaned = re.sub(r"[^\d.]", "", value.replace(",", "").strip())
+        try:
+            number = float(cleaned)
+            return number if math.isfinite(number) else None
+        except ValueError:
+            return None
+    return None
 
 
 def _quantile(values: list[float], percentile: float) -> float | None:
