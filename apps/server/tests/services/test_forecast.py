@@ -25,6 +25,8 @@ def test_forecast_short_history():
         assert f.net_profit_min <= f.net_profit_max
         assert f.confidence_level == "limited"
         assert f.model_used == "moving_average"
+        assert f.projected_reservations is not None
+        assert f.booked_reservations is not None
 
 
 def test_forecast_multi_month_trend():

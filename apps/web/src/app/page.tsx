@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Building2 } from "lucide-react";
+import { Building2, Sparkles, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { GlassLayout } from "@/components/layout/glass/GlassLayout";
 import { PeriodSelect } from "@/components/ui/PeriodSelect";
@@ -16,6 +16,7 @@ import { PredictiveRecommendations } from "@/components/dashboard/PredictiveReco
 import { NonInvasiveBottomAd } from "@/components/dashboard/NonInvasiveAds";
 import { AIReportModal } from "@/components/dashboard/AIReportModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAIReport } from "@/hooks/useAIReport";
 import { usePortfolioMetrics } from "@/hooks/usePortfolioMetrics";
 import { useForecast } from "@/hooks/useForecast";
@@ -24,11 +25,24 @@ import { pctChange, getDefaultDateFilter, type DateFilter } from "@/lib/metrics"
 export default function Home() {
   const router = useRouter();
   const { user, isPro } = useAuth();
+  const { formatCurrency, formatCurrencyCompact } = useCurrency();
   const [period, setPeriod] = useState<DateFilter>(getDefaultDateFilter);
 
   const { properties, current, previous, series, isLoading } = usePortfolioMetrics(period);
   const activePropertyId = properties[0]?.id;
   const { data: forecastData } = useForecast(activePropertyId, 3);
+  const nextMonthForecast = forecastData?.forecasts?.[0];
+
+  const nextMonthName = useMemo(() => {
+    if (!nextMonthForecast?.month) return "";
+    const parts = nextMonthForecast.month.split("-");
+    const mIdx = parseInt(parts[1], 10) - 1;
+    const names = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+    return `${names[mIdx] ?? parts[1]} ${parts[0]}`;
+  }, [nextMonthForecast]);
 
   const {
     isReportModalOpen,
@@ -81,6 +95,66 @@ export default function Home() {
 
       <PortfolioStatCards current={current} previous={previous} isLoading={isLoading} />
 
+      {/* Expectativa predictiva para el próximo mes */}
+      {nextMonthForecast && (
+        <div className="card-surface p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-violet-500 bg-surface/70">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-400">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-violet-400">
+                  Expectativa para el próximo mes ({nextMonthName})
+                </span>
+                <span className="rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-medium text-violet-400 border border-violet-500/20">
+                  {forecastData?.confidence_level === "high"
+                    ? "Alta confianza"
+                    : forecastData?.confidence_level === "medium"
+                    ? "Confianza media"
+                    : "Estimación inicial"}
+                </span>
+              </div>
+              <p className="text-xs text-ink-muted mt-0.5">
+                Estimación estadística basada en el historial de {forecastData?.property_name || "tu propiedad"}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 sm:gap-6 divide-x divide-line-soft">
+            <div className="pl-0">
+              <p className="text-[11px] text-ink-muted">Ingresos esperados</p>
+              <p className="text-sm sm:text-base font-bold text-ink">
+                {formatCurrency(nextMonthForecast.projected_gross_income)}
+              </p>
+              <p className="text-[10px] text-ink-muted truncate">
+                Rango: {formatCurrencyCompact(nextMonthForecast.gross_income_min)} - {formatCurrencyCompact(nextMonthForecast.gross_income_max)}
+              </p>
+            </div>
+            <div className="pl-3 sm:pl-6">
+              <p className="text-[11px] text-ink-muted">Ganancia neta estimada</p>
+              <p className="text-sm sm:text-base font-bold text-emerald-400">
+                {formatCurrency(nextMonthForecast.projected_net_profit)}
+              </p>
+              <p className="text-[10px] text-ink-muted truncate">
+                Min: {formatCurrencyCompact(nextMonthForecast.net_profit_min)}
+              </p>
+            </div>
+            <div className="pl-3 sm:pl-6">
+              <p className="text-[11px] text-ink-muted">Reservas esperadas</p>
+              <p className="text-sm sm:text-base font-bold text-ink">
+                ~{nextMonthForecast.projected_reservations ?? 0}
+              </p>
+              <p className="text-[10px] text-ink-muted truncate">
+                {nextMonthForecast.booked_reservations
+                  ? `${nextMonthForecast.booked_reservations} confirmadas`
+                  : "0 en libros"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <RevenueTrendChart
@@ -93,6 +167,7 @@ export default function Home() {
         </div>
         <PredictiveRecommendations
           recommendations={forecastData?.recommendations}
+          forecast={forecastData?.forecasts}
           isLoading={isLoading}
         />
       </div>

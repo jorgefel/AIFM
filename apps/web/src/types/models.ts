@@ -130,6 +130,8 @@ export interface MonthForecast {
   confidence_score?: number;
   model_used: string;
   is_forecast: boolean;
+  projected_reservations?: number;
+  booked_reservations?: number;
 }
 
 export interface PropertyForecastResponse {

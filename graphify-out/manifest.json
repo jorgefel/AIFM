@@ -474,9 +474,9 @@
     "semantic_hash": "0268dc97f32e8ef29a38a9724d5b79c9"
   },
   "apps/web/src/app/page.tsx": {
-    "mtime": 1794867272.6116867,
-    "seen": 1794868239.845118,
-    "ast_hash": "86695ecff42418bd0bad59bfa56c414d",
+    "mtime": 1794892056.0638278,
+    "seen": 1794892103.4956264,
+    "ast_hash": "d09369ce9b1ce7b90f99b6f0aaaadc90",
     "semantic_hash": ""
   },
   "apps/web/src/app/properties/layout.tsx": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/types/models.ts": {
-    "mtime": 1794883812.171892,
-    "seen": 1794884177.124733,
-    "ast_hash": "588b7a464d833219a07ac08e5a6fa273",
+    "mtime": 1794891947.204652,
+    "seen": 1794892103.4959443,
+    "ast_hash": "1a483f7d336b9714657c5184b993f61b",
     "semantic_hash": ""
   },
   "apps/web/tsconfig.json": {
@@ -1890,21 +1890,21 @@
     "semantic_hash": ""
   },
   "apps/server/app/schemas/forecast.py": {
-    "mtime": 1794867272.4406888,
-    "seen": 1794868239.844971,
-    "ast_hash": "56440fe8c105a8bef8fa4b3cdd927514",
+    "mtime": 1794891896.5252433,
+    "seen": 1794892103.4954374,
+    "ast_hash": "a2e69dea227499d439f6e6426b2e6dff",
     "semantic_hash": ""
   },
   "apps/server/app/services/forecast.py": {
-    "mtime": 1794865558.4943967,
-    "seen": 1794866624.5005386,
-    "ast_hash": "b2db00cb3b7a5a6495859eb3b9590df5",
+    "mtime": 1794891920.3257747,
+    "seen": 1794892103.4954777,
+    "ast_hash": "6e591769e8d9f3c87ba7edab53971560",
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_forecast.py": {
-    "mtime": 1794865558.6123998,
-    "seen": 1794866624.5005975,
-    "ast_hash": "54e17a469848f2a0532163f18c2cd94a",
+    "mtime": 1794891932.0947373,
+    "seen": 1794892103.49556,
+    "ast_hash": "e3f8677765df7097062bc2d9443b48e0",
     "semantic_hash": ""
   },
   "apps/web/src/app/analytics/layout.tsx": {
@@ -2046,8 +2046,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/PropertyGallery.tsx": {
-    "mtime": 1794891039.7143161,
-    "seen": 1794891296.211551,
+    "mtime": 1794891313.9797318,
+    "seen": 1794892103.4958014,
     "ast_hash": "fd753c2ecceb5a9b7d16aced6d6f288b",
     "semantic_hash": ""
   },
@@ -2316,9 +2316,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/dashboard/PredictiveRecommendations.tsx": {
-    "mtime": 1794882978.4356267,
-    "seen": 1794884177.1245244,
-    "ast_hash": "311d6943b2f8ebb4a74eb613dfa9a2a2",
+    "mtime": 1794892016.149547,
+    "seen": 1794892103.495728,
+    "ast_hash": "0a3fb7c54f894b19e987333fd206a0fa",
     "semantic_hash": ""
   },
   "AIFM-Brain/propuestas/comparacion_alojamientos_cercanos.md": {
@@ -2376,8 +2376,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/properties/MarketComparisonTable.tsx": {
-    "mtime": 1794891062.0449326,
-    "seen": 1794891296.2115471,
+    "mtime": 1794891313.619461,
+    "seen": 1794892103.4957974,
     "ast_hash": "408dc3d3dc7583d72994088464a64c89",
     "semantic_hash": ""
   },
@@ -2628,9 +2628,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/services/test_seed_demo.py": {
-    "mtime": 1794869802.5569978,
-    "seen": 1794869968.8980715,
-    "ast_hash": "81af7ec0dbced0daeeb0fb6f93892eb9",
+    "mtime": 1794891428.2712235,
+    "seen": 1794892103.4955666,
+    "ast_hash": "4bdfb7f62f0e2d8ad784a613cd291162",
     "semantic_hash": ""
   },
   "docs/chatbot-demo.md": {
@@ -2664,8 +2664,8 @@
     "semantic_hash": ""
   },
   "apps/server/app/services/competitors/apify.py": {
-    "mtime": 1794891250.161148,
-    "seen": 1794891296.2112308,
+    "mtime": 1794891313.3629541,
+    "seen": 1794892103.4954665,
     "ast_hash": "43255a36f0b590147cea0553f697bb9f",
     "semantic_hash": ""
   },

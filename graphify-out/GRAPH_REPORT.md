@@ -1,17 +1,17 @@
-# Graph Report - AIFM  (2026-11-16)
+# Graph Report - AIFM  (2026-11-17)
 
 ## Corpus Check
-- 441 files · ~271,983 words
+- 441 files · ~272,601 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 5, .css 4, .mdc 1)
 
 ## Summary
-- 3788 nodes · 7667 edges · 208 communities (170 shown, 38 thin omitted)
+- 3788 nodes · 7675 edges · 209 communities (171 shown, 38 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 415 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3faa7c02`
+- Built from commit: `e3ff1d9c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -26,7 +26,7 @@
 - Hardening Patterns
 - User
 - scripts
-- models.ts
+- api.ts
 - main.py
 - compilerOptions
 - worker/package.json
@@ -34,10 +34,10 @@
 - react
 - build_context
 - dependencies
-- AuthContext.tsx
+- models.ts
 - database/package.json
 - tasks
-- metrics.ts
+- useCurrency
 - test_dashboard_returns_daily_series_for_one_month
 - schemas/property.py
 - invalidate_summary_cache
@@ -46,7 +46,7 @@
 - devDependencies
 - Worked example: Agent Teams for competing-hypothesis debugging
 - shared/src/index.ts
-- Button
+- lucide-react
 - usePropertyWizard.ts
 - compilerOptions
 - compilerOptions
@@ -66,7 +66,7 @@
 - web/README.md
 - Security and Hardening
 - Property
-- lucide-react
+- next
 - MarketComparisonTable.tsx
 - test_competitors.py
 - postcss.config.mjs
@@ -191,8 +191,8 @@
 - app/layout.tsx
 - ._run_actor
 - auth_user
-- QueryProvider.tsx
-- DashboardLayout
+- Skeleton.tsx
+- Button
 - config.py
 - copilot.py
 - list_questions
@@ -201,6 +201,7 @@
 - do_run_migrations
 - test_chatbot_never_writes_to_redis
 - service.py
+- plans/page.tsx
 - db_session
 - PixelBlast.jsx
 - routes/competitors.py
@@ -210,8 +211,8 @@
 2. `Property` - 113 edges
 3. `lucide-react` - 85 edges
 4. `react` - 73 edges
-5. `Reservation` - 62 edges
-6. `useCurrency()` - 61 edges
+5. `useCurrency()` - 65 edges
+6. `Reservation` - 62 edges
 7. `next` - 55 edges
 8. `useAuth()` - 52 edges
 9. `Button()` - 49 edges
@@ -232,7 +233,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (208 total, 38 thin omitted)
+## Communities (209 total, 38 thin omitted)
 
 ### Community 0 - "ReservationDetail.tsx"
 Cohesion: 0.12
@@ -274,9 +275,9 @@ Nodes (24): approve_and_execute_automation(), cancel_automation(), create_automa
 Cohesion: 0.10
 Nodes (20): devDependencies, concurrently, turbo, engines, node, pnpm, name, packageManager (+12 more)
 
-### Community 10 - "models.ts"
-Cohesion: 0.10
-Nodes (34): ChatMessage, GlassPropertiesProps, Connection, Link, SyncHistory(), SyncLog, MonthlyReportSummary(), Summary (+26 more)
+### Community 10 - "api.ts"
+Cohesion: 0.09
+Nodes (34): ExpensesPage(), ChatMessage, ExpenseList(), ExpenseListProps, categoryLabels, FinanceOverview(), Overview, MonthlyReportSummary() (+26 more)
 
 ### Community 11 - "main.py"
 Cohesion: 0.09
@@ -295,8 +296,8 @@ Cohesion: 0.10
 Nodes (19): eslintConfig, typescript, name, private, version, eslint, eslint-config-next, react-dom (+11 more)
 
 ### Community 15 - "react"
-Cohesion: 0.18
-Nodes (20): GlassIncome(), GlassIncomeProps, GlassKeyMetrics(), GlassKeyMetricsProps, GlassStatCards(), GlassStatCardsProps, WidgetBase(), WidgetBaseProps (+12 more)
+Cohesion: 0.19
+Nodes (14): WidgetBase(), WidgetBaseProps, WidgetExpenses(), WidgetIncome(), WidgetNetProfit(), WidgetOccupancy(), WidgetPerformanceChart(), WidgetRecentActivity() (+6 more)
 
 ### Community 16 - "build_context"
 Cohesion: 0.12
@@ -306,9 +307,9 @@ Nodes (12): build_context(), compact_result(), ChatbotAdvice, compute_metric_evo
 Cohesion: 0.11
 Nodes (18): dependencies, axios, date-fns, framer-motion, lucide-react, next, postprocessing, react (+10 more)
 
-### Community 19 - "AuthContext.tsx"
-Cohesion: 0.16
-Nodes (18): AuthCallbackPage(), AuthContext, AuthContextType, AuthProvider(), buildDemoUser(), OnboardingUpdate, ProfileUpdate, readCachedUser() (+10 more)
+### Community 19 - "models.ts"
+Cohesion: 0.09
+Nodes (25): PropertyTableProps, GlassPropertiesProps, PredictiveRecommendationsProps, PropertySummaryGridProps, IncomeFormProps, PropertyWizardProps, PropertyPickerModalProps, buildDemoReservations() (+17 more)
 
 ### Community 20 - "database/package.json"
 Cohesion: 0.12
@@ -318,9 +319,9 @@ Nodes (15): dependencies, @prisma/client, devDependencies, prisma, name, private
 Cohesion: 0.12
 Nodes (15): dependsOn, inputs, outputs, cache, persistent, globalEnv, dependsOn, $schema (+7 more)
 
-### Community 22 - "metrics.ts"
+### Community 22 - "useCurrency"
 Cohesion: 0.05
-Nodes (86): 4. Modelo predictivo y proyecciones de series temporales (Forecasting), AnalyticsPage(), TabId, TABS, Home(), ChannelTable(), ChartCard(), ChartTooltip() (+78 more)
+Nodes (83): 4. Modelo predictivo y proyecciones de series temporales (Forecasting), AnalyticsPage(), TabId, TABS, Home(), ChannelTable(), ChartCard(), ChartTooltip() (+75 more)
 
 ### Community 23 - "test_dashboard_returns_daily_series_for_one_month"
 Cohesion: 0.20
@@ -354,13 +355,13 @@ Nodes (31): 1. Direct invocation (no orchestration), 2. Single-persona slash com
 Cohesion: 0.20
 Nodes (10): ApiResponse, Currency, Expense, ExpenseCategory, MonthlyReport, PaginatedResponse, Property, Reservation (+2 more)
 
-### Community 31 - "Button"
-Cohesion: 0.07
-Nodes (51): ExpensesPage(), GuestsPage(), IncomePage(), ReservationsContent(), ReservationsPage(), TabId, TABS, AIReportModal() (+43 more)
+### Community 31 - "lucide-react"
+Cohesion: 0.13
+Nodes (25): AIReportModal(), AIReportModalProps, ExpenseForm(), ExpenseFormProps, getNights(), IncomeForm(), ChoiceGroup(), PropertyForm() (+17 more)
 
 ### Community 32 - "usePropertyWizard.ts"
-Cohesion: 0.07
-Nodes (54): Fact(), PropertyDetailPage(), NewPropertyPage(), PropertyTableProps, PropertySummaryGrid(), PropertySummaryGridProps, AMENITY_ICONS, getAmenityIcon() (+46 more)
+Cohesion: 0.08
+Nodes (47): Fact(), PropertyDetailPage(), NewPropertyPage(), AMENITY_ICONS, getAmenityIcon(), PropertyGallery(), PropertyGalleryProps, PropertyList() (+39 more)
 
 ### Community 33 - "compilerOptions"
 Cohesion: 0.20
@@ -430,9 +431,9 @@ Nodes (12): Always Do (No Exceptions), Ask First (Requires Human Approval), Comm
 Cohesion: 0.10
 Nodes (36): get_forecast(), build(), handle_cancelaciones_mes(), handle_comparar_mes_anterior(), get_financials(), handle_dias_libres_proximos(), handle_estancia_promedio(), handle_gastos_categoria() (+28 more)
 
-### Community 51 - "lucide-react"
+### Community 51 - "next"
 Cohesion: 0.04
-Nodes (60): nextConfig, containerVariants, itemVariants, LoginPage(), Field(), OnboardingPage(), platforms, containerVariants (+52 more)
+Nodes (68): nextConfig, AuthCallbackPage(), containerVariants, itemVariants, LoginPage(), containerVariants, itemVariants, RegisterPage() (+60 more)
 
 ### Community 52 - "MarketComparisonTable.tsx"
 Cohesion: 0.28
@@ -847,8 +848,8 @@ Cohesion: 0.14
 Nodes (7): Detalles Técnicos, Enlaces, Motor Engine & IA Agents, get_job_status(), create_job(), get_job(), update_job()
 
 ### Community 177 - "ThemeContext.tsx"
-Cohesion: 0.18
-Nodes (14): AppearanceSection(), OPTIONS, ThemeSelector(), subscribeNoop(), ThemeToggle(), readStoredTheme(), ResolvedTheme, subscribeToSystemTheme() (+6 more)
+Cohesion: 0.15
+Nodes (16): AppearanceSection(), OPTIONS, ThemeSelector(), subscribeNoop(), ThemeToggle(), readStoredTheme(), ResolvedTheme, subscribeToSystemTheme() (+8 more)
 
 ### Community 179 - "Ponytail, lazy senior dev mode"
 Cohesion: 0.50
@@ -879,20 +880,20 @@ Cohesion: 0.05
 Nodes (39): GET(), Assumptions under review, Capability Map: inteligencia competitiva Airbnb, Key product decisions to approve, Sources checked, Boundaries, Code style, Commands (+31 more)
 
 ### Community 189 - "app/layout.tsx"
-Cohesion: 0.31
-Nodes (7): inter, manrope, metadata, RootLayout(), CurrencyProvider(), QueryProvider(), ToastProvider()
+Cohesion: 0.19
+Nodes (11): inter, manrope, metadata, RootLayout(), CurrencyProvider(), QueryProvider(), ToastProvider(), persister (+3 more)
 
 ### Community 191 - "auth_user"
 Cohesion: 0.40
 Nodes (3): auth_user(), mock_property(), mock_rate_limiter_redis()
 
-### Community 192 - "QueryProvider.tsx"
-Cohesion: 0.47
-Nodes (4): persister, queryClient, @tanstack/query-sync-storage-persister, @tanstack/react-query-persist-client
+### Community 192 - "Skeleton.tsx"
+Cohesion: 0.14
+Nodes (15): ActivityList(), ActivityListProps, DashboardCharts(), DashboardChartsProps, DashboardMetrics(), DashboardMetricsProps, IncomeList(), Column (+7 more)
 
-### Community 193 - "DashboardLayout"
-Cohesion: 0.06
-Nodes (53): AutomationAction, AutomationPayload, AutomationsPage(), ComparisonPage(), Banner(), BillingStatus, longDate, PlansContent() (+45 more)
+### Community 193 - "Button"
+Cohesion: 0.08
+Nodes (52): AutomationAction, AutomationPayload, AutomationsPage(), ComparisonPage(), GuestsPage(), IncomePage(), Field(), OnboardingPage() (+44 more)
 
 ### Community 194 - "config.py"
 Cohesion: 0.14
@@ -910,6 +911,10 @@ Nodes (6): AuditLogBase, AuditLogRead, AutomationActionBase, AutomationActionCre
 Cohesion: 0.13
 Nodes (14): ApifyProvider, OmkarProvider, CompetitorProvider, ProviderConfigurationError, ProviderError, ProviderRateLimitError, ProviderTimeoutError, ProviderUnavailableError (+6 more)
 
+### Community 203 - "plans/page.tsx"
+Cohesion: 0.22
+Nodes (11): Banner(), BillingStatus, longDate, PlansContent(), PlansPage(), shortDate, Subscription, PlanCard() (+3 more)
+
 ### Community 210 - "PixelBlast.jsx"
 Cohesion: 0.38
 Nodes (6): createLiquidEffect(), createTouchTexture(), PixelBlast(), SHAPE_MAP, postprocessing, three
@@ -922,12 +927,12 @@ Nodes (6): createLiquidEffect(), createTouchTexture(), PixelBlast(), SHAPE_MAP, 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Funciones del sistema` connect `Funciones del sistema` to `integrations.py`, `metrics.ts`?**
-  _High betweenness centrality (0.136) - this node is a cross-community bridge._
+- **Why does `Funciones del sistema` connect `Funciones del sistema` to `integrations.py`, `useCurrency`?**
+  _High betweenness centrality (0.134) - this node is a cross-community bridge._
 - **Why does `verify_property_access()` connect `datetime` to `integrations.py`, `routes/competitors.py`, `request_ai_insights`, `User`, `send_message`, `Property`, `routes/analysis.py`, `Funciones del sistema`, `_get_property_data`, `invalidate_summary_cache`?**
-  _High betweenness centrality (0.097) - this node is a cross-community bridge._
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
 - **Why does `2. Gestión de entidades operativas (Propiedades, Reservas y Gastos)` connect `Funciones del sistema` to `datetime`?**
-  _High betweenness centrality (0.095) - this node is a cross-community bridge._
+  _High betweenness centrality (0.094) - this node is a cross-community bridge._
 - **Are the 99 inferred relationships involving `User` (e.g. with `run_copilot()` and `ask_question()`) actually correct?**
   _`User` has 99 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 70 inferred relationships involving `Property` (e.g. with `get_owned_property()` and `_build_operational_alerts()`) actually correct?**

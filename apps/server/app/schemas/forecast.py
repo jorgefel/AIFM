@@ -38,6 +38,12 @@ class MonthForecast(BaseModel):
     )
     model_used: str = Field(description="Modelo matemático empleado (moving_average | holt | holt_winters)")
     is_forecast: bool = Field(default=True, description="Indica explícitamente que es una estimación")
+    projected_reservations: Optional[int] = Field(
+        default=None, description="Número de reservas proyectadas para el mes"
+    )
+    booked_reservations: Optional[int] = Field(
+        default=None, description="Reservas ya confirmadas en libros para el mes"
+    )
 
 
 class PropertyForecastResponse(BaseModel):

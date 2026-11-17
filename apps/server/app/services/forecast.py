@@ -187,6 +187,7 @@ def generate_property_forecast(
 
     gross_history = []
     net_history = []
+    res_history = []
 
     if dates:
         earliest = min(dates)
@@ -197,6 +198,7 @@ def generate_property_forecast(
             summary = calculate_monthly_summary(reservations, expenses, cur_y, cur_m)
             gross_history.append(float(summary["gross_income"]))
             net_history.append(float(summary["net_profit"]))
+            res_history.append(int(summary.get("reservation_count", 0)))
 
             cur_m += 1
             if cur_m > 12:
@@ -225,6 +227,9 @@ def generate_property_forecast(
     n_preds, n_lowers, n_uppers, n_model = _fit_and_forecast(
         net_history, steps, property_id, "net_profit", clip_zero=False
     )
+    r_preds, _, _, _ = _fit_and_forecast(
+        [float(r) for r in res_history], steps, property_id, "reservations", clip_zero=True
+    )
 
     future_months = _next_months(today, steps)
     forecasts = []
@@ -233,8 +238,10 @@ def generate_property_forecast(
         booked = calculate_monthly_summary(reservations, expenses, fy, fm)
         booked_gross = float(booked["gross_income"])
         booked_net = float(booked["net_profit"])
+        booked_res = int(booked.get("reservation_count", 0))
         proj_gross = max(g_preds[idx], booked_gross)
         proj_net = max(n_preds[idx], booked_net) if n_preds[idx] >= 0 else booked_net
+        proj_res = max(int(round(r_preds[idx])) if r_preds else 0, booked_res)
         low_gross = max(g_lowers[idx], booked_gross)
         up_gross = max(g_uppers[idx], booked_gross)
 
@@ -257,6 +264,8 @@ def generate_property_forecast(
                 confidence_score=0.80,
                 model_used=global_model,
                 is_forecast=True,
+                projected_reservations=proj_res,
+                booked_reservations=booked_res,
             )
         )
 
