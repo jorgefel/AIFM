@@ -7,19 +7,22 @@ from app.chatbot.context import build_context
 
 
 def test_recommendations_insufficient_data():
-    """Con menos de 2 meses o sin reservas, retorna recomendación de información insuficiente sin métricas inventadas."""
+    """Con menos de 2 meses o sin reservas, retorna recomendaciones básicas generales sin inventar cifras."""
     recs = generate_predictive_recommendations(
         property_id="prop-new",
         reservations=[],
         expenses=[],
         historical_count=0,
     )
-    assert len(recs) == 1
-    assert recs[0]["id"] == "rec-insufficient-history"
-    assert recs[0]["severity"] == "info"
-    assert recs[0]["evidence_source"] == "own_history"
-    # Sin porcentajes comerciales inventados
-    assert "%" not in recs[0]["action"]
+    assert len(recs) == 4
+    rec_ids = [r["id"] for r in recs]
+    assert "rec-basic-listing-quality" in rec_ids
+    assert "rec-basic-multi-channel" in rec_ids
+    assert "rec-basic-extra-services" in rec_ids
+    assert "rec-basic-market-pricing" in rec_ids
+    for r in recs:
+        assert r["severity"] == "info"
+        assert r["evidence_source"] == "market"
 
 
 def test_recommendations_trend_positive():

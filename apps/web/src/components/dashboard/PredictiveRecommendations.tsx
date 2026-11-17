@@ -135,15 +135,20 @@ export function PredictiveRecommendations({
         </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-line-soft flex items-center justify-between text-[11px] text-ink-muted">
-        <span>Fuente: Histórico de la propiedad</span>
-        <a
-          href="/analytics"
-          className="inline-flex items-center font-medium text-violet-500 hover:text-violet-600 transition-colors"
-        >
-          Ver proyecciones completas
-          <ArrowUpRight className="ml-0.5 h-3 w-3" />
-        </a>
+      <div className="mt-4 pt-3 border-t border-line-soft space-y-2.5">
+        <div className="rounded-lg border border-amber-500/25 bg-amber-500/10 p-2 text-[11px] leading-relaxed text-amber-600 dark:text-amber-300">
+          💡 Entre más datos registres, más precisas y específicas serán las recomendaciones, con mejores resultados.
+        </div>
+        <div className="flex items-center justify-between text-[11px] text-ink-muted">
+          <span>Fuente: Histórico y mercado</span>
+          <a
+            href="/analytics"
+            className="inline-flex items-center font-medium text-violet-500 hover:text-violet-600 transition-colors"
+          >
+            Ver proyecciones completas
+            <ArrowUpRight className="ml-0.5 h-3 w-3" />
+          </a>
+        </div>
       </div>
     </div>
   );

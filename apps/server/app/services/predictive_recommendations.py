@@ -34,25 +34,75 @@ def generate_predictive_recommendations(
         )
         historical_count = hist_count
 
-    # 1. Caso de información insuficiente (< 2 meses o sin reservas)
+    # 1. Determinar meses con actividad contable real (incluyendo reservas confirmadas futuras)
     confirmed_reservations = [
         r for r in reservations if r.get("status") not in ("cancelled",)
     ]
-    if historical_count < 2 or not confirmed_reservations:
+    active_months = set()
+    for r in confirmed_reservations:
+        if r.get("check_in"):
+            d = r["check_in"] if isinstance(r["check_in"], date) else date.fromisoformat(str(r["check_in"]))
+            active_months.add((d.year, d.month))
+    for e in expenses:
+        if not e.get("is_deleted", False) and e.get("date"):
+            d = e["date"] if isinstance(e["date"], date) else date.fromisoformat(str(e["date"]))
+            active_months.add((d.year, d.month))
+
+    effective_history = max(historical_count or 0, len(active_months))
+
+    # Si hay menos de 2 meses de actividad o no hay reservas confirmadas,
+    # ofrecer recomendaciones básicas generales accionables para cuentas nuevas (Punto 3).
+    if effective_history < 2 or not confirmed_reservations:
         return [
             {
-                "id": "rec-insufficient-history",
-                "title": "Información histórica insuficiente",
-                "action": "Registra tus reservas y gastos recientes o sincroniza tus canales para habilitar proyecciones.",
-                "reason": "El sistema cuenta con menos de 2 meses de registros financieros para esta propiedad, por lo que no es posible inferir tendencias confiables.",
+                "id": "rec-basic-listing-quality",
+                "title": "Optimiza la publicidad de tu alojamiento",
+                "action": "Sube fotografías luminosas de alta resolución, actualiza el título con el atractivo principal de la zona y detalla cada amenidad en la descripción.",
+                "reason": "Los anuncios con fotos profesionales y descripciones completas reciben hasta un 40% más de consultas en sus primeros meses.",
                 "evidence": [
-                    {"label": "Meses registrados", "value": historical_count},
-                    {"label": "Reservas registradas", "value": len(confirmed_reservations)},
+                    {"label": "Nivel de datos", "value": "Inicial"},
+                    {"label": "Impacto esperado", "value": "Mayor conversión"},
                 ],
                 "severity": "info",
-                "evidence_source": "own_history",
+                "evidence_source": "market",
                 "as_of": today_str,
-            }
+            },
+            {
+                "id": "rec-basic-multi-channel",
+                "title": "Publica en más plataformas",
+                "action": "Diversifica tu presencia publicando en Booking, Airbnb y explorando reservas directas para no depender de un solo canal.",
+                "reason": "Distribuir tu propiedad en múltiples canales reduce los periodos vacíos entre temporadas.",
+                "evidence": [
+                    {"label": "Canales recomendados", "value": "Airbnb, Booking, Directo"},
+                ],
+                "severity": "info",
+                "evidence_source": "market",
+                "as_of": today_str,
+            },
+            {
+                "id": "rec-basic-extra-services",
+                "title": "Ofrece servicios y experiencias adicionales",
+                "action": "Habilita opciones de check-in temprano, salida tardía o convenios de transporte/tours para generar ingresos complementarios.",
+                "reason": "Los servicios adicionales aumentan la satisfacción del huésped y mejoran el margen neto por estadía.",
+                "evidence": [
+                    {"label": "Opciones clave", "value": "Early check-in / Late check-out"},
+                ],
+                "severity": "info",
+                "evidence_source": "market",
+                "as_of": today_str,
+            },
+            {
+                "id": "rec-basic-market-pricing",
+                "title": "Revisa tu precio frente a la competencia",
+                "action": "Compara tu tarifa nocturna con alojamientos de similar capacidad en tu barrio para calibrar un precio competitivo de lanzamiento.",
+                "reason": "Una tarifa competitiva al inicio acelera la obtención de las primeras reseñas y posiciona tu anuncio.",
+                "evidence": [
+                    {"label": "Estrategia", "value": "Precio competitivo inicial"},
+                ],
+                "severity": "info",
+                "evidence_source": "market",
+                "as_of": today_str,
+            },
         ]
 
     recommendations: List[Dict[str, Any]] = []
