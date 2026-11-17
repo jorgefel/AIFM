@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 class ReservationBase(BaseModel):
     property_id: uuid.UUID
+    guest_id: uuid.UUID | None = None
     guest_name: str = Field(min_length=1, max_length=200)
     check_in: date
     check_out: date
@@ -26,6 +27,7 @@ class ReservationCreate(ReservationBase):
     pass # net_amount is calculated on the server
 
 class ReservationUpdate(BaseModel):
+    guest_id: uuid.UUID | None = None
     guest_name: str | None = Field(default=None, min_length=1, max_length=200)
     check_in: date | None = None
     check_out: date | None = None

@@ -24,6 +24,7 @@ export function useIncome() {
 
   const [formData, setFormData] = useState({
     property_id: "",
+    guest_id: null as string | null,
     guest_name: "",
     check_in: "",
     check_out: "",
@@ -43,17 +44,21 @@ export function useIncome() {
   }, [properties, selectedPropertyId]);
 
   // ── Reservations via React Query ──
-  const reservationsKey = ["reservations", selectedPropertyId];
+  const isAll = !selectedPropertyId || selectedPropertyId === "all";
+  const reservationsKey = ["reservations", isAll ? "all" : selectedPropertyId];
 
   const { data: reservations = [], isLoading } = useQuery<Reservation[]>({
     queryKey: reservationsKey,
-    queryFn: () => fetcher(`/reservations?property_id=${selectedPropertyId}`),
-    enabled: !!selectedPropertyId,
+    queryFn: () => {
+      const url = isAll ? "/reservations" : `/reservations?property_id=${selectedPropertyId}`;
+      return fetcher(url);
+    },
+    enabled: true,
     staleTime: 0, // No cache for reservation status endpoints as requested
   });
 
   const submitReservation = async (editingId: string | null) => {
-    const targetPropertyId = formData.property_id || selectedPropertyId;
+    const targetPropertyId = formData.property_id || (selectedPropertyId !== "all" ? selectedPropertyId : "");
     if (!targetPropertyId || !formData.check_in || !formData.check_out || formData.check_out <= formData.check_in) {
       toast.warning("Revisa los datos", "Verifica la propiedad y que la salida sea posterior a la entrada.");
       return false;
@@ -82,6 +87,7 @@ export function useIncome() {
       }
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["finance-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["guests"] });
       queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY });
       return true;
     } catch (error: any) {
@@ -100,6 +106,7 @@ export function useIncome() {
       queryClient.invalidateQueries({ queryKey: reservationsKey });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["finance-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["guests"] });
       queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY });
       return true;
     } catch {
@@ -114,6 +121,7 @@ export function useIncome() {
     const rate = prop ? Number(prop.nightly_rate ?? prop.price_per_night ?? 0) : 0;
     setFormData({
       property_id: propId,
+      guest_id: null,
       guest_name: "",
       check_in: "",
       check_out: "",
@@ -136,6 +144,7 @@ export function useIncome() {
 
     setFormData({
       property_id: res.property_id,
+      guest_id: res.guest_id || null,
       guest_name: res.guest_name,
       check_in: res.check_in,
       check_out: res.check_out,

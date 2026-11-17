@@ -20,6 +20,7 @@ from app.models.base import TimestampMixin, UUIDMixin
 
 if TYPE_CHECKING:
     from app.models.property import Property
+    from app.models.guest import Guest
 
 
 class Reservation(Base, UUIDMixin, TimestampMixin):
@@ -30,6 +31,12 @@ class Reservation(Base, UUIDMixin, TimestampMixin):
         ForeignKey("properties.id", ondelete="RESTRICT"),
         nullable=False,
         index=True,  # Índice explícito para queries de multi-tenancy
+    )
+    guest_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("guests.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
     guest_name: Mapped[str] = mapped_column(
         String(200), nullable=False
@@ -77,6 +84,9 @@ class Reservation(Base, UUIDMixin, TimestampMixin):
     # ── Relaciones ───────────────────────────────────────────
     property: Mapped[Property] = relationship(
         "Property", back_populates="reservations", lazy="selectin"
+    )
+    guest: Mapped[Guest | None] = relationship(
+        "Guest", back_populates="reservations", lazy="selectin"
     )
 
     def __repr__(self) -> str:

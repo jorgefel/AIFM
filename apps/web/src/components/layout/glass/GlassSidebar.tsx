@@ -35,7 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Comparación", href: "/comparison", icon: GitCompareArrows },
   { name: "Reservas", href: "/reservations", icon: CalendarCheck },
   { name: "Calendario", href: "/calendar", icon: Calendar },
-  { name: "Huéspedes", icon: Users, soon: true },
+  { name: "Huéspedes", href: "/guests", icon: Users },
   {
     name: "Finanzas",
     href: "/income",

@@ -10,6 +10,7 @@ from app.core.dependencies import get_current_user, verify_property_access
 from app.models.user import User
 from app.models.property import Property
 from app.models.reservation import Reservation
+from app.models.guest import Guest
 from app.schemas.reservation import ReservationRead, ReservationCreate, ReservationUpdate
 from app.services.cache import invalidate_summary_cache
 
@@ -61,18 +62,41 @@ async def get_calendar_reservations(
 
 @router.get("", response_model=List[ReservationRead], include_in_schema=False)
 @router.get("/", response_model=List[ReservationRead])
-async def get_reservations(property_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    await verify_property_access(property_id, current_user, db)
-    
-    result = await db.execute(
-        select(Reservation).where(Reservation.property_id == property_id, Reservation.status != "cancelled")
-    )
+async def get_reservations(
+    property_id: uuid.UUID | None = None,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if property_id is not None:
+        await verify_property_access(property_id, current_user, db)
+        query = select(Reservation).where(
+            Reservation.property_id == property_id,
+            Reservation.status != "cancelled",
+        )
+    else:
+        query = (
+            select(Reservation)
+            .join(Property, Reservation.property_id == Property.id)
+            .where(
+                Property.owner_id == current_user.id,
+                Property.is_active.is_(True),
+                Reservation.status != "cancelled",
+            )
+        )
+    result = await db.execute(query.order_by(Reservation.check_in.desc()))
     return result.scalars().all()
 
 @router.post("", response_model=ReservationRead, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @router.post("/", response_model=ReservationRead, status_code=status.HTTP_201_CREATED)
 async def create_reservation(reservation_in: ReservationCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     await verify_property_access(reservation_in.property_id, current_user, db)
+    if reservation_in.guest_id is not None:
+        guest_res = await db.execute(
+            select(Guest).where(Guest.id == reservation_in.guest_id, Guest.owner_id == current_user.id)
+        )
+        if not guest_res.scalars().first():
+            raise HTTPException(status_code=404, detail="Huésped no encontrado")
+
     if reservation_in.status != "cancelled":
         await _ensure_no_overlap(
             property_id=reservation_in.property_id,
@@ -88,7 +112,7 @@ async def create_reservation(reservation_in: ReservationCreate, db: AsyncSession
     await db.commit()
     await db.refresh(db_reservation)
     
-    await invalidate_summary_cache(db_reservation.property_id)
+    await invalidate_summary_cache(db_reservation.property_id, owner_id=current_user.id)
     
     return db_reservation
 
@@ -105,7 +129,13 @@ async def update_reservation(reservation_id: uuid.UUID, reservation_in: Reservat
         raise HTTPException(status_code=404, detail="Reservation not found")
         
     update_data = reservation_in.model_dump(exclude_unset=True)
-    
+    if "guest_id" in update_data and update_data["guest_id"] is not None:
+        guest_res = await db.execute(
+            select(Guest).where(Guest.id == update_data["guest_id"], Guest.owner_id == current_user.id)
+        )
+        if not guest_res.scalars().first():
+            raise HTTPException(status_code=404, detail="Huésped no encontrado")
+
     for field, value in update_data.items():
         setattr(db_reservation, field, value)
         
@@ -128,7 +158,7 @@ async def update_reservation(reservation_id: uuid.UUID, reservation_in: Reservat
     await db.commit()
     await db.refresh(db_reservation)
     
-    await invalidate_summary_cache(db_reservation.property_id)
+    await invalidate_summary_cache(db_reservation.property_id, owner_id=current_user.id)
     
     return db_reservation
 
@@ -148,6 +178,6 @@ async def delete_reservation(reservation_id: uuid.UUID, db: AsyncSession = Depen
     db_reservation.status = "cancelled" # Soft delete
     await db.commit()
     
-    await invalidate_summary_cache(db_reservation.property_id)
+    await invalidate_summary_cache(db_reservation.property_id, owner_id=current_user.id)
     
     return None

@@ -44,6 +44,7 @@ export interface Expense {
 export interface Reservation {
   id: string;
   property_id: string;
+  guest_id?: string | null;
   guest_name: string;
   check_in: string;
   check_out: string;
@@ -57,6 +58,34 @@ export interface Reservation {
   beds24_booking_id?: string | null;
   sync_source?: string | null;
   synced_at?: string | null;
+}
+
+export interface Guest {
+  id: string;
+  owner_id: string;
+  first_name: string;
+  last_name: string;
+  document_or_keyword?: string | null;
+  total_nights: number;
+  properties_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GuestStay {
+  reservation_id: string;
+  property_id: string;
+  property_name: string;
+  check_in: string;
+  check_out: string;
+  nights: number;
+  status: string;
+  total_amount: number;
+}
+
+export interface GuestDetail extends Guest {
+  properties_stayed: string[];
+  stays: GuestStay[];
 }
 
 export interface CalendarDay {

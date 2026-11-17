@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from app.api.v1.chatbot import router as chatbot_router
 from app.api.v1.routes import (
-    auth, users, properties, reservations, expenses, analysis, jobs, search, export, dashboard, billing, integrations, predictions, competitors
+    auth, users, properties, reservations, expenses, analysis, jobs, search, export, dashboard, billing, integrations, predictions, competitors, guests
 )
 
 api_router = APIRouter()
@@ -10,6 +10,7 @@ api_router.include_router(users.router)
 api_router.include_router(properties.router)
 api_router.include_router(competitors.router)
 api_router.include_router(reservations.router)
+api_router.include_router(guests.router)
 api_router.include_router(expenses.router)
 api_router.include_router(analysis.router)
 api_router.include_router(predictions.router)
