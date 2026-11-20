@@ -41,3 +41,15 @@ desktop.ini
 
 # Docker overrides locales
 docker-compose.override.yml
+
+# AI Assistants, Skills & Agent Artifacts
+.agents/
+.cursor/
+.codex/
+.claude/
+.gemini/
+.antigravity/
+graphify-out/
+scratch/
+skills/
+**/skills/
